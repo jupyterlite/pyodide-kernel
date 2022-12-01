@@ -4,6 +4,8 @@
 
 A Python kernel for JupyterLite powered by Pyodide
 
+⚠️ 🚧 This is a **work in progress**. The Pyodide kernel is currently being extracted from the main JupyterLite repository to this repo. See https://github.com/jupyterlite/jupyterlite/pull/854 for more information.
+
 ## Requirements
 
 - JupyterLite >= 0.1.0b15
