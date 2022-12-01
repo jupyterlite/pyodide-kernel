@@ -1,4 +1,4 @@
-# jupyterlite_pyodide_kernel
+# jupyterlite-pyodide-kernel
 
 [![Github Actions Status](https://github.com/jupyterlite/pyodide-kernel/workflows/Build/badge.svg)](https://github.com/jupyterlite/pyodide-kernel/actions/workflows/build.yml)
 
@@ -13,7 +13,7 @@ A Python kernel for JupyterLite powered by Pyodide
 To install the extension, execute:
 
 ```bash
-pip install jupyterlite_pyodide_kernel
+pip install jupyterlite-pyodide-kernel
 ```
 
 Then build your JupyterLite site:
@@ -27,7 +27,7 @@ jupyter lite build
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupyterlite_pyodide_kernel
+pip uninstall jupyterlite-pyodide-kernel
 ```
 
 ## Contributing
@@ -42,7 +42,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the jupyterlite_pyodide_kernel directory
+# Change directory to the jupyterlite-pyodide-kernel directory
 # Install package in development mode
 python -m pip install -e .
 
@@ -67,7 +67,7 @@ With the watch command running, every saved change will immediately be built loc
 ### Development uninstall
 
 ```bash
-pip uninstall jupyterlite_pyodide_kernel
+pip uninstall jupyterlite-pyodide-kernel
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
