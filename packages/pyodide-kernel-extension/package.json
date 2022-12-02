@@ -18,7 +18,6 @@
   ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "style": "style/index.css",
   "directories": {
     "lib": "lib/"
   },
@@ -30,11 +29,19 @@
     "style/index.js"
   ],
   "scripts": {
-    "build": "tsc -b",
-    "clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+    "build": "jlpm build:lib && jlpm build:labextension:dev",
+    "build:prod": "jlpm clean && jlpm build:lib && jlpm build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "jlpm clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf jupyterlite_pyodide_kernel/labextension",
+    "clean:all": "jlpm clean:lib && jlpm clean:labextension",
     "docs": "typedoc src",
-    "prepublishOnly": "npm run build",
-    "watch": "tsc -b --watch"
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
     "@jupyterlab/coreutils": "~5.5.0",
@@ -45,6 +52,7 @@
   "devDependencies": {
     "@babel/core": "^7.11.6",
     "@babel/preset-env": "^7.12.1",
+    "@jupyterlab/builder": "^3.1.0",
     "@types/jest": "^26.0.10",
     "jest": "^26.4.2",
     "rimraf": "~3.0.0",
@@ -54,5 +62,11 @@
   "publishConfig": {
     "access": "public"
   },
-  "styleModule": "style/index.js"
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "jupyterlite_pyodide_kernel/labextension"
+  },
+  "jupyterlite": {
+    "liteExtension": true
+  }
 }
