@@ -40,9 +40,6 @@ pip uninstall jupyterlite-pyodide-kernel
 
 Note: You will need NodeJS to build the extension package.
 
-The `jlpm` command is JupyterLab's pinned version of [yarn](https://yarnpkg.com/) that
-is installed with JupyterLab. You may use `yarn` or `npm` in lieu of `jlpm` below.
-
 ```bash
 # Clone the repo to your local environment
 # Change directory to the jupyterlite-pyodide-kernel directory
@@ -53,7 +50,7 @@ python -m pip install -e .
 jupyter labextension develop . --overwrite
 
 # Rebuild extension Typescript source after making changes
-jlpm build
+yarn build
 ```
 
 You can watch the source directory and run JupyterLab at the same time in different
@@ -62,7 +59,7 @@ extension.
 
 ```bash
 # Watch the source directory in one terminal, automatically rebuilding when needed
-jlpm watch
+yarn watch
 # Run JupyterLab in another terminal
 jupyter lab
 ```

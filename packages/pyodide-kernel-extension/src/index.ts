@@ -19,7 +19,7 @@ const PYODIDE_CDN_URL = 'https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.j
 /**
  * The id for the extension, and key in the litePlugins.
  */
-const PLUGIN_ID = '@jupyterlite/pyolite-kernel-extension:kernel';
+const PLUGIN_ID = '@jupyterlite/pyodide-kernel-extension:kernel';
 
 /**
  * A plugin to register the Pyodide kernel.
@@ -54,7 +54,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
         },
       },
       create: async (options: IKernel.IOptions): Promise<IKernel> => {
-        const { PyoliteKernel } = await import('@jupyterlite/pyolite-kernel');
+        const { PyoliteKernel } = await import('@jupyterlite/pyodide-kernel');
 
         return new PyoliteKernel({
           ...options,

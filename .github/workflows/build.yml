@@ -23,10 +23,10 @@ jobs:
     - name: Lint the extension
       run: |
         set -eux
-        jlpm
-        jlpm run eslint:check
+        yarn
+        yarn run eslint:check
         python -m pip install .
-        jlpm run lint:check
+        yarn run lint:check
 
     - name: Build the extension
       run: |

@@ -7,7 +7,7 @@
   "include": ["src/**/*"],
   "references": [
     {
-      "path": "../pyolite-kernel"
+      "path": "../pyodide-kernel"
     }
   ]
 }
