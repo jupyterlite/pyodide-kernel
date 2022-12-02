@@ -2,6 +2,11 @@
   "name": "@jupyterlite/pyodide-kernel-root",
   "version": "0.1.0",
   "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
   "scripts": {
     "eslint": "jlpm eslint:check --fix",
     "eslint:check": "eslint . --cache --ext .ts,.tsx",

@@ -4,7 +4,9 @@
 
 A Python kernel for JupyterLite powered by Pyodide
 
-⚠️ 🚧 This is a **work in progress**. The Pyodide kernel is currently being extracted from the main JupyterLite repository to this repo. See https://github.com/jupyterlite/jupyterlite/pull/854 for more information.
+⚠️ 🚧 This is a **work in progress**. The Pyodide kernel is currently being extracted
+from the main JupyterLite repository to this repo. See
+https://github.com/jupyterlite/jupyterlite/pull/854 for more information.
 
 ## Requirements
 
@@ -38,9 +40,8 @@ pip uninstall jupyterlite-pyodide-kernel
 
 Note: You will need NodeJS to build the extension package.
 
-The `jlpm` command is JupyterLab's pinned version of
-[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
-`yarn` or `npm` in lieu of `jlpm` below.
+The `jlpm` command is JupyterLab's pinned version of [yarn](https://yarnpkg.com/) that
+is installed with JupyterLab. You may use `yarn` or `npm` in lieu of `jlpm` below.
 
 ```bash
 # Clone the repo to your local environment
@@ -55,7 +56,9 @@ jupyter labextension develop . --overwrite
 jlpm build
 ```
 
-You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
+You can watch the source directory and run JupyterLab at the same time in different
+terminals to watch for changes in the extension's source and automatically rebuild the
+extension.
 
 ```bash
 # Watch the source directory in one terminal, automatically rebuilding when needed
@@ -64,7 +67,9 @@ jlpm watch
 jupyter lab
 ```
 
-With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
+With the watch command running, every saved change will immediately be built locally and
+available in your running JupyterLab. Refresh JupyterLab to load the change in your
+browser (you may need to wait several seconds for the extension to be rebuilt).
 
 ### Development uninstall
 
@@ -72,9 +77,10 @@ With the watch command running, every saved change will immediately be built loc
 pip uninstall jupyterlite-pyodide-kernel
 ```
 
-In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
-command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `@jupyterlite/pyodide-kernel` within that folder.
+In development mode, you will also need to remove the symlink created by
+`jupyter labextension develop` command. To find its location, you can run
+`jupyter labextension list` to figure out where the `labextensions` folder is located.
+Then you can remove the symlink named `@jupyterlite/pyodide-kernel` within that folder.
 
 ### Packaging the extension
 

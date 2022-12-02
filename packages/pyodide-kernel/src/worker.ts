@@ -165,7 +165,9 @@ export class PyoliteRemoteKernel {
     const { pyodideUrl, indexUrl } = options;
     if (pyodideUrl.endsWith('.mjs')) {
       const pyodideModule: any = await import(/* webpackIgnore: true */ pyodideUrl);
-      this._pyodide = await (pyodideModule as any).loadPyodide({ indexURL: indexUrl });
+      this._pyodide = await (pyodideModule as any).loadPyodide({
+        indexURL: indexUrl,
+      });
     } else {
       importScripts(pyodideUrl);
       this._pyodide = await (self as any).loadPyodide({ indexURL: indexUrl });

@@ -22,7 +22,7 @@ export interface IPyoliteWorkerKernel extends IWorkerKernel {
 /**
  * An convenience interface for pyolite workers wrapped by a comlink Remote.
  */
-export interface IRemotePyoliteWorkerKernel extends Remote<IPyoliteWorkerKernel> {}
+export type IRemotePyoliteWorkerKernel = Remote<IPyoliteWorkerKernel>;
 
 /**
  * An namespace for pyolite workers.
