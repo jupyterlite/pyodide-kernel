@@ -65,9 +65,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "pyolite": {
+  "pyodide-kernel": {
     "packages": {
-      "py/pyolite": "0.1.0b15",
+      "py/pyodide-kernel": "0.1.0b15",
       "py/piplite": "0.1.0b15",
       "py/ipykernel": "6.9.2",
       "py/widgetsnbextension3/widgetsnbextension": "3.6.0",

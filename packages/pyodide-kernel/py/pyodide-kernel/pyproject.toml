@@ -3,10 +3,10 @@ requires = ["hatchling>=1.11"]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
-path = "pyolite/__init__.py"
+path = "pyodide_kernel/__init__.py"
 
 [project]
-name = "pyolite"
+name = "pyodide-kernel"
 authors = [
     {name = "JupyterLite Contributors"},
 ]
