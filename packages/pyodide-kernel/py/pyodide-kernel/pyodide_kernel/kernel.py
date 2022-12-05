@@ -13,8 +13,8 @@ if typing.TYPE_CHECKING:
 from .litetransform import LiteTransformerManager
 
 
-class Pyolite(LoggingConfigurable):
-    interpreter: "Interpreter" = Instance("pyolite.interpreter.Interpreter")
+class PyodideKernel(LoggingConfigurable):
+    interpreter: "Interpreter" = Instance("pyodide_kernel.interpreter.Interpreter")
     comm_manager: CommManager = Instance(CommManager)
     parent_header: typing.Any = Instance(Any, allow_none=True)
     lite_transform_manager: LiteTransformerManager = Instance(

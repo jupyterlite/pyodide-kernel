@@ -3,7 +3,7 @@
 
 import { DriveFS } from '@jupyterlite/contents';
 
-import { IPyoliteWorkerKernel } from './tokens';
+import { IPyodideWorkerKernel } from './tokens';
 
 // TODO Once this https://github.com/pyodide/pyodide/pull/2582/files is released
 // Remove this shameless copy
@@ -131,7 +131,7 @@ const ERRNO_CODES = {
   EXFULL: 115,
 };
 
-export class PyoliteRemoteKernel {
+export class PyodideRemoteKernel {
   constructor() {
     this._initialized = new Promise((resolve, reject) => {
       this._initializer = { resolve, reject };
@@ -141,7 +141,7 @@ export class PyoliteRemoteKernel {
   /**
    * Accept the URLs from the host
    **/
-  async initialize(options: IPyoliteWorkerKernel.IOptions): Promise<void> {
+  async initialize(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     this._options = options;
 
     if (options.location.includes(':')) {
@@ -161,7 +161,7 @@ export class PyoliteRemoteKernel {
     this._initializer?.resolve();
   }
 
-  protected async initRuntime(options: IPyoliteWorkerKernel.IOptions): Promise<void> {
+  protected async initRuntime(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const { pyodideUrl, indexUrl } = options;
     if (pyodideUrl.endsWith('.mjs')) {
       const pyodideModule: any = await import(/* webpackIgnore: true */ pyodideUrl);
@@ -175,7 +175,7 @@ export class PyoliteRemoteKernel {
   }
 
   protected async initPackageManager(
-    options: IPyoliteWorkerKernel.IOptions
+    options: IPyodideWorkerKernel.IOptions
   ): Promise<void> {
     if (!this._options) {
       throw new Error('Uninitialized');
@@ -186,7 +186,7 @@ export class PyoliteRemoteKernel {
     // this is the only use of `loadPackage`, allow `piplite` to handle the rest
     await this._pyodide.loadPackage(['micropip']);
 
-    // get piplite early enough to impact pyolite dependencies
+    // get piplite early enough to impact pyodide dependencies
     await this._pyodide.runPythonAsync(`
       import micropip
       await micropip.install('${pipliteWheelUrl}', keep_going=True)
@@ -196,13 +196,13 @@ export class PyoliteRemoteKernel {
     `);
   }
 
-  protected async initKernel(options: IPyoliteWorkerKernel.IOptions): Promise<void> {
+  protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     // from this point forward, only use piplite (but not %pip)
     await this._pyodide.runPythonAsync(`
       await piplite.install(['matplotlib', 'ipykernel'], keep_going=True);
-      await piplite.install(['pyolite'], keep_going=True);
+      await piplite.install(['pyodide_kernel'], keep_going=True);
       await piplite.install(['ipython'], keep_going=True);
-      import pyolite
+      import pyodide_kernel
     `);
     // cd to the kernel location
     if (options.mountDrive && this._localPath) {
@@ -213,11 +213,11 @@ export class PyoliteRemoteKernel {
     }
   }
 
-  protected async initGlobals(options: IPyoliteWorkerKernel.IOptions): Promise<void> {
+  protected async initGlobals(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const { globals } = this._pyodide;
-    this._kernel = globals.get('pyolite').kernel_instance.copy();
-    this._stdout_stream = globals.get('pyolite').stdout_stream.copy();
-    this._stderr_stream = globals.get('pyolite').stderr_stream.copy();
+    this._kernel = globals.get('pyodide_kernel').kernel_instance.copy();
+    this._stdout_stream = globals.get('pyodide_kernel').stdout_stream.copy();
+    this._stderr_stream = globals.get('pyodide_kernel').stderr_stream.copy();
     this._interpreter = this._kernel.interpreter.copy();
     this._interpreter.send_comm = this.sendComm.bind(this);
   }
@@ -226,7 +226,7 @@ export class PyoliteRemoteKernel {
    * Setup custom Emscripten FileSystem
    */
   protected async initFilesystem(
-    options: IPyoliteWorkerKernel.IOptions
+    options: IPyodideWorkerKernel.IOptions
   ): Promise<void> {
     if (options.mountDrive) {
       const mountpoint = '/drive';
@@ -575,7 +575,7 @@ export class PyoliteRemoteKernel {
   /**
    * Initialization options.
    */
-  protected _options: IPyoliteWorkerKernel.IOptions | null = null;
+  protected _options: IPyodideWorkerKernel.IOptions | null = null;
   /**
    * A promise that resolves when all initiaization is complete.
    */

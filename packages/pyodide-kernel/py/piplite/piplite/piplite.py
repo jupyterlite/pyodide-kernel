@@ -3,7 +3,7 @@
     import piplite
     await piplite.install("a-package")
 
-    `pyolite` also includes a browser shim for the IPython `%pip` magic
+    `pyodide-kernel` also includes a browser shim for the IPython `%pip` magic
 
 """
 import asyncio

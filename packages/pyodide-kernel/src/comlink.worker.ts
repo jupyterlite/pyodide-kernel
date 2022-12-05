@@ -6,8 +6,8 @@
  */
 import { expose } from 'comlink';
 
-import { PyoliteRemoteKernel } from './worker';
+import { PyodideRemoteKernel } from './worker';
 
-const worker = new PyoliteRemoteKernel();
+const worker = new PyodideRemoteKernel();
 
 expose(worker);

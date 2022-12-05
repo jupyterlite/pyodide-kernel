@@ -54,9 +54,9 @@ const kernel: JupyterLiteServerPlugin<void> = {
         },
       },
       create: async (options: IKernel.IOptions): Promise<IKernel> => {
-        const { PyoliteKernel } = await import('@jupyterlite/pyodide-kernel');
+        const { PyodideKernel } = await import('@jupyterlite/pyodide-kernel');
 
-        return new PyoliteKernel({
+        return new PyodideKernel({
           ...options,
           pyodideUrl,
           pipliteUrls,

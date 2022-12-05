@@ -2,7 +2,7 @@
 // Distributed under the terms of the Modified BSD License.
 
 /**
- * Definitions for the pyolite kernel.
+ * Definitions for the Pyodide kernel.
  */
 
 import type { Remote } from 'comlink';
@@ -10,24 +10,24 @@ import type { Remote } from 'comlink';
 import { IWorkerKernel } from '@jupyterlite/kernel';
 
 /**
- * An interface for pyolite workers.
+ * An interface for Pyodide workers.
  */
-export interface IPyoliteWorkerKernel extends IWorkerKernel {
+export interface IPyodideWorkerKernel extends IWorkerKernel {
   /**
    * Handle any lazy initialization activities.
    */
-  initialize(options: IPyoliteWorkerKernel.IOptions): Promise<void>;
+  initialize(options: IPyodideWorkerKernel.IOptions): Promise<void>;
 }
 
 /**
- * An convenience interface for pyolite workers wrapped by a comlink Remote.
+ * An convenience interface for Pyodide workers wrapped by a comlink Remote.
  */
-export type IRemotePyoliteWorkerKernel = Remote<IPyoliteWorkerKernel>;
+export type IRemotePyodideWorkerKernel = Remote<IPyodideWorkerKernel>;
 
 /**
- * An namespace for pyolite workers.
+ * An namespace for Pyodide workers.
  */
-export namespace IPyoliteWorkerKernel {
+export namespace IPyodideWorkerKernel {
   /**
    * Initialization options for a worker.
    */

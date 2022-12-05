@@ -7,20 +7,20 @@ import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 
 import { wrap } from 'comlink';
 
-import { IPyoliteWorkerKernel, IRemotePyoliteWorkerKernel } from './tokens';
+import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
 
 import { PIPLITE_WHEEL } from './_pypi';
 
 /**
  * A kernel that executes Python code with Pyodide.
  */
-export class PyoliteKernel extends BaseKernel implements IKernel {
+export class PyodideKernel extends BaseKernel implements IKernel {
   /**
    * Instantiate a new PyodideKernel
    *
    * @param options The instantiation options for a new PyodideKernel
    */
-  constructor(options: PyoliteKernel.IOptions) {
+  constructor(options: PyodideKernel.IOptions) {
     super(options);
     this._worker = this.initWorker(options);
     this._worker.onmessage = (e) => this._processWorkerMessage(e.data);
@@ -36,22 +36,22 @@ export class PyoliteKernel extends BaseKernel implements IKernel {
    * Subclasses must implement this typographically almost _exactly_ for
    * webpack to find it.
    */
-  protected initWorker(options: PyoliteKernel.IOptions): Worker {
+  protected initWorker(options: PyodideKernel.IOptions): Worker {
     return new Worker(new URL('./comlink.worker.js', import.meta.url), {
       type: 'module',
     });
   }
 
-  protected initRemote(options: PyoliteKernel.IOptions): IRemotePyoliteWorkerKernel {
-    const remote: IRemotePyoliteWorkerKernel = wrap(this._worker);
+  protected initRemote(options: PyodideKernel.IOptions): IRemotePyodideWorkerKernel {
+    const remote: IRemotePyodideWorkerKernel = wrap(this._worker);
     const remoteOptions = this.initRemoteOptions(options);
     remote.initialize(remoteOptions);
     return remote;
   }
 
   protected initRemoteOptions(
-    options: PyoliteKernel.IOptions
-  ): IPyoliteWorkerKernel.IOptions {
+    options: PyodideKernel.IOptions
+  ): IPyodideWorkerKernel.IOptions {
     const { pyodideUrl } = options;
 
     const indexUrl = pyodideUrl.slice(0, pyodideUrl.lastIndexOf('/') + 1);
@@ -183,7 +183,7 @@ export class PyoliteKernel extends BaseKernel implements IKernel {
       },
       protocol_version: '5.3',
       status: 'ok',
-      banner: 'Pyolite: A WebAssembly-powered Python kernel backed by Pyodide',
+      banner: 'A WebAssembly-powered Python kernel backed by Pyodide',
       help_links: [
         {
           text: 'Python (WASM) Kernel',
@@ -294,14 +294,14 @@ export class PyoliteKernel extends BaseKernel implements IKernel {
   }
 
   private _worker: Worker;
-  private _remoteKernel: IRemotePyoliteWorkerKernel;
+  private _remoteKernel: IRemotePyodideWorkerKernel;
   private _ready = new PromiseDelegate<void>();
 }
 
 /**
- * A namespace for PyoliteKernel statics.
+ * A namespace for PyodideKernel statics.
  */
-export namespace PyoliteKernel {
+export namespace PyodideKernel {
   /**
    * The instantiation options for a Pyodide kernel
    */
