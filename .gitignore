@@ -113,3 +113,7 @@ dmypy.json
 
 # OSX files
 .DS_Store
+
+# generated
+**/pypi/all.json
+_pypi.ts
