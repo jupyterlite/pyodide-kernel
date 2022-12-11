@@ -116,4 +116,5 @@ dmypy.json
 
 # generated
 **/pypi/all.json
+**/pypi/
 _pypi.ts
