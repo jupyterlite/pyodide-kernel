@@ -10,6 +10,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
+    "build:py": "lerna run build:py",
     "build:prod": "lerna run build:prod",
     "clean": "lerna run clean",
     "eslint": "yarn eslint:check --fix",
