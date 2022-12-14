@@ -1,5 +1,4 @@
 import os
-import re
 import json
 import shutil
 import subprocess
@@ -21,8 +20,7 @@ def which(cmd):
 
 
 ENC = "utf-8"
-ROOT = Path(__file__).parent.parent
-PYODIDE_KERNEL_PACKAGE = ROOT / "packages" / "pyodide-kernel"
+PYODIDE_KERNEL_PACKAGE = Path(__file__).parent.parent
 PYODIDE_KERNEL_WHEELS = PYODIDE_KERNEL_PACKAGE / "pypi"
 PYODIDE_KERNEL_WHEEL_TS = PYODIDE_KERNEL_PACKAGE / "src" / "_pypi.ts"
 PYODIDE_KERNEL_PACKAGE_JSON = json.loads(

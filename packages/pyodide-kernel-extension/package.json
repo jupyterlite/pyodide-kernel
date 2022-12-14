@@ -31,7 +31,6 @@
   "scripts": {
     "build": "yarn build:lib && yarn build:labextension:dev",
     "build:prod": "yarn clean && yarn build:lib && yarn build:labextension",
-    "build:py": "python scripts/generate-wheels-js.py",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc",
