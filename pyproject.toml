@@ -23,6 +23,24 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
+dependencies = [
+    "jupyterlite",
+    "pkginfo"
+]
+
+[project.entry-points."jupyterlite.addon.v0"]
+jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.piplite:PipliteAddon"
+jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:PyodideAddon"
+
+[project.optional-dependencies]
+dev = [
+    "hatch"
+]
+
+test = [
+    "pytest",
+    "pytest-console-scripts",
+]
 
 [tool.hatch.version]
 source = "nodejs"
@@ -51,11 +69,11 @@ skip-if-exists = ["jupyterlite_pyodide_kernel/labextension/static/style.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
-npm = ["jlpm"]
+npm = ["yarn"]
 
 [tool.hatch.build.hooks.jupyter-builder.editable-build-kwargs]
 build_cmd = "install:extension"
-npm = ["jlpm"]
+npm = ["yarn"]
 source_dir = "src"
 build_dir = "jupyterlite_pyodide_kernel/labextension"
 
@@ -64,10 +82,10 @@ version_cmd = "hatch version"
 
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
-    "python -m pip install jupyterlab~=3.1",
-    "jlpm",
-    "jlpm build:prod",
+    "python -m pip install jupyterlab~=3.1 hatch",
+    "yarn",
+    "yarn build:prod",
 ]
 before-build-python = [
-    "jlpm clean:all",
+    "yarn clean:all",
 ]

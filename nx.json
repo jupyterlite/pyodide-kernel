@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "build:py"]
+      }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build:py"],
+      "outputs": ["{projectRoot}/lib"]
+    },
+    "build:py": {
+      "outputs": ["{projectRoot}/src/_pypi.ts"]
+    }
+  }
+}

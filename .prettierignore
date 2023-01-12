@@ -3,3 +3,8 @@ node_modules
 **/lib
 **/package.json
 jupyterlite_pyodide_kernel
+pytest_cache
+
+# generated
+_pypi.ts
+**/pypi/all.json
