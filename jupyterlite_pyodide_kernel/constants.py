@@ -17,3 +17,11 @@ PYODIDE_URL = "pyodideUrl"
 PYODIDE = "pyodide"
 PYODIDE_JS = "pyodide.js"
 PYODIDE_REPODATA = "repodata.json"
+
+#: the only kind of noarch wheel piplite understands
+NOARCH_WHL = "py3-none-any.whl"
+
+#: the only kind of binary wheel piplite understands
+WASM_WHL = "emscripten_*_wasm32.whl"
+
+ALL_WHL = [NOARCH_WHL, WASM_WHL]

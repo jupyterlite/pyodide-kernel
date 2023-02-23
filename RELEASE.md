@@ -1,12 +1,21 @@
 # Making a new release of jupyterlite-pyodide-kernel
 
-The extension can be published to `PyPI` and `npm` manually or using the
-[Jupyter Releaser](https://github.com/jupyter-server/jupyter_releaser).
+## Automated Releases with `jupyter_releaser`
 
-## Publishing to `conda-forge`
+The recommended way to make a release is to use
+[`jupyter_releaser`](https://jupyter-releaser.readthedocs.io/en/latest/get_started/making_release_from_repo.html).
 
-If the package is not on conda forge yet, check the documentation to learn how to add
-it: https://conda-forge.org/docs/maintainer/adding_pkgs.html
+This repository contains the two workflows located under
+https://github.com/jupyterlite/pyodide-kernel/actions:
 
-Otherwise a bot should pick up the new version publish to PyPI, and open a new PR on the
-feedstock repository automatically.
+- Step 1: Prep Release
+- Step 2: Publish Release
+
+### Specifying a version spec
+
+You can specify the Python version directly as the `version_spec` when using the
+releaser workflows. For example:
+
+- `0.1.0b8`
+- `0.1.1`
+- `1.2.0rc0`

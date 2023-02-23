@@ -1,6 +1,6 @@
 import { PromiseDelegate } from '@lumino/coreutils';
 
-import { URLExt, PageConfig } from '@jupyterlab/coreutils';
+import { PageConfig } from '@jupyterlab/coreutils';
 import { KernelMessage } from '@jupyterlab/services';
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
@@ -9,7 +9,7 @@ import { wrap } from 'comlink';
 
 import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
 
-import { PIPLITE_WHEEL } from './_pypi';
+import { allJSONUrl, pipliteWheelUrl } from './_pypi';
 
 /**
  * A kernel that executes Python code with Pyodide.
@@ -52,16 +52,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     options: PyodideKernel.IOptions
   ): IPyodideWorkerKernel.IOptions {
     const { pyodideUrl } = options;
-
     const indexUrl = pyodideUrl.slice(0, pyodideUrl.lastIndexOf('/') + 1);
-
     const baseUrl = PageConfig.getBaseUrl();
-
-    const pypi = URLExt.join(baseUrl, 'build/pypi');
-
-    const pipliteUrls = [...(options.pipliteUrls || []), URLExt.join(pypi, 'all.json')];
-
-    const pipliteWheelUrl = URLExt.join(pypi, PIPLITE_WHEEL);
+    const pipliteUrls = [...(options.pipliteUrls || []), allJSONUrl.default];
 
     const disablePyPIFallback = !!options.disablePyPIFallback;
 
@@ -69,7 +62,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       baseUrl,
       pyodideUrl,
       indexUrl,
-      pipliteWheelUrl,
+      pipliteWheelUrl: pipliteWheelUrl.default,
       pipliteUrls,
       disablePyPIFallback,
       location: this.location,

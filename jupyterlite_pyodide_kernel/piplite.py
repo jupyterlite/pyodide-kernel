@@ -15,7 +15,6 @@ from jupyterlite.trait_types import TypedTuple
 
 from jupyterlite.constants import (
     ALL_JSON,
-    ALL_WHL,
     JSON_FMT,
     JUPYTER_CONFIG_DATA,
     JUPYTERLITE_JSON,
@@ -26,6 +25,7 @@ from jupyterlite.constants import (
 from jupyterlite.addons.base import BaseAddon
 
 from .constants import (
+    ALL_WHL,
     PIPLITE_URLS,
     PIPLITE_INDEX_SCHEMA,
     PYPI_WHEELS,

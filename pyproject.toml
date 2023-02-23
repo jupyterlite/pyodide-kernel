@@ -1,18 +1,27 @@
 [build-system]
-requires = ["hatchling>=1.4.0", "jupyterlab>=3.5.0,<4.0.0", "hatch-nodejs-version"]
+requires = ["hatchling>=1.4.0", "jupyterlab>=3.5.0,<3.6"]
 build-backend = "hatchling.build"
 
 [project]
-name = "jupyterlite_pyodide_kernel"
+name = "jupyterlite-pyodide-kernel"
+dynamic = ["version"]
 readme = "README.md"
+description = "Python kernel for JupyterLite powered by Pyodide"
+authors = [
+    { name = "JupyterLite Contributors" },
+]
+keywords = [
+    "jupyterlite",
+    "jupyter",
+    "jupyterlab",
+    "notebook",
+    "browser",
+    "pyodide",
+]
 license = { file = "LICENSE" }
 requires-python = ">=3.7"
 classifiers = [
     "Framework :: Jupyter",
-    "Framework :: Jupyter :: JupyterLab",
-    "Framework :: Jupyter :: JupyterLab :: 3",
-    "Framework :: Jupyter :: JupyterLab :: Extensions",
-    "Framework :: Jupyter :: JupyterLab :: Extensions :: Prebuilt",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -22,11 +31,19 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dynamic = ["version", "description", "authors", "urls", "keywords"]
 dependencies = [
     "jupyterlite",
+    # for testing
+    # "jupyterlite @ git+https://github.com/jtpio/jupyterlite@move-pyolite#subdirectory=py/jupyterlite",
     "pkginfo"
 ]
+
+[project.urls]
+Homepage = "https://jupyterlite.readthedocs.io"
+Documentation = "https://jupyterlite.readthedocs.io"
+Source = "https://github.com/jupyterlite/jupyterlite"
+Issues = "https://github.com/jupyterlite/jupyterlite/issues"
+Pypi = "https://pypi.org/project/jupyterlite"
 
 [project.entry-points."jupyterlite.addon.v0"]
 jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.piplite:PipliteAddon"
@@ -34,7 +51,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:Pyodide
 
 [project.optional-dependencies]
 dev = [
-    "hatch"
+    "hatch",
 ]
 
 test = [
@@ -42,50 +59,49 @@ test = [
     "pytest-console-scripts",
 ]
 
-[tool.hatch.version]
-source = "nodejs"
+[tool.hatch.metadata]
+allow-direct-references = true
 
-[tool.hatch.metadata.hooks.nodejs]
-fields = ["description", "authors", "urls"]
+[tool.hatch.version]
+path = "jupyterlite_pyodide_kernel/_version.py"
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["jupyterlite_pyodide_kernel/labextension"]
 exclude = [".github", "binder"]
+include = [
+    "/jupyterlite_pyodide_kernel",
+    "/package.json",
+    "/install.json",
+    "/ts*.json",
+    "/*.md"
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/jupyterlite_pyodide_kernel",
+]
 
 [tool.hatch.build.targets.wheel.shared-data]
 "jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel"
 "install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel/install.json"
 
-[tool.hatch.build.hooks.version]
-path = "jupyterlite_pyodide_kernel/_version.py"
-
-[tool.hatch.build.hooks.jupyter-builder]
-dependencies = ["hatch-jupyter-builder>=0.5"]
-build-function = "hatch_jupyter_builder.npm_builder"
-ensured-targets = [
-    "jupyterlite_pyodide_kernel/labextension/package.json",
+[tool.pytest.ini_options]
+addopts = "--ff --script-launch-mode=subprocess -vv"
+testpaths = [
+    "tests/",
 ]
-skip-if-exists = ["jupyterlite_pyodide_kernel/labextension/static/style.js"]
-
-[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
-build_cmd = "build:prod"
-npm = ["yarn"]
-
-[tool.hatch.build.hooks.jupyter-builder.editable-build-kwargs]
-build_cmd = "install:extension"
-npm = ["yarn"]
-source_dir = "src"
-build_dir = "jupyterlite_pyodide_kernel/labextension"
 
 [tool.jupyter-releaser.options]
-version_cmd = "hatch version"
+version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
-    "python -m pip install jupyterlab~=3.1 hatch",
+    "python -m pip install jupyterlab~=3.5.3 hatch",
+    "python -m pip install -e .[dev]",
     "yarn",
     "yarn build:prod",
+    "python -m pip uninstall -y jupyterlite_pyodide_kernel",
 ]
-before-build-python = [
-    "yarn clean:all",
-]
+
+[tool.check-wheel-contents]
+ignore = ["W002"]

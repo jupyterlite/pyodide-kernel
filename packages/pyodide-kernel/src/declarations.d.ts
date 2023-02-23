@@ -1,9 +1,9 @@
 declare module '*.whl' {
   const res: string;
-  return res;
+  export default res;
 }
 
-declare module '*.json' {
+declare module '*all.json' {
   const res: string;
-  return res;
+  export default res;
 }

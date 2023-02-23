@@ -2,10 +2,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.whl$/,
+        test: /pypi\/.*/,
         type: 'asset/resource',
         generator: {
-          filename: 'pypi/[name].[ext]',
+          filename: 'pypi/[name][ext][query]',
         },
       },
     ],

@@ -2,9 +2,14 @@
 import json
 import shutil
 
+import pytest
 from pytest import mark
 
 from .conftest import WHEELS
+
+
+# TODO: remove when there is no collision with the jupyterlite built-in addons
+# pytest.skip("skipping piplite tests", allow_module_level=True)
 
 
 def has_wheel_after_build(an_empty_lite_dir, script_runner):

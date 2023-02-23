@@ -14,12 +14,17 @@ from jupyterlite.constants import (
     JUPYTER_CONFIG_DATA,
     JUPYTERLITE_JSON,
     LITE_PLUGIN_SETTINGS,
-    PYOLITE_PLUGIN_ID,
     UTF8,
 )
 from jupyterlite.addons.base import BaseAddon
 
-from .constants import PYODIDE_URL, PYODIDE, PYODIDE_JS, PYODIDE_REPODATA
+from .constants import (
+    PYODIDE_URL,
+    PYODIDE,
+    PYODIDE_JS,
+    PYODIDE_REPODATA,
+    PYOLITE_PLUGIN_ID,
+)
 
 
 class PyodideAddon(BaseAddon):
