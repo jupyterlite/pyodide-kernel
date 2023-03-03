@@ -8,10 +8,6 @@ from pytest import mark
 from .conftest import WHEELS
 
 
-# TODO: remove when there is no collision with the jupyterlite built-in addons
-# pytest.skip("skipping piplite tests", allow_module_level=True)
-
-
 def has_wheel_after_build(an_empty_lite_dir, script_runner):
     """run a build, expecting the fixture wheel to be there"""
     build = script_runner.run("jupyter", "lite", "build", cwd=str(an_empty_lite_dir))
