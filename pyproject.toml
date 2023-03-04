@@ -1,5 +1,8 @@
 [build-system]
-requires = ["hatchling>=1.4.0", "jupyterlab>=3.5.0,<3.6"]
+requires = [
+    "hatchling>=1.4.0",
+    "jupyterlab>=3.5.3,<3.6",
+]
 build-backend = "hatchling.build"
 
 [project]
@@ -55,8 +58,19 @@ dev = [
 ]
 
 test = [
-    "pytest",
     "pytest-console-scripts",
+    "pytest",
+]
+
+docs = [
+    "ipywidgets>=8.0,<9",
+    "jupyterlab-language-pack-fr-FR",
+    "jupyterlab-language-pack-zh-CN",
+    "jupyterlab>=3.5.0,<4",
+    "jupyterlite-sphinx",
+    "jupyterlite==0.1.0b18",
+    "myst-parser",
+    "pydata-sphinx-theme",
 ]
 
 [tool.hatch.metadata]
@@ -98,8 +112,8 @@ version_cmd = "python scripts/bump-version.py"
 before-build-npm = [
     "python -m pip install jupyterlab~=3.5.3 hatch",
     "python -m pip install -e .[dev]",
-    "yarn",
-    "yarn build:prod",
+    "jlpm",
+    "jlpm build:prod",
     "python -m pip uninstall -y jupyterlite_pyodide_kernel",
 ]
 
