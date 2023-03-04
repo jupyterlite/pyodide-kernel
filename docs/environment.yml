@@ -13,6 +13,5 @@ dependencies:
 - jupyterlab-language-pack-zh-CN
 - nodejs=18
 - pip:
-  - ..
   - jupyterlite-sphinx
   - jupyterlite==0.1.0b18
