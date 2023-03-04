@@ -81,4 +81,4 @@ Then you can remove the symlink named `@jupyterlite/pyodide-kernel` within that 
 
 ### Packaging the extension
 
-See [RELEASE](RELEASE.md)
+See [RELEASE](https://github.com/jupyterlite/pyodide-kernel/blob/main/RELEASE.md)
