@@ -12,6 +12,7 @@ build:
     pre_build:
       - jlpm --frozen-lockfile
       - jlpm build
+      - jlpm dist
       # pre-build the lite site to isolate build errors
       - jlpm docs:lite
 
