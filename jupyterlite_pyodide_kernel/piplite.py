@@ -131,14 +131,14 @@ class PipliteAddon(BaseAddon):
         )
 
         for wheel_index_url in urls:
-            if not wheel_index_url.startswith("./"):
+            if not wheel_index_url.startswith("./"):  # pragma: no cover
                 continue
 
             wheel_index_url = wheel_index_url.split("?")[0].split("#")[0]
 
             path = manager.output_dir / wheel_index_url
 
-            if not path.exists():
+            if not path.exists():  # pragma: no cover
                 continue
 
             yield self.task(
