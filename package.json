@@ -29,7 +29,7 @@
     "eslint": "jlpm eslint:check --fix",
     "lint:check": "jlpm prettier:check && jlpm eslint:check",
     "lint": "jlpm prettier && jlpm eslint",
-    "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
+    "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md,.yml,.yaml}\"",
     "prettier:check": "jlpm prettier:base --check",
     "prettier": "jlpm prettier:base --write --list-different",
     "quickstart": "npm run setup:py && jlpm && jlpm deduplicate && jlpm clean:all && jlpm bootstrap && jlpm lint && jlpm build:prod && jlpm dist && jlpm docs && jlpm test",
