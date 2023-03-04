@@ -1,24 +1,42 @@
 # jupyterlite-pyodide-kernel
 
-[![Github Actions Status](https://github.com/jupyterlite/pyodide-kernel/workflows/Build/badge.svg)](https://github.com/jupyterlite/pyodide-kernel/actions/workflows/build.yml)
+> A Python kernel for [JupyterLite](https://jupyterlite.rtfd.io) powered by
+> [Pyodide](https://pyodide.org),
 
-A Python kernel for JupyterLite powered by Pyodide
+[![ci-badge]][ci] [![lite-badge]][lite] [![docs-badge]][docs]
 
-⚠️ 🚧 This is a **work in progress**. The Pyodide kernel is currently being extracted
-from the main JupyterLite repository to this repo. See
-https://github.com/jupyterlite/jupyterlite/pull/854 for more information.
+[ci-badge]: https://github.com/jupyterlite/pyodide-kernel/workflows/Build/badge.svg
+[lite-badge]: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
+[lite]: https://jupyterlite-pyodide-kernel.rtfd.io/en/latest/_static
+[ci]: https://github.com/jupyterlite/pyodide-kernel/actions?query=branch%3Amain
+[docs-badge]:
+  https://readthedocs.org/projects/jupyterlite-pyodide-kernel/badge/?version=latest
+[docs]: https://jupyterlite-pyodide-kernel.readthedocs.io/en/latest/?badge=latest
+
+> ## ⚠️ 🚧 This is a **work in progress**.
+>
+> The Pyodide kernel is currently being extracted from the main JupyterLite repository
+> to this repo. See https://github.com/jupyterlite/jupyterlite/pull/854 for more
+> information.
 
 ## Requirements
 
-- JupyterLite >= 0.1.0b15
+- python >=3.8
+
+> At present, this is only compatible with
+>
+> - JupyterLite >=0.1.0b15
 
 ## Install
 
-To install the extension, execute:
+To install the Pyodide kernel labextension and the CLI addons for `jupyter lite`, run:
 
-```bash
-pip install jupyterlite-pyodide-kernel
-```
+> This package is not yet published to PyPI. For now, the [contributing guide] describes
+> how to build the package locally.
+>
+> > ```bash
+> > pip install jupyterlite-pyodide-kernel
+> > ```
 
 Then build your JupyterLite site:
 
@@ -26,9 +44,19 @@ Then build your JupyterLite site:
 jupyter lite build
 ```
 
+> For now, the documentation for advanced configuration is available from the main
+> JupyterLite documentation site:
+>
+> - [configuring]
+> - [command line interface][cli]
+
+[configuring]:
+  https://jupyterlite.readthedocs.io/en/latest/howto/index.html#configuring-the-python-environment
+[cli]: https://jupyterlite.readthedocs.io/en/latest/reference/cli.html
+
 ## Uninstall
 
-To remove the extension, execute:
+To remove the extension, run:
 
 ```bash
 pip uninstall jupyterlite-pyodide-kernel
@@ -36,49 +64,7 @@ pip uninstall jupyterlite-pyodide-kernel
 
 ## Contributing
 
-### Development install
+> See the [contributing guide].
 
-Note: You will need NodeJS to build the extension package.
-
-```bash
-# Clone the repo to your local environment
-# Change directory to the jupyterlite-pyodide-kernel directory
-# Install package in development mode
-python -m pip install -e .
-
-# Link your development version of the extension with JupyterLab
-jupyter labextension develop . --overwrite
-
-# Rebuild extension Typescript source after making changes
-yarn build
-```
-
-You can watch the source directory and run JupyterLab at the same time in different
-terminals to watch for changes in the extension's source and automatically rebuild the
-extension.
-
-```bash
-# Watch the source directory in one terminal, automatically rebuilding when needed
-yarn watch
-# Run JupyterLab in another terminal
-jupyter lab
-```
-
-With the watch command running, every saved change will immediately be built locally and
-available in your running JupyterLab. Refresh JupyterLab to load the change in your
-browser (you may need to wait several seconds for the extension to be rebuilt).
-
-### Development uninstall
-
-```bash
-pip uninstall jupyterlite-pyodide-kernel
-```
-
-In development mode, you will also need to remove the symlink created by
-`jupyter labextension develop` command. To find its location, you can run
-`jupyter labextension list` to figure out where the `labextensions` folder is located.
-Then you can remove the symlink named `@jupyterlite/pyodide-kernel` within that folder.
-
-### Packaging the extension
-
-See [RELEASE](https://github.com/jupyterlite/pyodide-kernel/blob/main/RELEASE.md)
+[contributing guide]:
+  https://github.com/jupyterlite/pyodide-kernel/blob/main/CONTRIBUTING.md

@@ -10,3 +10,12 @@
 
 ```{include} ../README.md
 ```
+
+## Learn More
+
+```{toctree}
+:maxdepth: 1
+
+contributing.md
+changelog.md
+```

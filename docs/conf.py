@@ -20,6 +20,7 @@ exclude_patterns = []
 # extensions
 extensions = [
     "myst_parser",
+    "sphinx_copybutton",
 ]
 
 # myst

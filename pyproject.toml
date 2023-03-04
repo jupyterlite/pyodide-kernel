@@ -22,13 +22,12 @@ keywords = [
     "pyodide",
 ]
 license = { file = "LICENSE" }
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Framework :: Jupyter",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -69,6 +68,7 @@ docs = [
     "jupyterlab-language-pack-zh-CN",
     "myst-parser",
     "pydata-sphinx-theme",
+    "sphinx-copybutton",
     # TODO: restore
     # "jupyterlite[mathjax,libarchive,lab]>=0.1.0b19",
     "jupyter-server-mathjax",
