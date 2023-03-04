@@ -46,7 +46,7 @@ Homepage = "https://jupyterlite-pyodide-kernel.readthedocs.io"
 Documentation = "https://jupyterlite-pyodide-kernel.readthedocs.io"
 Source = "https://github.com/jupyterlite/pyodide-kernel"
 Issues = "https://github.com/jupyterlite/pyodide-kernel/issues"
-Pypi = "https://pypi.org/project/jupyterlite-pyodide-kernel"
+PyPI = "https://pypi.org/project/jupyterlite-pyodide-kernel"
 
 [project.entry-points."jupyterlite.addon.v0"]
 jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.piplite:PipliteAddon"
