@@ -8,11 +8,13 @@
     ]
   },
   "scripts": {
-    "quickstart": "npm run setup:py && jlpm && jlpm clean:all && jlpm bootstrap && jlpm lint && jlpm build && jlpm setup:py && jlpm dist && jlpm docs",
+    "quickstart": "npm run setup:py && jlpm && jlpm deduplicate && jlpm clean:all && jlpm bootstrap && jlpm lint && jlpm build:prod && jlpm setup:py && jlpm dist && jlpm docs",
     "bootstrap": "lerna bootstrap",
     "setup:py": "python -m pip install -e .[dev,docs]",
-    "dist": "jlpm dist:py",
-    "dist:py": "pyproject-build .",
+    "deduplicate": "yarn-deduplicate -s fewer --fail",
+    "dist": "jlpm dist:pypi && jlpm dist:npm",
+    "dist:npm": "lerna run dist",
+    "dist:pypi": "pyproject-build .",
     "docs": "jlpm docs:lite && jlpm docs:sphinx",
     "docs:lite": "cd examples && jupyter lite build",
     "docs:sphinx": "sphinx-build -W -b html docs build/docs",
@@ -21,7 +23,9 @@
     "build:prod": "lerna run build:prod",
     "bump:js:version": "lerna version --no-push --force-publish --no-git-tag-version --yes",
     "clean": "lerna run clean",
-    "clean:all": "lerna run clean:all",
+    "clean:all": "jlpm clean:build && jlpm clean:dist && lerna run clean:all",
+    "clean:dist": "rimraf dist",
+    "clean:build": "rimraf build",
     "eslint": "jlpm eslint:check --fix",
     "eslint:check": "eslint . --cache --ext .ts,.tsx",
     "lint": "jlpm prettier && jlpm eslint",
@@ -40,6 +44,7 @@
     "lerna": "^6.5.1",
     "prettier": "^2.8.0",
     "rimraf": "^3.0.2",
-    "typescript": "~4.9.3"
+    "typescript": "~4.9.3",
+    "yarn-deduplicate": "^6.0.1"
   }
 }

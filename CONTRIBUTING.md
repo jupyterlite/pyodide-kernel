@@ -7,30 +7,42 @@
 
 ## Quick Start
 
+This cleans out all built artifacts, ensures a fully-configured JS/Python environment,
+and generates everything up to the documentation website.
+
 ```bash
 git clone https://github.com/jupyterlite/pyodide-kernel
 cd pyodide kernel
 npm run quickstart
 ```
 
+### Serve
+
 ```bash
 jlpm serve
 ```
 
+## Individual steps
 
-## Build
+### Build
+
+Build and install development versions of the JS packages.
 
 ```bash
 jlpm build
 ```
 
-## Distributions
+### Distributions
+
+Build distributions for `pypi.org` and `npmjs.org`.
 
 ```bash
 jlpm dist
 ```
 
-## Test
+### Test
+
+Run JS and Python tests.
 
 > TBD
 >
@@ -40,12 +52,8 @@ jlpm dist
 
 ## Documenation
 
+Build the JupyterLite site and a Sphinx site which includes the JupyterLite site.
+
 ```bash
 jlpm docs
-```
-
-## Serve
-
-```bash
-jlpm serve
 ```

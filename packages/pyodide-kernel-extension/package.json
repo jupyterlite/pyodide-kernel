@@ -34,6 +34,7 @@
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc",
+    "dist": "cd ../../dist && npm pack ../packages/pyodide-kernel-extension",
     "clean": "jlpm clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:labextension": "rimraf ../../jupyterlite_pyodide_kernel/labextension",
@@ -51,7 +52,7 @@
     "@jupyterlite/server": "^0.1.0-beta.18"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.1.0",
+    "@jupyterlab/builder": "^3.5.0",
     "rimraf": "~3.0.0",
     "typescript": "~4.9.4"
   },
