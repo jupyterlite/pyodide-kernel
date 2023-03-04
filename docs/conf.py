@@ -19,10 +19,8 @@ exclude_patterns = []
 
 # extensions
 extensions = [
-    "jupyterlite_sphinx",
     "myst_parser",
 ]
-
 
 # myst
 autosectionlabel_prefix_document = True
@@ -37,11 +35,6 @@ html_theme_options = {
     "github_url": P["urls"]["Homepage"],
     "use_edit_page_button": True,
     "icon_links": [
-        {
-            "name": "GitHub",
-            "url": P["urls"]["Source"],
-            "icon": "fa-solid fa-github-square",
-        },
         {
             "name": "PyPI",
             "url": P["urls"]["PyPI"],
@@ -58,10 +51,13 @@ html_context = {
     "github_version": "main",
     "doc_path": "docs",
 }
-
-# lite
-jupyterlite_dir = "."
-
+# rely on the order of these to patch json, labextensions correctly
+html_static_path = [
+    # as-built assets for testing "hot" downstreams against a PR without rebuilding
+    "../dist",
+    # as-built application, extensions, contents, and patched jupyter-lite.json
+    "../build/docs-app",
+]
 
 # TODO: add the pyodide logo
 # html_theme_options = {

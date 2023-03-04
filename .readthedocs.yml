@@ -12,6 +12,10 @@ build:
     pre_build:
       - jlpm --frozen-lockfile
       - jlpm build
+      # re-install after the labextension is built
+      - python -m pip install . --no-deps --ignore-installed --no-build-isolation
+      # pre-build the lite site to isolate build errors
+      - cd examples && jupyter lite build
 
 python:
   install:

@@ -66,7 +66,6 @@ docs = [
     "ipywidgets>=8.0,<9",
     "jupyterlab-language-pack-fr-FR",
     "jupyterlab-language-pack-zh-CN",
-    "jupyterlite-sphinx",
     "myst-parser",
     "pydata-sphinx-theme",
     # TODO: restore

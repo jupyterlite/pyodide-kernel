@@ -3,8 +3,7 @@
     "jupyter-config-data": {
       "appName": "JupyterLite Pyodide Kernel",
       "disabledExtensions": [
-        "@jupyterlite/javascript-kernel-extension",
-        "@jupyterlite/pyolite-kernel-extension"
+        "@jupyterlite/javascript-kernel-extension"
       ]
     }
 }
