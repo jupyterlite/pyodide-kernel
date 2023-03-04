@@ -32,9 +32,9 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    # "jupyterlite",
+    "jupyterlite",
     # for testing
-    "jupyterlite @ git+https://github.com/jtpio/jupyterlite@move-pyolite#subdirectory=py/jupyterlite",
+    # "jupyterlite @ git+https://github.com/jtpio/jupyterlite@move-pyolite#subdirectory=py/jupyterlite",
     "pkginfo"
 ]
 
