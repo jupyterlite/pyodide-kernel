@@ -3,6 +3,8 @@ try:
 except ImportError:
     import tomli as tomllib
 
+from jupyterlite_pyodide_kernel import __version__
+
 from pathlib import Path
 
 PY_PROJ = tomllib.load((Path(__file__).parent.parent / "pyproject.toml").open("rb"))
@@ -10,6 +12,12 @@ P = PY_PROJ["project"]
 
 project = P["name"]
 copyright = authors = P["authors"][0]["name"]
+
+release = __version__
+
+# The short X.Y version
+version = ".".join(release.rsplit(".", 1))
+
 
 extensions = [
     "jupyterlite_sphinx",
