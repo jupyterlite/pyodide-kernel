@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "build:py", "build:prod"]
+      }
+    }
+  },
+  "targetDefaults": {
+    "build:py": {
+      "outputs": [
+        "{projectRoot}/src/_pypi.ts",
+        "{projectRoot}/pypi",
+        "{projectRoot}/pypi/all.json"
+      ]
+    },
+    "build": {
+      "dependsOn": ["build:py", "^build"],
+      "outputs": ["{projectRoot}/lib"]
+    },
+    "build:prod": {
+      "dependsOn": ["build:py", "^build:prod"],
+      "outputs": ["{projectRoot}/lib"]
+    }
+  }
+}

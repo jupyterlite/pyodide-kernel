@@ -6,8 +6,6 @@ node_modules/
 .ipynb_checkpoints
 *.tsbuildinfo
 jupyterlite_pyodide_kernel/labextension
-# Version file is handled by hatchling
-jupyterlite_pyodide_kernel/_version.py
 
 # Created by https://www.gitignore.io/api/python
 # Edit at https://www.gitignore.io/?templates=python
@@ -113,3 +111,10 @@ dmypy.json
 
 # OSX files
 .DS_Store
+
+# generated
+**/pypi/all.json
+**/pypi/
+_pypi.ts
+.jupyterlite.doit.db
+_output

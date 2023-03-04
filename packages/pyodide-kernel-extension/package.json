@@ -1,0 +1,83 @@
+{
+  "name": "@jupyterlite/pyodide-kernel-extension",
+  "version": "0.0.1",
+  "description": "JupyterLite - Pyodide Kernel Extension",
+  "homepage": "https://github.com/jupyterlite/pyodide-kernel",
+  "bugs": {
+    "url": "https://github.com/jupyterlite/pyodide-kernel/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jupyterlite/pyodide-kernel.git"
+  },
+  "license": "BSD-3-Clause",
+  "author": "JupyterLite Contributors",
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib/"
+  },
+  "files": [
+    "lib/*.d.ts",
+    "lib/*.js.map",
+    "lib/*.js",
+    "style/*.css",
+    "style/index.js"
+  ],
+  "scripts": {
+    "build": "yarn build:lib && yarn build:labextension:dev",
+    "build:prod": "yarn build:lib && yarn build:labextension",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc",
+    "clean": "yarn clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf ../../jupyterlite_pyodide_kernel/labextension",
+    "clean:all": "yarn clean:lib && yarn clean:labextension",
+    "docs": "typedoc src",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@jupyterlab/coreutils": "^5.5.2",
+    "@jupyterlite/contents": "^0.1.0-beta.18",
+    "@jupyterlite/kernel": "^0.1.0-beta.18",
+    "@jupyterlite/pyodide-kernel": "^0.0.1",
+    "@jupyterlite/server": "^0.1.0-beta.18"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^3.1.0",
+    "rimraf": "~3.0.0",
+    "typescript": "~4.9.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "../../jupyterlite_pyodide_kernel/labextension",
+    "webpackConfig": "webpack.config.js",
+    "sharedPackages": {
+      "@jupyterlite/kernel": {
+        "bundled": false,
+        "singleton": true
+      },
+      "@jupyterlite/server": {
+        "bundled": false,
+        "singleton": true
+      },
+      "@jupyterlite/contents": {
+        "bundled": false,
+        "singleton": true
+      }
+    }
+  },
+  "jupyterlite": {
+    "liteExtension": true
+  }
+}

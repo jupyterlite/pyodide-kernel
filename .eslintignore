@@ -5,3 +5,6 @@ coverage
 tests
 
 **/__tests__
+
+# generated
+**/_pypi.ts
