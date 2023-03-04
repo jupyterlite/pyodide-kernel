@@ -3,6 +3,7 @@ dist
 coverage
 **/*.d.ts
 tests
+docs
 
 **/__tests__
 
