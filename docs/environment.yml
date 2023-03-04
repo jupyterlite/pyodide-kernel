@@ -15,3 +15,4 @@ dependencies:
 - pip:
   - jupyterlite-sphinx
   - jupyterlite==0.1.0b18
+  - ..
