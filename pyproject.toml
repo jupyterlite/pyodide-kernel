@@ -67,7 +67,7 @@ path = "jupyterlite_pyodide_kernel/_version.py"
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["jupyterlite_pyodide_kernel/labextension"]
-exclude = [".github", "binder"]
+exclude = [".github"]
 include = [
     "/jupyterlite_pyodide_kernel",
     "/package.json",
