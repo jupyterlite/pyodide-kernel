@@ -1,7 +1,10 @@
-# -*- coding: utf-8 -*-
-import tomllib
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+
 from pathlib import Path
-PY_PROJ = tomllib.read((Path(__file__).parent / "pyproject.toml").open("rb"))
+PY_PROJ = tomllib.load((Path(__file__).parent / "pyproject.toml").open("rb"))
 
 
 extensions = [
