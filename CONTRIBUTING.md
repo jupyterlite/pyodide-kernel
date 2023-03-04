@@ -9,7 +9,7 @@
 ## Quick Start
 
 The command below cleans out all built artifacts, ensures a fully-configured JS/Python
-environment, and generates everything up to the documentation website.
+environment, and generates everything up to the documentation website and test reports.
 
 ```bash
 git clone https://github.com/jupyterlite/pyodide-kernel
@@ -29,18 +29,31 @@ jlpm serve
 > Serve the `build/` directory as `http://127.0.0.1:8000`, which contains:
 >
 > - `docs-app/` just the built JupyterLite
-> - `docs/` the full documentation websit.
+> - `docs/` the full documentation website
+> - `reports/` built reports from tests and static analysis
 
 ## Individual steps
 
-### Update/install dependencies
+### Update/Install Dependencies
+
+#### JS
 
 ```bash
 jlpm
 ```
 
-> Updates `yarn.lock` with a reproducible solution to the NodeJS build tools and static
-> assets that will be served on the website.
+> Run this after changing the `dependencies` or `devDependencies` of any `package.json`
+>
+> This will update the `yarn.lock` with a reproducible solution to the NodeJS build
+> tools and static assets that will be served on the website.
+
+#### Python
+
+```bash
+python -m pip install -e .[dev,test,docs]
+```
+
+> Run this after changing `pyproject.toml`.
 
 ### Build
 
