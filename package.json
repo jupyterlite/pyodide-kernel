@@ -34,7 +34,9 @@
     "prettier": "jlpm prettier:base --write --list-different",
     "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
     "prettier:check": "jlpm prettier:base --check",
-    "serve": "cd build && python -m http.server -b 127.0.0.1"
+    "serve": "cd build && python -m http.server -b 127.0.0.1",
+    "test": "jlpm test:py",
+    "test:py": "pytest"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.45.0",

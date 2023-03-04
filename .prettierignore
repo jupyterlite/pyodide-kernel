@@ -1,9 +1,10 @@
-node_modules
+node_modules/
 **/node_modules
 **/lib
 **/package.json
-jupyterlite_pyodide_kernel
-pytest_cache
+jupyterlite_pyodide_kernel/labextension/
+**/.pyodide/
+.pytest_cache/
 docs/
 build/
 dist/

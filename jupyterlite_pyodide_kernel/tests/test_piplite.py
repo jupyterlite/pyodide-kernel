@@ -74,7 +74,6 @@ def test_lite_dir_wheel(an_empty_lite_dir, script_runner):
     has_wheel_after_build(an_empty_lite_dir, script_runner)
 
 
-
 def test_piplite_cli_fail_missing(script_runner, tmp_path, index_cmd):
     path = tmp_path / "missing"
     build = script_runner.run(*index_cmd, str(path))

@@ -9,7 +9,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, windows, macos]
+        python-version: ['3.8', '3.11']
 
     steps:
     - name: Checkout
@@ -18,25 +22,18 @@ jobs:
     - name: Base Setup
       uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
-    - name: Install JupyterLite from the draft PR
-      run: |
-        # this is temporary
-        # need this since installing from git in pyproject.toml does not trigger the build
-        # of the JS assets
-        TMP_DIR=$(mktemp -d -t jupyterlite-XXXXX)
-        pushd ${TMP_DIR}
-        git clone https://github.com/jtpio/jupyterlite
-        cd jupyterlite
-        git checkout move-pyolite
-        pip install doit sphinx flit jupyter_core pkginfo
-        doit build
-        popd
-
     - name: Install dependencies
       run: |
         python -m pip install -e ".[dev,test]"
 
     - name: Run the tests
       run: |
-        echo "skipping tests for now"
-        # pytest
+        pytest
+
+    - name: Upload reports
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-reports
+        path: build/reports
+        if-no-files-found: error

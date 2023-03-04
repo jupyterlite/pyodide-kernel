@@ -62,6 +62,8 @@ dev = [
 
 test = [
     "pytest-console-scripts",
+    "pytest-cov",
+    "pytest-html",
     "pytest",
 ]
 
@@ -87,7 +89,10 @@ path = "jupyterlite_pyodide_kernel/_version.py"
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["jupyterlite_pyodide_kernel/labextension"]
-exclude = [".github"]
+exclude = [
+    ".github",
+    "/jupyterlite_pyodide_kernel/tests/fixtures/.pyodide"
+]
 include = [
     "/jupyterlite_pyodide_kernel",
     "/package.json",
@@ -106,7 +111,22 @@ include = [
 "install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel/install.json"
 
 [tool.pytest.ini_options]
-addopts = "--ff --script-launch-mode=subprocess -vv"
+addopts = [
+    "--ff",
+    "-vv",
+    # asyncio
+    "--script-launch-mode=subprocess",
+    # cov
+    "--cov=jupyterlite_pyodide_kernel",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:build/reports/htmlcov",
+    "--cov-branch",
+    "--cov-fail-under=96",
+    "--no-cov-on-fail",
+    # html
+    "--html=build/reports/pytest.html",
+    "--self-contained-html",
+]
 testpaths = [
     "tests/",
 ]
