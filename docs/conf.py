@@ -32,7 +32,7 @@ def on_config_inited(*args):
 
     HERE = Path(__file__)
     ROOT = HERE.parent.parent
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "'.[dev]'"], cwd=str(ROOT))
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "\".[dev]\""], cwd=str(ROOT))
     subprocess.check_call(["yarn"], cwd=str(ROOT))
     subprocess.check_call(["yarn", "build"], cwd=str(ROOT))
 
