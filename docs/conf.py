@@ -10,24 +10,26 @@ from pathlib import Path
 PY_PROJ = tomllib.load((Path(__file__).parent.parent / "pyproject.toml").open("rb"))
 P = PY_PROJ["project"]
 
+# standard sphinx metadata
 project = P["name"]
 copyright = authors = P["authors"][0]["name"]
-
 release = __version__
-
-# The short X.Y version
 version = ".".join(release.rsplit(".", 1))
+exclude_patterns = []
 
-
+# extensions
 extensions = [
     "jupyterlite_sphinx",
     "myst_parser",
 ]
 
+
+# myst
+autosectionlabel_prefix_document = True
+myst_heading_anchors = 3
+suppress_warnings = ["autosectionlabel.*"]
 master_doc = "index"
 source_suffix = ".md"
-
-exclude_patterns = []
 
 # theme
 html_theme = "pydata_sphinx_theme"
@@ -36,7 +38,7 @@ html_theme_options = {
     "use_edit_page_button": True,
 }
 
-github_user, github_repo = P["urls"]["Source"].split("//")[1].split("/")
+github_user, github_repo = P["urls"]["Source"].split("/")[-2:]
 
 html_context = {
     "github_user": github_user,
@@ -47,11 +49,6 @@ html_context = {
 
 # lite
 jupyterlite_dir = "."
-
-# myst
-autosectionlabel_prefix_document = True
-myst_heading_anchors = 3
-suppress_warnings = ["autosectionlabel.*"]
 
 
 # TODO: add the pyodide logo
