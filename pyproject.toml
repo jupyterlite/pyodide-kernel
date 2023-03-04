@@ -71,6 +71,7 @@ docs = [
     "jupyterlite==0.1.0b18",
     "myst-parser",
     "pydata-sphinx-theme",
+    "python-libarchive-c",
 ]
 
 [tool.hatch.metadata]
