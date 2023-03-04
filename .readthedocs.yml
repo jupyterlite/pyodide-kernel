@@ -6,7 +6,7 @@ build:
     python: "3.11"
     nodejs: "18"
   apt_packages:
-    - libarchive
+    - libarchive-dev
 
   jobs:
     pre_build:
