@@ -4,7 +4,9 @@ node_modules
 **/package.json
 jupyterlite_pyodide_kernel
 pytest_cache
-docs
+docs/
+build/
+dist/
 
 # generated
 _pypi.ts

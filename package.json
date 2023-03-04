@@ -8,20 +8,26 @@
     ]
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "jlpm && lerna bootstrap && jlpm lint && jlpm build && jlpm setup:py && jlpm dist && jlpm docs",
+    "setup:py": "python -m pip install -e .[dev]",
+    "dist": "jlpm dist:py",
+    "dist:py": "pyproject-build .",
+    "docs": "jlpm docs:lite && jlpm docs:sphinx",
+    "docs:lite": "cd examples && jupyter lite build",
+    "docs:sphinx": "sphinx-build -W -b html docs build/docs",
     "build": "lerna run build",
     "build:py": "lerna run build:py",
     "build:prod": "lerna run build:prod",
     "bump:js:version": "lerna version --no-push --force-publish --no-git-tag-version --yes",
     "clean": "lerna run clean",
     "clean:all": "lerna run clean:all",
-    "eslint": "yarn eslint:check --fix",
+    "eslint": "jlpm eslint:check --fix",
     "eslint:check": "eslint . --cache --ext .ts,.tsx",
-    "lint": "yarn prettier && yarn eslint",
-    "lint:check": "yarn prettier:check && yarn eslint:check",
-    "prettier": "yarn prettier:base --write --list-different",
+    "lint": "jlpm prettier && jlpm eslint",
+    "lint:check": "jlpm prettier:check && jlpm eslint:check",
+    "prettier": "jlpm prettier:base --write --list-different",
     "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
-    "prettier:check": "yarn prettier:base --check"
+    "prettier:check": "jlpm prettier:base --check"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.45.0",

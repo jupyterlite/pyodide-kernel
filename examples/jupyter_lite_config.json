@@ -1,8 +1,6 @@
 {
   "LiteBuildConfig": {
-    "contents": [
-      "."
-    ],
+    "contents": ["."],
     "output_dir": "../build/docs-app"
   }
 }

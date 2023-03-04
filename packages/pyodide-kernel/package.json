@@ -32,13 +32,13 @@
     "pypi/*.{json,whl}"
   ],
   "scripts": {
-    "build": "yarn run build:lib && yarn build:worker",
+    "build": "jlpm build:lib && jlpm build:worker",
     "build:lib": "tsc -b",
-    "build:prod": "yarn run build",
+    "build:prod": "jlpm build",
     "build:py": "python scripts/generate-wheels-js.py",
     "build:worker": "esbuild --bundle --minify --sourcemap --target=es2019 --format=esm --outfile=lib/worker.js src/worker.ts",
-    "clean": "yarn run clean:lib && yarn run clean:py",
-    "clean:all": "yarn run clean",
+    "clean": "jlpm clean:lib && jlpm clean:py",
+    "clean:all": "jlpm clean",
     "clean:lib": "rimraf lib && rimraf tsconfig.tsbuildinfo",
     "clean:py": "rimraf pypi src/_pypi.ts",
     "docs": "typedoc src",
