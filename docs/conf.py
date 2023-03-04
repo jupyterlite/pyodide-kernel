@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import tomllib
+from pathlib import Path
+PY_PROJ = tomllib.read((Path(__file__).parent / "pyproject.toml").open("rb"))
+
 
 extensions = [
     'jupyterlite_sphinx'
@@ -7,9 +11,8 @@ extensions = [
 master_doc = 'index'
 source_suffix = '.md'
 
-project = 'jupyterlite-pyodide-kernel'
-copyright = 'JupyterLite Contributors'
-author = 'JupyterLite Contributors'
+project = PY_PROJ["project"]["name"]
+copyright = authors = PY_PROJ["project"]["authors"][0]["name"]
 
 exclude_patterns = []
 
@@ -24,18 +27,3 @@ jupyterlite_dir = "."
 #       "image_dark": "TODO",
 #    }
 # }
-
-def on_config_inited(*args):
-    import sys
-    import subprocess
-    from pathlib import Path
-
-    HERE = Path(__file__)
-    ROOT = HERE.parent.parent
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "\".[dev]\""], cwd=str(ROOT))
-    subprocess.check_call(["yarn"], cwd=str(ROOT))
-    subprocess.check_call(["yarn", "build"], cwd=str(ROOT))
-
-
-def setup(app):
-    app.connect("config-inited", on_config_inited)
