@@ -8,7 +8,6 @@ from ._version import __version__
 from .piplite import list_wheels
 
 
-
 class PipliteIndex(DescribedMixin, JupyterApp):
     """index a directory of wheels for piplite into an all.json
 
@@ -57,6 +56,7 @@ class PipliteApp(DescribedMixin, JupyterApp):
             index=PipliteIndex,
         ).items()
     }
+
 
 main = launch_new_instance = PipliteApp.launch_instance
 

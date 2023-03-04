@@ -9,6 +9,10 @@ PIPLITE_INDEX_SCHEMA = "piplite.schema.v0.json"
 PYPI_WHEELS = "pypi"
 #: the plugin id for the pyolite kernel
 PYOLITE_PLUGIN_ID = "@jupyterlite/pyolite-kernel-extension:kernel"
+#: the package.json key for piplite
+PKG_JSON_PIPLITE = "piplite"
+#: the package.json/piplite key for wheels
+PKG_JSON_WHEELDIR = "wheelDir"
 
 #: where we put wheels, for now
 PYODIDE_URL = "pyodideUrl"
