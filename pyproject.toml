@@ -66,10 +66,8 @@ docs = [
     "ipywidgets>=8.0,<9",
     "jupyterlab-language-pack-fr-FR",
     "jupyterlab-language-pack-zh-CN",
-    "jupyterlab>=3.5.0,<4",
     "jupyterlite-sphinx",
-    "jupyterlite==0.1.0b18",
-    "libarchive-c",
+    "jupyterlite==0.1.0b18[mathjax,translation,libarchive,lab]",
     "myst-parser",
     "pydata-sphinx-theme",
 ]
