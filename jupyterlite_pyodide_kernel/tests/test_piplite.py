@@ -74,23 +74,21 @@ def test_lite_dir_wheel(an_empty_lite_dir, script_runner):
     has_wheel_after_build(an_empty_lite_dir, script_runner)
 
 
-index_cmd = "jupyter", "lite", "pip", "index"
 
-
-def test_piplite_cli_fail_missing(script_runner, tmp_path):
+def test_piplite_cli_fail_missing(script_runner, tmp_path, index_cmd):
     path = tmp_path / "missing"
     build = script_runner.run(*index_cmd, str(path))
     assert not build.success
 
 
-def test_piplite_cli_empty(script_runner, tmp_path):
+def test_piplite_cli_empty(script_runner, tmp_path, index_cmd):
     path = tmp_path / "empty"
     path.mkdir()
     build = script_runner.run(*index_cmd, str(path))
     assert not build.success
 
 
-def test_piplite_cli_win(script_runner, tmp_path):
+def test_piplite_cli_win(script_runner, tmp_path, index_cmd):
     path = tmp_path / "one"
     path.mkdir()
     shutil.copy2(WHEELS[0], path / WHEELS[0].name)

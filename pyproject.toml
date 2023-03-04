@@ -47,6 +47,9 @@ Source = "https://github.com/jupyterlite/pyodide-kernel"
 Issues = "https://github.com/jupyterlite/pyodide-kernel/issues"
 PyPI = "https://pypi.org/project/jupyterlite-pyodide-kernel"
 
+[project.scripts]
+jupyter-piplite = "jupyterlite_pyodide_kernel.app:main"
+
 [project.entry-points."jupyterlite.addon.v0"]
 jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.piplite:PipliteAddon"
 jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:PyodideAddon"
