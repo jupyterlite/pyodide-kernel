@@ -4,15 +4,14 @@ except ImportError:
     import tomli as tomllib
 
 from pathlib import Path
+
 PY_PROJ = tomllib.load((Path(__file__).parent / "pyproject.toml").open("rb"))
 
 
-extensions = [
-    'jupyterlite_sphinx'
-]
+extensions = ["jupyterlite_sphinx", "myst_parser"]
 
-master_doc = 'index'
-source_suffix = '.md'
+master_doc = "index"
+source_suffix = ".md"
 
 project = PY_PROJ["project"]["name"]
 copyright = authors = PY_PROJ["project"]["authors"][0]["name"]
