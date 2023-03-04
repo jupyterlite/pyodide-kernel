@@ -5,6 +5,8 @@ build:
   tools:
     python: "3.11"
     nodejs: "18"
+  apt_packages:
+    - libarchive
 
   jobs:
     pre_build:
