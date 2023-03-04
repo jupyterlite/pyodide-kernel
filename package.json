@@ -8,8 +8,9 @@
     ]
   },
   "scripts": {
-    "bootstrap": "jlpm && lerna bootstrap && jlpm lint && jlpm build && jlpm setup:py && jlpm dist && jlpm docs",
-    "setup:py": "python -m pip install -e .[dev]",
+    "quickstart": "npm run setup:py && jlpm && jlpm clean:all && jlpm bootstrap && jlpm lint && jlpm build && jlpm setup:py && jlpm dist && jlpm docs",
+    "bootstrap": "lerna bootstrap",
+    "setup:py": "python -m pip install -e .[dev,docs]",
     "dist": "jlpm dist:py",
     "dist:py": "pyproject-build .",
     "docs": "jlpm docs:lite && jlpm docs:sphinx",
@@ -27,7 +28,8 @@
     "lint:check": "jlpm prettier:check && jlpm eslint:check",
     "prettier": "jlpm prettier:base --write --list-different",
     "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
-    "prettier:check": "jlpm prettier:base --check"
+    "prettier:check": "jlpm prettier:base --check",
+    "serve": "cd build/docs && python -m http.server -b 127.0.0.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.45.0",

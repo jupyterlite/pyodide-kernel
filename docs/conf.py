@@ -41,6 +41,8 @@ html_theme_options = {
             "icon": "fa-solid fa-box",
         },
     ],
+    "pygment_light_style": "github-light",
+    "pygment_dark_style": "github-dark"
 }
 
 github_user, github_repo = P["urls"]["Source"].split("/")[-2:]

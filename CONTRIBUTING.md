@@ -10,8 +10,13 @@
 ```bash
 git clone https://github.com/jupyterlite/pyodide-kernel
 cd pyodide kernel
-jlpm bootstrap
+npm run quickstart
 ```
+
+```bash
+jlpm serve
+```
+
 
 ## Build
 
@@ -21,16 +26,26 @@ jlpm build
 
 ## Distributions
 
-```
+```bash
 jlpm dist
 ```
 
 ## Test
 
 > TBD
+>
+> > ```bash
+> > jlpm test
+> > ```
 
 ## Documenation
 
 ```bash
 jlpm docs
+```
+
+## Serve
+
+```bash
+jlpm serve
 ```
