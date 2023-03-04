@@ -35,6 +35,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
+    # TODO: restore
+    # "jupyterlite>=0.1.0b19",
     "jupyterlite @ https://jupyterlite--854.org.readthedocs.build/en/854/_static/jupyterlite-0.1.0b18-py3-none-any.whl",
     "pkginfo"
 ]
@@ -68,7 +70,7 @@ docs = [
     "myst-parser",
     "pydata-sphinx-theme",
     # TODO: restore
-    # "jupyterlite[mathjax,libarchive,lab]==0.1.0b18",
+    # "jupyterlite[mathjax,libarchive,lab]>=0.1.0b19",
     "jupyter-server-mathjax",
     "libarchive-c",
     "jupyterlab >=3.5.3,<3.6"
