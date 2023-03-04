@@ -49,7 +49,7 @@ def test_pyodide(
             url = str(Path(url).parent / "pyodide")
 
         if approach == "env":
-            env[PYODIDE_URL_ENV_VAR] = url
+            env[PYODIDE_URL_ENV_VAR] = str(url)
         else:
             pargs += ["--pyodide", url]
 
