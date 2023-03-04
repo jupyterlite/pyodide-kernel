@@ -87,10 +87,13 @@ def test_piplite_cli_empty(script_runner, tmp_path, index_cmd):
     assert not build.success
 
 
-def test_piplite_cli_win(script_runner, tmp_path, index_cmd):
+@pytest.mark.parametrize("in_cwd", [True, False])
+def test_piplite_cli_win(script_runner, tmp_path, index_cmd, in_cwd):
     path = tmp_path / "one"
     path.mkdir()
     shutil.copy2(WHEELS[0], path / WHEELS[0].name)
-    build = script_runner.run(*index_cmd, str(path))
+    kwargs = {"cwd": str(path)} if in_cwd else {}
+    pargs = [] if in_cwd else [str(path)]
+    build = script_runner.run(*index_cmd, *pargs, **kwargs)
     assert build.success
     assert json.loads((path / "all.json").read_text(encoding="utf-8"))
