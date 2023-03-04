@@ -5,7 +5,7 @@ extensions = [
 ]
 
 master_doc = 'index'
-source_suffix = '.rst'
+source_suffix = '.md'
 
 project = 'jupyterlite-pyodide-kernel'
 copyright = 'JupyterLite Team'
