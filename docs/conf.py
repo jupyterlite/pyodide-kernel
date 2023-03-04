@@ -5,16 +5,19 @@ except ImportError:
 
 from pathlib import Path
 
-PY_PROJ = tomllib.load((Path(__file__).parent / "pyproject.toml").open("rb"))
+PY_PROJ = tomllib.load((Path(__file__).parent.parent / "pyproject.toml").open("rb"))
+P = PY_PROJ["project"]
 
-
-extensions = ["jupyterlite_sphinx", "myst_parser"]
+extensions = [
+    "jupyterlite_sphinx",
+    "myst_parser",
+]
 
 master_doc = "index"
 source_suffix = ".md"
 
-project = PY_PROJ["project"]["name"]
-copyright = authors = PY_PROJ["project"]["authors"][0]["name"]
+project = P["name"]
+copyright = authors = P["authors"][0]["name"]
 
 exclude_patterns = []
 
