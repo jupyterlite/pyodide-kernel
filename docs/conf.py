@@ -8,8 +8,8 @@ master_doc = 'index'
 source_suffix = '.md'
 
 project = 'jupyterlite-pyodide-kernel'
-copyright = 'JupyterLite Team'
-author = 'JupyterLite Team'
+copyright = 'JupyterLite Contributors'
+author = 'JupyterLite Contributors'
 
 exclude_patterns = []
 
