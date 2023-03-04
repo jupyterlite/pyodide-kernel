@@ -72,7 +72,7 @@
         "singleton": true
       },
       "@jupyterlite/contents": {
-        "bundled": true,
+        "bundled": false,
         "singleton": true
       }
     }
