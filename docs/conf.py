@@ -28,7 +28,7 @@ html_theme_options = {
     "use_edit_page_button": True,
 }
 
-github_user, github_repo = P["urls"]["source"].split("//")[1].split("/")
+github_user, github_repo = P["urls"]["Source"].split("//")[1].split("/")
 
 html_context = {
     "github_user": github_user,
