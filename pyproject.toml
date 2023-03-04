@@ -54,6 +54,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:Pyodide
 
 [project.optional-dependencies]
 dev = [
+    "build",
     "hatch",
 ]
 
