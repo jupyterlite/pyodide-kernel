@@ -67,7 +67,7 @@ docs = [
     "jupyterlab-language-pack-fr-FR",
     "jupyterlab-language-pack-zh-CN",
     "jupyterlite-sphinx",
-    "jupyterlite==0.1.0b18[mathjax,translation,libarchive,lab]",
+    "jupyterlite[mathjax,translation,libarchive,lab]==0.1.0b18",
     "myst-parser",
     "pydata-sphinx-theme",
 ]
