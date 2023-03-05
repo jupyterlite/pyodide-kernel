@@ -57,7 +57,7 @@ Serve the `build/` directory as `http://127.0.0.1:8000`, which contains:
 - a minimal JupyterLite [demo](#demo) site with
   - `pyodide-core`, a lightweight Pyodide distribution (5mb vs 250mb)
   - the `@jupyter-widget/jupyterlab-manager` extension enabled
-- the [documentation](#documenation) website (including the demo)
+- the [documentation](#documentation) website (including the demo)
 - [test](#test) the code and generate HTML reports
 
 ### Dependencies
@@ -172,9 +172,9 @@ Build a site in `build/docs` with Sphinx which includes a copy of the JupyterLit
 jlpm clean:all
 ```
 
-| provides | requires                    | run after                       |
-| -------- | --------------------------- | ------------------------------- |
-| -        | [install](#dependendencies) | anything that seems out-of-date |
+| provides | requires                 | run after                       |
+| -------- | ------------------------ | ------------------------------- |
+| -        | [install](#dependencies) | anything that seems out-of-date |
 
 Removes all built assets, caches, etc. `node_modules` _won't_ be cleaned out
 
