@@ -28,7 +28,7 @@ def index_cmd():
 
 
 @pytest.fixture
-def a_pydodide_tarball():
+def a_pyodide_tarball():
     """maybe fetch the pyodide archive"""
     if not PYODIDE_FIXTURE.exists():  # pragma: no cover
         import shutil
@@ -52,11 +52,11 @@ def a_pydodide_tarball():
 
 
 @pytest.fixture
-def a_pyodide_server(an_unused_port, a_pydodide_tarball):  # pragma: no cover
+def a_pyodide_server(an_unused_port, a_pyodide_tarball):  # pragma: no cover
     """serve up the pyodide archive"""
     import subprocess
 
-    root = a_pydodide_tarball.parent
+    root = a_pyodide_tarball.parent
 
     p = subprocess.Popen(
         ["python", "-m", "http.server", "-b", "127.0.0.1", f"{an_unused_port}"],

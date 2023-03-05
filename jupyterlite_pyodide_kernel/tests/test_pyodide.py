@@ -23,7 +23,7 @@ from jupyterlite_pyodide_kernel.constants import PYODIDE_URL_ENV_VAR
 def test_pyodide(
     an_empty_lite_dir,
     script_runner,
-    a_pydodide_tarball,
+    a_pyodide_tarball,
     a_pyodide_server,
     approach,
     path,
@@ -37,11 +37,11 @@ def test_pyodide(
         static = an_empty_lite_dir / "static"
         static.mkdir(parents=True, exist_ok=True)
         shutil.copytree(
-            a_pydodide_tarball.parent / "pyodide/pyodide",
+            a_pyodide_tarball.parent / "pyodide/pyodide",
             static / "pyodide",
         )
     else:
-        url = a_pydodide_tarball
+        url = a_pyodide_tarball
 
         if path == "remote":
             url = f"{a_pyodide_server}/{Path(url).name}"
