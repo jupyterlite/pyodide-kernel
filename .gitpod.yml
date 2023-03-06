@@ -1,0 +1,19 @@
+github:
+  prebuilds:
+    master: true
+    pullRequests: true
+    pullRequestsFromForks: true
+    addCheck: false
+    addComment: false
+    addBadge: false
+    addLabel: false
+tasks:
+  - name: setup
+    init: |
+      python -m venv ..
+      source ../bin/activate
+      python -m pip install -e ".[dev,test,docs]"
+    command: |
+      source ../bin/activate
+      jlpm
+      jlpm build
