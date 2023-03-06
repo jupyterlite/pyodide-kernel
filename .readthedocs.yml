@@ -13,6 +13,8 @@ build:
       - jlpm --frozen-lockfile
       - jlpm build
       - jlpm dist
+      # TODO: remove
+      - python -m pip install --force-reinstall https://jupyterlite--854.org.readthedocs.build/en/854/_static/jupyterlite-0.1.0b18-py3-none-any.whl
       # pre-build the lite site to isolate build errors
       - jlpm docs:lite
 
