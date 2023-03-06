@@ -15,9 +15,9 @@
 
 ## 🚧 This is a **work in progress** 🚧
 
-The Pyodide kernel is currently being extracted from the main JupyterLite repository
-to this repo. See the [JupyterLite issue][lite-issue] for background, and the
-in-progress [pull request][lite-pr] for current status.
+The Pyodide kernel is currently being extracted from the main JupyterLite repository to
+this repo. See the [JupyterLite issue][lite-issue] for background, and the in-progress
+[pull request][lite-pr] for current status.
 
 ⚠️ below denotes instructions that are **incomplete** or **subject to change**.
 
