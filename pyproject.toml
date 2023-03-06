@@ -57,7 +57,6 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:Pyodide
 dev = [
     "build",
     "hatch",
-    "jupyterlite @ https://jupyterlite--854.org.readthedocs.build/en/854/_static/jupyterlite-0.1.0b18-py3-none-any.whl",
 ]
 
 test = [
