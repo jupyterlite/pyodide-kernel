@@ -8,6 +8,7 @@ jupyterlite_pyodide_kernel/labextension/
 docs/
 build/
 dist/
+CHANGELOG.md
 
 # generated
 _pypi.ts
