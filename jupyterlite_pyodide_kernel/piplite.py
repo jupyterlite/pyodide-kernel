@@ -9,10 +9,7 @@ from pathlib import Path
 from typing import Tuple as _Tuple
 
 import doit.tools
-from traitlets import Unicode
-
-from jupyterlite.trait_types import TypedTuple
-
+from jupyterlite.addons.base import BaseAddon
 from jupyterlite.constants import (
     ALL_JSON,
     JSON_FMT,
@@ -22,7 +19,8 @@ from jupyterlite.constants import (
     LITE_PLUGIN_SETTINGS,
     UTF8,
 )
-from jupyterlite.addons.base import BaseAddon
+from jupyterlite.trait_types import TypedTuple
+from traitlets import Unicode
 
 from .constants import (
     ALL_WHL,

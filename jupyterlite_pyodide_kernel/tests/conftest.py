@@ -1,10 +1,10 @@
 """test configuration for jupyterlite-pyodide-kernel"""
-import pytest
 from pathlib import Path
 
+import pytest
 from jupyterlite.tests.conftest import (
-    an_empty_lite_dir,
     a_fixture_server,
+    an_empty_lite_dir,
     an_unused_port,
 )
 
@@ -42,8 +42,8 @@ def a_pyodide_tarball():
     unpacked = PYODIDE_FIXTURE.parent / "pyodide/pyodide"
 
     if not unpacked.is_dir():  # pragma: no cover
-        from jupyterlite.manager import LiteManager
         from jupyterlite.addons.base import BaseAddon
+        from jupyterlite.manager import LiteManager
 
         manager = LiteManager()
         BaseAddon(manager=manager).extract_one(PYODIDE_FIXTURE, unpacked.parent)

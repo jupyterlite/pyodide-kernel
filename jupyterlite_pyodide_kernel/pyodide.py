@@ -7,8 +7,7 @@ import urllib.parse
 from pathlib import Path
 
 import doit.tools
-from traitlets import Unicode, default
-
+from jupyterlite.addons.base import BaseAddon
 from jupyterlite.constants import (
     JSON_FMT,
     JUPYTER_CONFIG_DATA,
@@ -16,13 +15,13 @@ from jupyterlite.constants import (
     LITE_PLUGIN_SETTINGS,
     UTF8,
 )
-from jupyterlite.addons.base import BaseAddon
+from traitlets import Unicode, default
 
 from .constants import (
-    PYODIDE_URL,
     PYODIDE,
     PYODIDE_JS,
     PYODIDE_REPODATA,
+    PYODIDE_URL,
     PYOLITE_PLUGIN_ID,
 )
 
