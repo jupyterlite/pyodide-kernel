@@ -140,7 +140,10 @@ before-build-npm = [
     "python -m pip install -e .[dev]",
     "jlpm",
     "jlpm build:prod",
-    "python -m pip uninstall -y jupyterlite_pyodide_kernel",
+]
+before-build-python = [
+    "jlpm",
+    "jlpm build:prod",
 ]
 
 [tool.check-wheel-contents]
