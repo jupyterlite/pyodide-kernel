@@ -113,8 +113,8 @@ dmypy.json
 .DS_Store
 
 # generated
-**/pypi/all.json
-**/pypi/
+packages/pyodide-kernel/pypi/
+packages/pyodide-kernel/pypi/all.json
 _pypi.ts
 .jupyterlite.doit.db
 _output
