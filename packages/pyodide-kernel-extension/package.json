@@ -29,15 +29,16 @@
     "style/index.js"
   ],
   "scripts": {
-    "build": "yarn build:lib && yarn build:labextension:dev",
-    "build:prod": "yarn build:lib && yarn build:labextension",
+    "build": "jlpm build:lib && jlpm build:labextension:dev",
+    "build:prod": "jlpm build:lib && jlpm build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc",
-    "clean": "yarn clean:lib",
+    "dist": "cd ../../dist && npm pack ../packages/pyodide-kernel-extension",
+    "clean": "jlpm clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "clean:labextension": "rimraf ../../jupyterlite_pyodide_kernel/labextension",
-    "clean:all": "yarn clean:lib && yarn clean:labextension",
+    "clean:all": "jlpm clean:lib && jlpm clean:labextension",
     "docs": "typedoc src",
     "watch": "run-p watch:src watch:labextension",
     "watch:src": "tsc -w",
@@ -51,7 +52,7 @@
     "@jupyterlite/server": "^0.1.0-beta.18"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.1.0",
+    "@jupyterlab/builder": "^3.5.0",
     "rimraf": "~3.0.0",
     "typescript": "~4.9.4"
   },
@@ -79,5 +80,8 @@
   },
   "jupyterlite": {
     "liteExtension": true
+  },
+  "piplite": {
+    "wheelDir": "static/pypi"
   }
 }

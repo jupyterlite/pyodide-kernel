@@ -26,10 +26,12 @@ from jupyterlite.addons.base import BaseAddon
 
 from .constants import (
     ALL_WHL,
-    PIPLITE_URLS,
     PIPLITE_INDEX_SCHEMA,
+    PIPLITE_URLS,
+    PKG_JSON_PIPLITE,
+    PKG_JSON_WHEELDIR,
+    PYOLITE_PLUGIN_ID,
     PYPI_WHEELS,
-    PYOLITE_PLUGIN_ID
 )
 
 
@@ -99,7 +101,7 @@ class PipliteAddon(BaseAddon):
                 targets=[whl_meta],
             )
 
-        if whl_metas:
+        if whl_metas or pkg_jsons:
             whl_index = self.manager.output_dir / PYPI_WHEELS / ALL_JSON
 
             yield self.task(
@@ -129,14 +131,14 @@ class PipliteAddon(BaseAddon):
         )
 
         for wheel_index_url in urls:
-            if not wheel_index_url.startswith("./"):
+            if not wheel_index_url.startswith("./"):  # pragma: no cover
                 continue
 
             wheel_index_url = wheel_index_url.split("?")[0].split("#")[0]
 
             path = manager.output_dir / wheel_index_url
 
-            if not path.exists():
+            if not path.exists():  # pragma: no cover
                 continue
 
             yield self.task(
@@ -234,15 +236,14 @@ class PipliteAddon(BaseAddon):
             new_urls = old_urls
 
         # ...then add wheels from federated extensions...
-        if pkg_jsons:
-            for pkg_json in pkg_jsons:
-                pkg_data = json.loads(pkg_json.read_text(**UTF8))
-                wheel_dir = pkg_data.get("piplite", {}).get("wheelDir")
-                if wheel_dir:
-                    pkg_whl_index = pkg_json.parent / wheel_dir / ALL_JSON
-                    if pkg_whl_index.exists():
-                        pkg_whl_index_url_with_sha = self.get(pkg_whl_index)[1]
-                        new_urls += [pkg_whl_index_url_with_sha]
+        for pkg_json in pkg_jsons or []:
+            pkg_data = json.loads(pkg_json.read_text(**UTF8))
+            wheel_dir = pkg_data.get(PKG_JSON_PIPLITE, {}).get(PKG_JSON_WHEELDIR)
+            if wheel_dir:
+                pkg_whl_index = pkg_json.parent / wheel_dir / ALL_JSON
+                if pkg_whl_index.exists():
+                    pkg_whl_index_url_with_sha = self.get_index_urls(pkg_whl_index)[1]
+                    new_urls += [pkg_whl_index_url_with_sha]
 
         # ... and only update if actually changed
         if new_urls:

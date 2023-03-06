@@ -118,3 +118,4 @@ dmypy.json
 _pypi.ts
 .jupyterlite.doit.db
 _output
+jupyterlite_pyodide_kernel/tests/fixtures/.pyodide*/

@@ -1,5 +1,8 @@
 [build-system]
-requires = ["hatchling>=1.4.0", "jupyterlab>=3.5.0,<3.6"]
+requires = [
+    "hatchling>=1.4.0",
+    "jupyterlab>=3.5.3,<3.6",
+]
 build-backend = "hatchling.build"
 
 [project]
@@ -19,31 +22,33 @@ keywords = [
     "pyodide",
 ]
 license = { file = "LICENSE" }
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Framework :: Jupyter",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    # "jupyterlite",
-    # for testing
-    "jupyterlite @ git+https://github.com/jtpio/jupyterlite@move-pyolite#subdirectory=py/jupyterlite",
+    # TODO: restore
+    # "jupyterlite>=0.1.0b19",
+    "jupyterlite @ https://jupyterlite--854.org.readthedocs.build/en/854/_static/jupyterlite-0.1.0b18-py3-none-any.whl",
     "pkginfo"
 ]
 
 [project.urls]
-Homepage = "https://jupyterlite.readthedocs.io"
-Documentation = "https://jupyterlite.readthedocs.io"
-Source = "https://github.com/jupyterlite/jupyterlite"
-Issues = "https://github.com/jupyterlite/jupyterlite/issues"
-Pypi = "https://pypi.org/project/jupyterlite"
+Homepage = "https://jupyterlite-pyodide-kernel.readthedocs.io"
+Documentation = "https://jupyterlite-pyodide-kernel.readthedocs.io"
+Source = "https://github.com/jupyterlite/pyodide-kernel"
+Issues = "https://github.com/jupyterlite/pyodide-kernel/issues"
+PyPI = "https://pypi.org/project/jupyterlite-pyodide-kernel"
+
+[project.scripts]
+jupyter-piplite = "jupyterlite_pyodide_kernel.app:main"
 
 [project.entry-points."jupyterlite.addon.v0"]
 jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.piplite:PipliteAddon"
@@ -51,12 +56,29 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:Pyodide
 
 [project.optional-dependencies]
 dev = [
+    "build",
     "hatch",
 ]
 
 test = [
-    "pytest",
     "pytest-console-scripts",
+    "pytest-cov",
+    "pytest-html",
+    "pytest",
+]
+
+docs = [
+    "ipywidgets>=8.0,<9",
+    "jupyterlab-language-pack-fr-FR",
+    "jupyterlab-language-pack-zh-CN",
+    "myst-parser",
+    "pydata-sphinx-theme",
+    "sphinx-copybutton",
+    # TODO: restore
+    # "jupyterlite[mathjax,libarchive,lab]>=0.1.0b19",
+    "jupyter-server-mathjax",
+    "libarchive-c",
+    "jupyterlab >=3.5.3,<3.6"
 ]
 
 [tool.hatch.metadata]
@@ -67,7 +89,10 @@ path = "jupyterlite_pyodide_kernel/_version.py"
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["jupyterlite_pyodide_kernel/labextension"]
-exclude = [".github"]
+exclude = [
+    ".github",
+    "/jupyterlite_pyodide_kernel/tests/fixtures/.pyodide"
+]
 include = [
     "/jupyterlite_pyodide_kernel",
     "/package.json",
@@ -86,7 +111,22 @@ include = [
 "install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel/install.json"
 
 [tool.pytest.ini_options]
-addopts = "--ff --script-launch-mode=subprocess -vv"
+addopts = [
+    "--ff",
+    "-vv",
+    # asyncio
+    "--script-launch-mode=subprocess",
+    # cov
+    "--cov=jupyterlite_pyodide_kernel",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:build/reports/htmlcov",
+    "--cov-branch",
+    "--cov-fail-under=93",
+    "--no-cov-on-fail",
+    # html
+    "--html=build/reports/pytest.html",
+    "--self-contained-html",
+]
 testpaths = [
     "tests/",
 ]
@@ -98,8 +138,8 @@ version_cmd = "python scripts/bump-version.py"
 before-build-npm = [
     "python -m pip install jupyterlab~=3.5.3 hatch",
     "python -m pip install -e .[dev]",
-    "yarn",
-    "yarn build:prod",
+    "jlpm",
+    "jlpm build:prod",
     "python -m pip uninstall -y jupyterlite_pyodide_kernel",
 ]
 
