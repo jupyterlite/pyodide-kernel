@@ -44,11 +44,14 @@ jobs:
       - name: Package the extension
         run: jlpm dist:pypi
 
+      - name: Hash dists
+        run: cd dist && ls | sort | sha256sum * > SHA256SUMS
+
       - name: Upload extension packages
         uses: actions/upload-artifact@v3
         with:
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
-          path: dist/
+          path: dist
           if-no-files-found: error
 
   test_isolated:
@@ -71,6 +74,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
+          path: dist
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
 
       # Remove NodeJS, twice to take care of system and locally installed node versions.
