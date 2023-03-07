@@ -208,7 +208,7 @@ class PipliteAddon(BaseAddon):
 
         new_urls = []
 
-        # first add user-specified wheels
+        # first add user-specified wheels from piplite_urls
         if whl_metas:
             metadata = {}
             for whl_meta in whl_metas:
@@ -216,20 +216,20 @@ class PipliteAddon(BaseAddon):
                 whl = self.output_wheels / whl_meta.name.replace(".json", "")
                 metadata[whl] = meta["name"], meta["version"], meta["release"]
 
-            whl_index = write_wheel_index(self.output_wheels, metadata)
-            whl_index_url, whl_index_url_with_sha = self.get_index_urls(whl_index)
+            user_whl_index = write_wheel_index(self.output_wheels, metadata)
+            user_whl_index_url, user_whl_index_url_with_sha = self.get_index_urls(user_whl_index)
 
             added_build = False
 
             for url in old_urls:
-                if url.split("#")[0].split("?")[0] == whl_index_url:
-                    new_urls += [whl_index_url_with_sha]
+                if url.split("#")[0].split("?")[0] == user_whl_index_url:
+                    new_urls += [user_whl_index_url_with_sha]
                     added_build = True
                 else:
                     new_urls += [url]
 
             if not added_build:
-                new_urls = [whl_index_url_with_sha, *new_urls]
+                new_urls = [user_whl_index_url_with_sha, *new_urls]
         else:
             new_urls = old_urls
 
@@ -241,7 +241,8 @@ class PipliteAddon(BaseAddon):
                 pkg_whl_index = pkg_json.parent / wheel_dir / ALL_JSON
                 if pkg_whl_index.exists():
                     pkg_whl_index_url_with_sha = self.get_index_urls(pkg_whl_index)[1]
-                    new_urls += [pkg_whl_index_url_with_sha]
+                    if pkg_whl_index_url_with_sha not in new_urls:
+                        new_urls += [pkg_whl_index_url_with_sha]
 
         # ... and only update if actually changed
         if new_urls:
