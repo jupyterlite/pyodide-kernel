@@ -8,6 +8,10 @@ on:
     branches:
       - '*'
 
+env:
+  EXPECT_BUILD: |-
+    _output/extensions/@jupyterlite/pyodide-kernel-extension/static/pypi/all.json
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -78,9 +82,21 @@ jobs:
           sudo rm -rf $(which node)
 
       - name: Install Built Package
-        run: python -m pip install "jupyterlab~=3.5.3" "jupyterlite_pyodide_kernel*.whl"
+        run: |-
+          python -m pip install --find-links=dist --no-index jupyterlite-pyodide-kernel
 
-      - name: Check extensions
-        run: |
-          jupyter labextension list
-          jupyter labextension list 2>&1 | grep -ie "@jupyterlite/pyodide-kernel.*OK"
+      - name: Smoke test CLI
+        run: |-
+          jupyter piplite --version || exit 1
+          jupyter piplite --help || exit 1
+
+      - name: Smoke test build
+        run: |-
+          jupyter lite status
+          jupyter lite build
+          jupyter lite check
+          ls ${{ env.EXPECT_BUILD }} || ${{ env.EXPECT_BUILD }} || exit 1
+
+      - name: Smoke test archive
+        run: |-
+          jupyter lite archive
