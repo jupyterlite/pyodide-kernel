@@ -10,6 +10,15 @@ from jupyterlite.tests.conftest import (
 
 from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
 
+__all__ = [
+    "a_fixture_server",
+    "a_pyodide_server",
+    "a_pyodide_tarball",
+    "an_empty_lite_dir",
+    "an_unused_port",
+    "index_cmd",
+]
+
 HERE = Path(__file__).parent
 FIXTURES = HERE / "fixtures"
 
@@ -18,7 +27,7 @@ WHEELS = [*FIXTURES.glob("*.whl")]
 PYODIDE_GH = "https://github.com/pyodide/pyodide/releases/download"
 PYODIDE_TARBALL = f"pyodide-core-{PYODIDE_VERSION}.tar.bz2"
 PYODIDE_URL = f"{PYODIDE_GH}/{PYODIDE_VERSION}/{PYODIDE_TARBALL}"
-PYODIDE_FIXTURE = FIXTURES / f".pyodide" / PYODIDE_VERSION / PYODIDE_TARBALL
+PYODIDE_FIXTURE = FIXTURES / ".pyodide" / PYODIDE_VERSION / PYODIDE_TARBALL
 
 
 @pytest.fixture

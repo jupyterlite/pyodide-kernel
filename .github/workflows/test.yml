@@ -37,8 +37,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name:
-            jupyterlite-pyodide-kernel-pytest-${{ github.run_number }}-${{ matrix.os
-            }}-${{ matrix.python-version}}
+          name: |-
+            jupyterlite-pyodide-kernel-pytest-${{ github.run_number }}-${{ matrix.os }}-${{ matrix.python-version}}
           path: build/reports
           if-no-files-found: error
