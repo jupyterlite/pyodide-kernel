@@ -111,18 +111,28 @@ jobs:
         run: |-
           python -m pip install -v -r dist/requirements-sdist.txt
 
-      - name: Smoke test CLI
+      - name: Smoke test (CLI)
         run: |-
           jupyter piplite --version || exit 1
           jupyter piplite --help || exit 1
 
-      - name: Smoke test build
+      - name: Smoke test (status)
         run: |-
+          set -eux
           jupyter lite status
+
+      - name: Smoke test (build)
+        run: |-
+          set -eux
           jupyter lite build
-          jupyter lite check
-          ls ${{ env.EXPECT_BUILD }} || ${{ env.EXPECT_BUILD }} || exit 1
+          ls ${{ env.EXPECT_BUILD }} || dir ${{ env.EXPECT_BUILD }} || exit 1
 
       - name: Smoke test archive
         run: |-
+          set -eux
           jupyter lite archive
+
+      - name: Smoke test (check)
+        run: |-
+          set -eux
+          jupyter lite check
