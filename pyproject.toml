@@ -57,6 +57,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:Pyodide
 dev = [
     "build",
     "hatch",
+    "jupyterlab >=3.5.3,<3.6",
 ]
 
 lint = [
@@ -82,8 +83,7 @@ docs = [
     # TODO: restore
     # "jupyterlite[mathjax,libarchive,lab]>=0.1.0b19",
     "jupyter-server-mathjax",
-    "libarchive-c",
-    "jupyterlab >=3.5.3,<3.6"
+    "libarchive-c"
 ]
 
 [tool.hatch.metadata]
