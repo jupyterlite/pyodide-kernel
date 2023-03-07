@@ -217,7 +217,9 @@ class PipliteAddon(BaseAddon):
                 metadata[whl] = meta["name"], meta["version"], meta["release"]
 
             user_whl_index = write_wheel_index(self.output_wheels, metadata)
-            user_whl_index_url, user_whl_index_url_with_sha = self.get_index_urls(user_whl_index)
+            user_whl_index_url, user_whl_index_url_with_sha = self.get_index_urls(
+                user_whl_index
+            )
 
             added_build = False
 
