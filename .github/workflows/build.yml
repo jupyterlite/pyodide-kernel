@@ -74,6 +74,7 @@ jobs:
     needs: build
     runs-on: ${{ matrix.os }}-latest
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu, windows, macos]
         python-version: ['3.8', '3.11']
@@ -111,28 +112,33 @@ jobs:
         run: |-
           python -m pip install -v -r dist/requirements-sdist.txt
 
+      - name: Make temp dir
+        run: |-
+          mkdir tmp || md tmp
+
       - name: Smoke test (CLI)
         run: |-
+          cd tmp
           jupyter piplite --version || exit 1
           jupyter piplite --help || exit 1
 
       - name: Smoke test (status)
         run: |-
-          set -eux
-          jupyter lite status
+          cd tmp
+          jupyter lite status || exit 1
 
       - name: Smoke test (build)
         run: |-
-          set -eux
+          cd tmp
           jupyter lite build
           ls ${{ env.EXPECT_BUILD }} || dir ${{ env.EXPECT_BUILD }} || exit 1
 
       - name: Smoke test archive
         run: |-
-          set -eux
-          jupyter lite archive
+          cd tmp
+          jupyter lite archive || exit 1
 
       - name: Smoke test (check)
         run: |-
-          set -eux
-          jupyter lite check
+          cd tmp
+          jupyter lite check || exit 1
