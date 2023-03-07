@@ -48,14 +48,20 @@ jobs:
 
       - name: Hash distributions
         run: |-
+          set -eux
           cd dist
-          ls | sort | sha256sum * > SHA256SUMS
+          ls | sort | sha256sum > SHA256SUMS
+          cat SHA256SUMS
 
       - name: Build requirements files
         run: |-
-          export NL=$'\n'
-          echo "./dist/$(ls *.whl)${NL}${RTD_WHEEL}" > requirements-wheel.txt
-          echo "./dist/$(ls *.tar.gz)${NL}${RTD_WHEEL}" > requirements-sdist.txt
+          set -eux
+          cd dist
+          echo $RTD_WHEEL >> requirements-wheel.txt
+          echo $RTD_WHEEL >> requirements-sdist.txt
+          echo "./dist/$(ls *.whl)" >> requirements-wheel.txt
+          echo "./dist/$(ls *.tar.gz)" >> requirements-sdist.txt
+          cat *.txt
 
       - name: Upload extension packages
         uses: actions/upload-artifact@v3
