@@ -27,7 +27,7 @@ jobs:
         run: python -m pip install -U pip
 
       - name: Install Python dependencies
-        run: python -m pip install -e ".[dev,lint]"
+        run: python -m pip install -vv -e ".[dev,lint]"
 
       - name: Install JS dependencies
         run: jlpm --frozen-lockfile
@@ -83,7 +83,7 @@ jobs:
 
       - name: Install Built Package
         run: |-
-          python -m pip install --find-links=dist --no-index jupyterlite-pyodide-kernel
+          python -m pip install -vv --find-links=dist --no-index jupyterlite-pyodide-kernel
 
       - name: Smoke test CLI
         run: |-
