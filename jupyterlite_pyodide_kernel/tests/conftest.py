@@ -1,6 +1,6 @@
 """test configuration for jupyterlite-pyodide-kernel"""
 from pathlib import Path
-
+import sys
 import pytest
 from jupyterlite.tests.conftest import (
     a_fixture_server,
@@ -8,7 +8,10 @@ from jupyterlite.tests.conftest import (
     an_unused_port,
 )
 
-from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
+from jupyterlite_pyodide_kernel.constants import (
+    PYODIDE_VERSION,
+    PYODIDE_KERNEL_NPM_NAME,
+)
 
 __all__ = [
     "a_fixture_server",
@@ -21,6 +24,13 @@ __all__ = [
 
 HERE = Path(__file__).parent
 FIXTURES = HERE / "fixtures"
+
+IN_TREE_EXTENSION = (HERE / "../labextension").resolve()
+SHARE = Path(sys.prefix) / "share/jupyter/labextensions"
+IN_SHARE_EXTENSION = (SHARE / PYODIDE_KERNEL_NPM_NAME).resolve()
+PYODIDE_KERNEL_EXTENSION = (
+    IN_TREE_EXTENSION if IN_SHARE_EXTENSION.exists() else IN_SHARE_EXTENSION
+)
 
 WHEELS = [*FIXTURES.glob("*.whl")]
 

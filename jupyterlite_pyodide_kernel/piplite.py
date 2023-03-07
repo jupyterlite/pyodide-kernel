@@ -28,7 +28,8 @@ from .constants import (
     PIPLITE_URLS,
     PKG_JSON_PIPLITE,
     PKG_JSON_WHEELDIR,
-    PYOLITE_PLUGIN_ID,
+    PYODIDE_KERNEL_PLUGIN_ID,
+    PYODIDE_KERNEL_NPM_NAME,
     PYPI_WHEELS,
 )
 
@@ -61,6 +62,14 @@ class PipliteAddon(BaseAddon):
     def output_extensions(self):
         """where labextensions will go in the output folder"""
         return self.manager.output_dir / LAB_EXTENSIONS
+
+    @property
+    def output_kernel_extension(self):
+        return self.output_extensions / PYODIDE_KERNEL_NPM_NAME
+
+    @property
+    def piplite_schema(self):
+        return self.output_kernel_extension / "static/schema" / PIPLITE_INDEX_SCHEMA
 
     def post_init(self, manager):
         """handle downloading of wheels"""
@@ -124,7 +133,7 @@ class PipliteAddon(BaseAddon):
         urls = (
             config.get(JUPYTER_CONFIG_DATA, {})
             .get(LITE_PLUGIN_SETTINGS, {})
-            .get(PYOLITE_PLUGIN_ID, {})
+            .get(PYODIDE_KERNEL_PLUGIN_ID, {})
             .get(PIPLITE_URLS, [])
         )
 
@@ -143,12 +152,7 @@ class PipliteAddon(BaseAddon):
                 name=f"validate:{wheel_index_url}",
                 doc=f"validate {wheel_index_url} with the piplite API schema",
                 file_dep=[path],
-                actions=[
-                    (
-                        self.validate_one_json_file,
-                        [manager.output_dir / PIPLITE_INDEX_SCHEMA, path],
-                    )
-                ],
+                actions=[(self.validate_one_json_file, [self.piplite_schema, path])],
             )
 
     def resolve_one_wheel(self, path_or_url):
@@ -202,7 +206,7 @@ class PipliteAddon(BaseAddon):
         old_urls = (
             config.setdefault(JUPYTER_CONFIG_DATA, {})
             .setdefault(LITE_PLUGIN_SETTINGS, {})
-            .setdefault(PYOLITE_PLUGIN_ID, {})
+            .setdefault(PYODIDE_KERNEL_PLUGIN_ID, {})
             .get(PIPLITE_URLS, [])
         )
 
@@ -248,7 +252,7 @@ class PipliteAddon(BaseAddon):
 
         # ... and only update if actually changed
         if new_urls:
-            config[JUPYTER_CONFIG_DATA][LITE_PLUGIN_SETTINGS][PYOLITE_PLUGIN_ID][
+            config[JUPYTER_CONFIG_DATA][LITE_PLUGIN_SETTINGS][PYODIDE_KERNEL_PLUGIN_ID][
                 PIPLITE_URLS
             ] = new_urls
 

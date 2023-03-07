@@ -10,6 +10,11 @@ import type { Remote } from 'comlink';
 import { IWorkerKernel } from '@jupyterlite/kernel';
 
 /**
+ * The schema for a Warehouse-like index, as used by piplite.
+ */
+export * as PIPLITE_INDEX_SCHEMA from '../schema/piplite.schema.v0.json';
+
+/**
  * An interface for Pyodide workers.
  */
 export interface IPyodideWorkerKernel extends IWorkerKernel {

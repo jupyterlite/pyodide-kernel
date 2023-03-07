@@ -8,8 +8,5 @@
       "../jupyterlite_pyodide_kernel/labextension"
     ],
     "cache_dir": "../build/.lite-cache"
-  },
-  "PyodideAddon": {
-    "pyodide_url": "https://github.com/pyodide/pyodide/releases/download/0.22.1/pyodide-core-0.22.1.tar.bz2"
   }
 }

@@ -1,14 +1,16 @@
 """Well-known (and otherwise) constants used by JupyterLite"""
 
-### pyolite-specific values, will move to separate repo
+### pyodide-specific values
 #: the key for PyPI-compatible API responses pointing to wheels
 PIPLITE_URLS = "pipliteUrls"
 #: the schema for piplite-compatible wheel index
 PIPLITE_INDEX_SCHEMA = "piplite.schema.v0.json"
 #: where we put wheels, for now
 PYPI_WHEELS = "pypi"
-#: the plugin id for the pyolite kernel
-PYOLITE_PLUGIN_ID = "@jupyterlite/pyolite-kernel-extension:kernel"
+#: the plugin id for the pydodide kernel labextension
+PYODIDE_KERNEL_PLUGIN_ID = "@jupyterlite/pyodide-kernel-extension:kernel"
+#: the npm name of the pyodide kernel
+PYODIDE_KERNEL_NPM_NAME = PYODIDE_KERNEL_PLUGIN_ID.split(":")[0]
 #: the package.json key for piplite
 PKG_JSON_PIPLITE = "piplite"
 #: the package.json/piplite key for wheels

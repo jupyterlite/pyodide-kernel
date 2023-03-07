@@ -22,7 +22,7 @@ from .constants import (
     PYODIDE_JS,
     PYODIDE_REPODATA,
     PYODIDE_URL,
-    PYOLITE_PLUGIN_ID,
+    PYODIDE_KERNEL_PLUGIN_ID,
 )
 
 
@@ -148,7 +148,7 @@ class PyodideAddon(BaseAddon):
         pyodide_url = (
             config.setdefault(JUPYTER_CONFIG_DATA, {})
             .setdefault(LITE_PLUGIN_SETTINGS, {})
-            .setdefault(PYOLITE_PLUGIN_ID, {})
+            .setdefault(PYODIDE_KERNEL_PLUGIN_ID, {})
             .get(PYODIDE_URL)
         )
 
@@ -165,14 +165,14 @@ class PyodideAddon(BaseAddon):
     def patch_jupyterlite_json(self, jupyterlite_json, output_js):
         """update jupyter-lite.json to use the local pyodide"""
         config = json.loads(jupyterlite_json.read_text(**UTF8))
-        pyolite_config = (
+        pyodide_kernel_config = (
             config.setdefault(JUPYTER_CONFIG_DATA, {})
             .setdefault(LITE_PLUGIN_SETTINGS, {})
-            .setdefault(PYOLITE_PLUGIN_ID, {})
+            .setdefault(PYODIDE_KERNEL_PLUGIN_ID, {})
         )
         url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
-        if pyolite_config.get(PYODIDE_URL) != url:
-            pyolite_config[PYODIDE_URL] = url
+        if pyodide_kernel_config.get(PYODIDE_URL) != url:
+            pyodide_kernel_config[PYODIDE_URL] = url
             jupyterlite_json.write_text(json.dumps(config, **JSON_FMT), **UTF8)
             self.maybe_timestamp(jupyterlite_json)
 

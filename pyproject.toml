@@ -111,8 +111,8 @@ include = [
 ]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel"
-"install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel/install.json"
+"jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension"
+"install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension/install.json"
 
 [tool.pytest.ini_options]
 addopts = [

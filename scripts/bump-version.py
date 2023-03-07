@@ -28,10 +28,10 @@ def bump():
         run(f"hatch version {py_version}", shell=True, check=True, cwd=package)
 
     # bump the js version
-    pyolite_json = json.loads(PYODIDE_PACKAGE_JSON.read_text(**ENC))
-    pyolite_json["pyodide-kernel"]["packages"]["py/pyodide-kernel"] = py_version
-    pyolite_json["pyodide-kernel"]["packages"]["py/piplite"] = py_version
-    PYODIDE_PACKAGE_JSON.write_text(json.dumps(pyolite_json, indent=2), **ENC)
+    pyodide_kernel_json = json.loads(PYODIDE_PACKAGE_JSON.read_text(**ENC))
+    pyodide_kernel_json["pyodide-kernel"]["packages"]["py/pyodide-kernel"] = py_version
+    pyodide_kernel_json["pyodide-kernel"]["packages"]["py/piplite"] = py_version
+    PYODIDE_PACKAGE_JSON.write_text(json.dumps(pyodide_kernel_json, indent=2), **ENC)
 
     # bump the JS version with lerna
     run(f"yarn run bump:js:version {js_version}", shell=True, check=True)

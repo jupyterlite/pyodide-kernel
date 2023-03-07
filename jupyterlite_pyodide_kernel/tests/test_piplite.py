@@ -5,7 +5,8 @@ import shutil
 import pytest
 from pytest import mark
 
-from .conftest import WHEELS
+from jupyterlite_pyodide_kernel.constants import PYODIDE_KERNEL_PLUGIN_ID
+from .conftest import WHEELS, PYODIDE_KERNEL_EXTENSION
 
 
 def has_wheel_after_build(an_empty_lite_dir, script_runner):
@@ -21,7 +22,7 @@ def has_wheel_after_build(an_empty_lite_dir, script_runner):
     lite_json = output / "jupyter-lite.json"
     lite_data = json.loads(lite_json.read_text(encoding="utf-8"))
     assert lite_data["jupyter-config-data"]["litePluginSettings"][
-        "@jupyterlite/pyolite-kernel-extension:kernel"
+        PYODIDE_KERNEL_PLUGIN_ID
     ]["pipliteUrls"], "bad wheel urls"
 
     wheel_out = output / "pypi"
@@ -53,13 +54,17 @@ def test_piplite_urls(
     config = {
         "LiteBuildConfig": {
             "apps": ["lab"],
-            "ignore_sys_prefix": ["federated_extensions"],
+            # ignore accidental extensions from the env
+            "ignore_sys_prefix": True,
+            # re-add with the as-built or -shipped extension
+            "federated_extensions": [
+                str(PYODIDE_KERNEL_EXTENSION),
+            ],
         },
         "PipliteAddon": {
             "piplite_urls": piplite_urls,
         },
     }
-    print("CONFIG", config)
 
     (an_empty_lite_dir / "jupyter_lite_config.json").write_text(json.dumps(config))
 
