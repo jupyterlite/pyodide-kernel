@@ -80,9 +80,6 @@ jobs:
         python-version: ['3.8', '3.11']
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Install Python
         uses: actions/setup-python@v4
         with:
