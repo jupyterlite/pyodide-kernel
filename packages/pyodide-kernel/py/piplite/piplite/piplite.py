@@ -28,7 +28,8 @@ ALL_JSON = "/all.json"
 
 
 class PiplitePyPIDisabled(ValueError):
-    """An error for when PyPI is disabled at the site level, but a download was attempted."""
+    """An error for when PyPI is disabled at the site level, but a download was
+    attempted."""
 
     pass
 

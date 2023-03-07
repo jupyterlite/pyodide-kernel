@@ -41,7 +41,7 @@ class LiteDisplayPublisher(DisplayPublisher):
         *,
         transient=None,
         update=False,
-        **kwargs
+        **kwargs,
     ) -> None:
         if update and self.update_display_data_callback:
             self.update_display_data_callback(data, metadata, transient)

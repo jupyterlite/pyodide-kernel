@@ -62,8 +62,7 @@ dev = [
 
 lint = [
     "black",
-    "isort",
-    "pyflakes",
+    "ruff",
 ]
 
 test = [

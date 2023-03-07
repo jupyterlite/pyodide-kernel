@@ -46,7 +46,7 @@ class PyodideKernel(LoggingConfigurable):
         try:
             data = self.interpreter.object_inspect_mime(name, detail_level)
             found = True
-        except:
+        except Exception:
             pass
 
         results["data"] = data
