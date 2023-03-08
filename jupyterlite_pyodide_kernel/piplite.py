@@ -31,6 +31,7 @@ from .constants import (
     PYODIDE_KERNEL_PLUGIN_ID,
     PYODIDE_KERNEL_NPM_NAME,
     PYPI_WHEELS,
+    KERNEL_SETTINGS_SCHEMA,
 )
 
 
@@ -68,8 +69,16 @@ class PipliteAddon(BaseAddon):
         return self.output_extensions / PYODIDE_KERNEL_NPM_NAME
 
     @property
+    def schemas(self):
+        return self.output_kernel_extension / "static/schema"
+
+    @property
     def piplite_schema(self):
-        return self.output_kernel_extension / "static/schema" / PIPLITE_INDEX_SCHEMA
+        return self.schemas / PIPLITE_INDEX_SCHEMA
+
+    @property
+    def settings_schema(self):
+        return self.schemas / KERNEL_SETTINGS_SCHEMA
 
     def post_init(self, manager):
         """handle downloading of wheels"""
@@ -125,10 +134,30 @@ class PipliteAddon(BaseAddon):
             )
 
     def check(self, manager):
-        """verify that all Wheel API are valid (sorta)"""
-        jupyterlite_json = manager.output_dir / JUPYTERLITE_JSON
+        """verify that all JSON for settings and Warehouse API are valid"""
+
+        for app in [None, *manager.apps]:
+            app_dir = manager.output_dir / app if app else manager.output_dir
+            jupyterlite_json = app_dir / JUPYTERLITE_JSON
+            yield from self.check_one_jupyterlite(manager, jupyterlite_json)
+
+    def check_one_jupyterlite(self, manager, jupyterlite_json):
+        """verify the settings and Warehouse API for a single jupyter-lite.json"""
         if not jupyterlite_json.exists():
             return
+
+        yield self.task(
+            name=f"validate:settings:{jupyterlite_json.relative_to(manager.output_dir)}",
+            doc=f"validate {jupyterlite_json} with the pyodide kernel schema",
+            actions=[
+                (
+                    self.validate_one_json_file,
+                    [None, self.settings_schema, jupyterlite_json],
+                )
+            ],
+            file_dep=[self.settings_schema, jupyterlite_json],
+        )
+
         config = json.loads(jupyterlite_json.read_text(**UTF8))
         urls = (
             config.get(JUPYTER_CONFIG_DATA, {})
@@ -138,22 +167,25 @@ class PipliteAddon(BaseAddon):
         )
 
         for wheel_index_url in urls:
-            if not wheel_index_url.startswith("./"):  # pragma: no cover
-                continue
+            yield from self.check_one_wheel_index(manager, wheel_index_url)
 
-            wheel_index_url = wheel_index_url.split("?")[0].split("#")[0]
+    def check_one_wheel_index(self, manager, wheel_index_url):
+        if not wheel_index_url.startswith("./"):  # pragma: no cover
+            return
 
-            path = manager.output_dir / wheel_index_url
+        wheel_index_url = wheel_index_url.split("?")[0].split("#")[0]
 
-            if not path.exists():  # pragma: no cover
-                continue
+        path = manager.output_dir / wheel_index_url
 
-            yield self.task(
-                name=f"validate:{wheel_index_url}",
-                doc=f"validate {wheel_index_url} with the piplite API schema",
-                file_dep=[path],
-                actions=[(self.validate_one_json_file, [self.piplite_schema, path])],
-            )
+        if not path.exists():  # pragma: no cover
+            return
+
+        yield self.task(
+            name=f"validate:wheels:{wheel_index_url}",
+            doc=f"validate {wheel_index_url} with the piplite API schema",
+            file_dep=[path],
+            actions=[(self.validate_one_json_file, [self.piplite_schema, path])],
+        )
 
     def resolve_one_wheel(self, path_or_url):
         """download a single wheel, and copy to the cache"""

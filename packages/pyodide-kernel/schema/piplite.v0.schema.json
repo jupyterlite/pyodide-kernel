@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://jupyterlite.readthedocs.org/en/latest/piplite-schema-v0.html#",
+  "$id": "https://jupyterlite-pyodide-kernel.readthedocs.org/en/latest/reference/schema/piplite-v0.html#",
   "title": "PipLite Schema v0",
   "description": "a schema for the warehouse-like API index",
   "$ref": "#/definitions/top",

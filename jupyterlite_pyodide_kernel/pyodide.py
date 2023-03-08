@@ -135,13 +135,15 @@ class PyodideAddon(BaseAddon):
 
     def check(self, manager):
         """ensure the pyodide configuration is sound"""
-        jupyterlite_json = manager.output_dir / JUPYTERLITE_JSON
+        for app in [None, *manager.apps]:
+            app_dir = manager.output_dir / app if app else manager.output_dir
+            jupyterlite_json = app_dir / JUPYTERLITE_JSON
 
-        yield self.task(
-            name="config",
-            file_dep=[jupyterlite_json],
-            actions=[(self.check_config_paths, [jupyterlite_json])],
-        )
+            yield self.task(
+                name=f"config:{jupyterlite_json.relative_to(manager.output_dir)}",
+                file_dep=[jupyterlite_json],
+                actions=[(self.check_config_paths, [jupyterlite_json])],
+            )
 
     def check_config_paths(self, jupyterlite_json):
         config = json.loads(jupyterlite_json.read_text(**UTF8))
