@@ -50,8 +50,8 @@ PyPI = "https://pypi.org/project/jupyterlite-pyodide-kernel"
 jupyter-piplite = "jupyterlite_pyodide_kernel.app:main"
 
 [project.entry-points."jupyterlite.addon.v0"]
-jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.piplite:PipliteAddon"
-jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:PyodideAddon"
+jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.addons.piplite:PipliteAddon"
+jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:PyodideAddon"
 
 [project.optional-dependencies]
 dev = [

@@ -1,4 +1,4 @@
-"""Well-known (and otherwise) constants used by JupyterLite"""
+"""Well-known (and otherwise) constants used by ``jupyterlite-pyodide-kernel``"""
 
 ### pyodide-specific values
 #: the key for PyPI-compatible API responses pointing to wheels
