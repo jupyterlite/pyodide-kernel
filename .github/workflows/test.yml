@@ -152,9 +152,13 @@ jobs:
           name: pyproject-toml
 
       - name: Install test deps
-        run:
-          python -m pip install jupyterlite-pyodide-kernel[test] --upgrade-strategy
-          only-if-needed
+        run: |-
+          python -m pip install jupyterlite-pyodide-kernel[test] jupyterlite[lab] --upgrade-strategy only-if-needed
+
+      - name: Check extension
+        run: |-
+          jupyter labextension list
+          jupyter labextension list 2>&1 | grep -ie "@jupyterlite/pyodide-kernel.*OK"
 
       - name: Run the tests
         run: pytest
