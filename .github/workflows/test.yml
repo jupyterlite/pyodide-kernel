@@ -70,6 +70,13 @@ jobs:
           path: dist
           if-no-files-found: error
 
+      - name: Upload test config
+        uses: actions/upload-artifact@v3
+        with:
+          name: pyproject-toml
+          path: pyproject.toml
+          if-no-files-found: error
+
   test:
     needs: build
     runs-on: ${{ matrix.os }}-latest
@@ -141,9 +148,12 @@ jobs:
           jupyter lite check || exit 1
 
       - name: Install test dependencies
-        run:
-          python -m pip install -r dist/requirements.txt
-          jupyterlite-pyodide-kernel[test]
+        run: |-
+          python -m pip install jupyterlite-pyodide-kernel[test] -r dist/requirements-wheel.txt
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: pyproject-toml
 
       - name: Run the tests
         run: pytest
