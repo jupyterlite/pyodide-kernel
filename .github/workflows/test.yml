@@ -13,9 +13,14 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}-latest
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu, windows, macos]
         python-version: ['3.8', '3.11']
+        node-version: ['18']
+
+    env:
+      CACHE_PREFIX: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.node-version }}
 
     steps:
       - name: Checkout
