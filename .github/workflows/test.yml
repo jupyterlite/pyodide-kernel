@@ -59,8 +59,8 @@ jobs:
           cd dist
           echo $RTD_WHEEL >> requirements-wheel.txt
           echo $RTD_WHEEL >> requirements-sdist.txt
-          echo "./dist/$(ls *.whl)" >> requirements-wheel.txt
-          echo "./dist/$(ls *.tar.gz)" >> requirements-sdist.txt
+          echo "jupyterlite-pyodide-kernel[test] @ ./dist/$(ls *.whl)" >> requirements-wheel.txt
+          echo "jupyterlite-pyodide-kernel[test] @ ./dist/$(ls *.tar.gz)" >> requirements-sdist.txt
           cat *.txt
 
       - name: Upload extension packages
@@ -146,10 +146,6 @@ jobs:
         run: |-
           cd tmp
           jupyter lite check || exit 1
-
-      - name: Install test dependencies
-        run: |-
-          python -m pip install jupyterlite-pyodide-kernel[test] -r dist/requirements-wheel.txt
 
       - uses: actions/download-artifact@v3
         with:
