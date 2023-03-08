@@ -28,8 +28,9 @@ FIXTURES = HERE / "fixtures"
 IN_TREE_EXTENSION = (HERE / "../labextension").resolve()
 SHARE = Path(sys.prefix) / "share/jupyter/labextensions"
 IN_SHARE_EXTENSION = (SHARE / PYODIDE_KERNEL_NPM_NAME).resolve()
+# prefer testing an in-tree extension, if available
 PYODIDE_KERNEL_EXTENSION = (
-    IN_TREE_EXTENSION if IN_SHARE_EXTENSION.exists() else IN_SHARE_EXTENSION
+    IN_TREE_EXTENSION if IN_TREE_EXTENSION.exists() else IN_SHARE_EXTENSION
 )
 
 WHEELS = [*FIXTURES.glob("*.whl")]
