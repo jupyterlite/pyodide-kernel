@@ -1,23 +1,22 @@
-name: Test
+name: Build
 
 on:
   push:
-    branches: main
+    branches:
+      - main
   pull_request:
-    branches: '*'
+    branches:
+      - '*'
 
 env:
-  RTD_WHEEL: https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite-0.1.0b18-py3-none-any.whl
+  EXPECT_BUILD: |-
+    _output/extensions/@jupyterlite/pyodide-kernel-extension/static/pypi/all.json
+  RTD_WHEEL: |-
+    https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite-0.1.0b18-py3-none-any.whl
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu, windows, macos]
-        python-version: ['3.8', '3.11']
-        node-version: ['18']
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -26,21 +25,125 @@ jobs:
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
-      - name: Install Python dependencies
-        run: python -m pip install -v -e ".[dev,test]"
+      - name: Install dependencies
+        run: python -m pip install -U pip
 
-      # TODO: remove
-      - name: Install JupyterLite from ReadTheDocs
-        run: python -m pip install -v --force-reinstall ${{ env.RTD_WHEEL }}
+      - name: Install Python dependencies
+        run: python -m pip install -v -e ".[dev,lint]"
 
       - name: Install JS dependencies
         run: jlpm --frozen-lockfile
 
-      - name: Build JS extension
-        run: jlpm build:prod
+      - name: Lint the JS
+        run: jlpm lint:js:check
 
-      - name: Install JS extension
-        run: jupyter labextension develop . --overwrite
+      - name: Lint the Python
+        run: jlpm lint:py:check
+
+      - name: Build the JS extension
+        run: jlpm build
+
+      - name: Package the extension
+        run: jlpm dist:pypi
+
+      - name: Hash distributions
+        run: |-
+          set -eux
+          cd dist
+          ls | sort | sha256sum > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Build requirements files
+        run: |-
+          set -eux
+          cd dist
+          echo $RTD_WHEEL >> requirements-wheel.txt
+          echo $RTD_WHEEL >> requirements-sdist.txt
+          echo "./dist/$(ls *.whl)" >> requirements-wheel.txt
+          echo "./dist/$(ls *.tar.gz)" >> requirements-sdist.txt
+          cat *.txt
+
+      - name: Upload extension packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
+          path: dist
+          if-no-files-found: error
+
+  test:
+    needs: build
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, windows, macos]
+        python-version: ['3.8', '3.11']
+
+    steps:
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
+
+      - uses: actions/download-artifact@v3
+        with:
+          path: dist
+          name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
+
+      # Remove NodeJS, twice to take care of system and locally installed node versions.
+      - name: Clean out nodejs
+        if: matrix.os != 'windows'
+        run: |
+          set -eux
+          sudo rm -rf $(which node)
+          sudo rm -rf $(which node)
+
+      - name: Install Built Package (wheel)
+        if: matrix.python-version == '3.11'
+        run: |-
+          python -m pip install -v -r dist/requirements-wheel.txt
+
+      - name: Install Built Package (sdist)
+        if: matrix.python-version == '3.8'
+        run: |-
+          python -m pip install -v -r dist/requirements-sdist.txt
+
+      - name: Make temp dir
+        run: |-
+          mkdir tmp || md tmp
+
+      - name: Smoke test (CLI)
+        run: |-
+          cd tmp
+          jupyter piplite --version || exit 1
+          jupyter piplite --help || exit 1
+
+      - name: Smoke test (status)
+        run: |-
+          cd tmp
+          jupyter lite status || exit 1
+
+      - name: Smoke test (build)
+        run: |-
+          cd tmp
+          jupyter lite build
+          ls ${{ env.EXPECT_BUILD }} || dir ${{ env.EXPECT_BUILD }} || exit 1
+
+      - name: Smoke test archive
+        run: |-
+          cd tmp
+          jupyter lite archive || exit 1
+
+      - name: Smoke test (check)
+        run: |-
+          cd tmp
+          jupyter lite check || exit 1
+
+      - name: Install test dependencies
+        run:
+          python -m pip install -r dist/requirements.txt
+          jupyterlite-pyodide-kernel[test]
 
       - name: Run the tests
         run: pytest
