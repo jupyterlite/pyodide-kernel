@@ -5,3 +5,8 @@ declare module '../schema/*.json' {
   const res: string;
   export default res;
 }
+
+declare module '!!url-loader!*' {
+  const res: string;
+  export default res;
+}

@@ -26,6 +26,7 @@
     "lib/*.js.map",
     "lib/*.js",
     "style/*.css",
+    "style/**/*.svg",
     "style/index.js",
     "schema/*.json"
   ],
@@ -55,7 +56,8 @@
   "devDependencies": {
     "@jupyterlab/builder": "^3.5.0",
     "rimraf": "~3.0.0",
-    "typescript": "~4.9.4"
+    "typescript": "~4.9.4",
+    "url-loader": "^4.1.1"
   },
   "publishConfig": {
     "access": "public"

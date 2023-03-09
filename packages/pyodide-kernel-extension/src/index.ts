@@ -13,6 +13,7 @@ import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
 import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
 
 export * as KERNEL_SETTINGS_SCHEMA from '../schema/kernel.v0.schema.json';
+import * as KERNEL_ICON from '!!url-loader!../style/img/pyodide.svg';
 
 /**
  * The default CDN fallback for Pyodide
@@ -38,7 +39,6 @@ const kernel: JupyterLiteServerPlugin<void> = {
     serviceWorker?: IServiceWorkerManager,
     broadcastChannel?: IBroadcastChannelWrapper
   ) => {
-    const baseUrl = PageConfig.getBaseUrl();
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
     const url = config.pyodideUrl || PYODIDE_CDN_URL;
@@ -54,8 +54,8 @@ const kernel: JupyterLiteServerPlugin<void> = {
         language: 'python',
         argv: [],
         resources: {
-          'logo-32x32': 'TODO',
-          'logo-64x64': URLExt.join(baseUrl, '/kernelspecs/python.svg'),
+          'logo-32x32': KERNEL_ICON.default,
+          'logo-64x64': KERNEL_ICON.default,
         },
       },
       create: async (options: IKernel.IOptions): Promise<IKernel> => {
