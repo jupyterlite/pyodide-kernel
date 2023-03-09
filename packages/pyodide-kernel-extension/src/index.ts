@@ -12,7 +12,7 @@ import {
 import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
 import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
 
-export * as KERNEL_SETTINGS_SCHEMA from '../schema/plugin.v0.schema.json';
+export * as KERNEL_SETTINGS_SCHEMA from '../schema/kernel.v0.schema.json';
 
 /**
  * The default CDN fallback for Pyodide

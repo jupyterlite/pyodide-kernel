@@ -118,7 +118,6 @@ include = [
 addopts = [
     "--pyargs",
     "jupyterlite_pyodide_kernel",
-    "--ff",
     "-vv",
     # asyncio
     "--script-launch-mode=subprocess",

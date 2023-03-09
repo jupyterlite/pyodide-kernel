@@ -5,7 +5,21 @@ import shutil
 import pytest
 from pytest import mark
 
-from jupyterlite_pyodide_kernel.constants import PYODIDE_KERNEL_PLUGIN_ID
+from jupyterlite.constants import (
+    JUPYTERLITE_IPYNB,
+    JUPYTERLITE_JSON,
+    UTF8,
+    JUPYTERLITE_METADATA,
+    LITE_PLUGIN_SETTINGS,
+    JSON_FMT,
+    JUPYTER_CONFIG_DATA,
+)
+
+from jupyterlite_pyodide_kernel.constants import (
+    PYODIDE_KERNEL_PLUGIN_ID,
+    DISABLE_PYPI_FALLBACK,
+)
+
 from .conftest import WHEELS, PYODIDE_KERNEL_EXTENSION
 
 
@@ -102,3 +116,42 @@ def test_piplite_cli_win(script_runner, tmp_path, index_cmd, in_cwd):
     build = script_runner.run(*index_cmd, *pargs, **kwargs)
     assert build.success
     assert json.loads((path / "all.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture(params=[JUPYTERLITE_IPYNB, JUPYTERLITE_JSON])
+def a_lite_config_file(request, an_empty_lite_dir):
+    return an_empty_lite_dir / request.param
+
+
+def test_validate_config(script_runner, a_lite_config_file):
+    lite_dir = a_lite_config_file.parent
+    output = lite_dir / "_output"
+
+    build = script_runner.run("jupyter", "lite", "build", cwd=str(lite_dir))
+    assert build.success
+    shutil.copy2(output / a_lite_config_file.name, a_lite_config_file)
+    first_config_data = a_lite_config_file.read_text(**UTF8)
+
+    check = script_runner.run("jupyter", "lite", "check", cwd=str(lite_dir))
+    assert check.success
+    second_config_data = a_lite_config_file.read_text(**UTF8)
+    assert first_config_data == second_config_data
+
+    whole_file = config_data = json.loads(first_config_data)
+    if a_lite_config_file.name == JUPYTERLITE_IPYNB:
+        config_data = whole_file["metadata"][JUPYTERLITE_METADATA]
+
+    config_data[JUPYTER_CONFIG_DATA].setdefault(LITE_PLUGIN_SETTINGS, {}).setdefault(
+        PYODIDE_KERNEL_PLUGIN_ID, {}
+    )[DISABLE_PYPI_FALLBACK] = ["clearly-not-an-boolean"]
+
+    third_config_data = json.dumps(whole_file, **JSON_FMT)
+    a_lite_config_file.write_text(third_config_data, **UTF8)
+    rebuild = script_runner.run("jupyter", "lite", "build", cwd=str(lite_dir))
+    assert rebuild.success
+
+    recheck = script_runner.run("jupyter", "lite", "check", cwd=str(lite_dir))
+    assert not recheck.success, third_config_data
+
+    fourth_config_data = a_lite_config_file.read_text(**UTF8)
+    assert third_config_data == fourth_config_data, fourth_config_data

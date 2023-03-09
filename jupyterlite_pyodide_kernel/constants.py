@@ -3,10 +3,11 @@
 ### pyodide-specific values
 #: the key for PyPI-compatible API responses pointing to wheels
 PIPLITE_URLS = "pipliteUrls"
+DISABLE_PYPI_FALLBACK = "disablePyPIFallback"
 #: the schema for piplite-compatible wheel index
 PIPLITE_INDEX_SCHEMA = "piplite.v0.schema.json"
 #: the schema for piplite-compatible wheel index
-KERNEL_SETTINGS_SCHEMA = "plugin.v0.schema.json"
+KERNEL_SETTINGS_SCHEMA = "kernel.v0.schema.json"
 #: where we put wheels, for now
 PYPI_WHEELS = "pypi"
 #: the plugin id for the pydodide kernel labextension
