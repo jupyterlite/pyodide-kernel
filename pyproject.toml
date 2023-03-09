@@ -153,8 +153,3 @@ before-build-python = [
 
 [tool.check-wheel-contents]
 ignore = ["W002"]
-
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-known_first_party = ["jupyterlite_pyodide_kernel"]
