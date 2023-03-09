@@ -2,8 +2,8 @@
 from pathlib import Path
 
 from jupyter_core.application import JupyterApp
-from jupyterlite.app import DescribedMixin
-from jupyterlite.trait_types import CPath
+from jupyterlite_core.app import DescribedMixin
+from jupyterlite_core.trait_types import CPath
 
 from ._version import __version__
 from .addons.piplite import list_wheels

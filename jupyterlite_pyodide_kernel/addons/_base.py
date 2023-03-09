@@ -6,7 +6,7 @@ when these features are added upstream:
     https://github.com/jupyterlite/jupyterlite/issues/996
 """
 
-from jupyterlite.addons.base import BaseAddon
+from jupyterlite_core.addons.base import BaseAddon
 
 
 class _BaseAddon(BaseAddon):

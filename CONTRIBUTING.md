@@ -69,7 +69,7 @@ python -m pip install -e .[dev,test,docs]
 
 # Temporary while the Pyodide kernel is being migrated to a separate repo
 # TODO: remove
-python -m pip install https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite-0.1.0b18-py3-none-any.whl
+python -m pip install https://jupyterlite--994.org.readthedocs.build/en/994/_static/jupyterlite_core-0.1.0b18-py3-none-any.whl
 ```
 
 | provides | requires                        | run after changing |

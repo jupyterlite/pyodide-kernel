@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys
 import pytest
-from jupyterlite.tests.conftest import (
+from jupyterlite_core.tests.conftest import (
     a_fixture_server,
     an_empty_lite_dir,
     an_unused_port,
@@ -62,8 +62,8 @@ def a_pyodide_tarball():
     unpacked = PYODIDE_FIXTURE.parent / "pyodide/pyodide"
 
     if not unpacked.is_dir():  # pragma: no cover
-        from jupyterlite.addons.base import BaseAddon
-        from jupyterlite.manager import LiteManager
+        from jupyterlite_core.addons.base import BaseAddon
+        from jupyterlite_core.manager import LiteManager
 
         manager = LiteManager()
         BaseAddon(manager=manager).extract_one(PYODIDE_FIXTURE, unpacked.parent)

@@ -15,7 +15,7 @@ build:
       - jlpm dist
       # TODO: remove
       - |-
-        python -m pip install --force-reinstall https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite-0.1.0b18-py3-none-any.whl
+        python -m pip install --force-reinstall https://jupyterlite--994.org.readthedocs.build/en/994/_static/jupyterlite_core-0.1.0b18-py3-none-any.whl
       # pre-build the lite site to isolate build errors
       - jlpm docs:lite
 
