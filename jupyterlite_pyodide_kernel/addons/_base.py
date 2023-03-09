@@ -90,5 +90,5 @@ class _BaseAddon(BaseAddon):
         ).update({plugin_id: settings})
 
         config_path.write_text(json.dumps(whole_file, **JSON_FMT), **UTF8)
-        self.log.warn("%s wrote settings in %s: %s", plugin_id, config_path, settings)
+        self.log.debug("%s wrote settings in %s: %s", plugin_id, config_path, settings)
         self.maybe_timestamp(config_path)

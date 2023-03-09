@@ -13,7 +13,9 @@ import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
 import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
 
 export * as KERNEL_SETTINGS_SCHEMA from '../schema/kernel.v0.schema.json';
-import * as KERNEL_ICON from '!!url-loader!../style/img/pyodide.svg';
+import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
+
+const KERNEL_ICON_URL = `data:image/svg+xml;base64,${btoa(KERNEL_ICON_SVG_STR)}`;
 
 /**
  * The default CDN fallback for Pyodide
@@ -54,8 +56,8 @@ const kernel: JupyterLiteServerPlugin<void> = {
         language: 'python',
         argv: [],
         resources: {
-          'logo-32x32': KERNEL_ICON.default,
-          'logo-64x64': KERNEL_ICON.default,
+          'logo-32x32': KERNEL_ICON_URL,
+          'logo-64x64': KERNEL_ICON_URL,
         },
       },
       create: async (options: IKernel.IOptions): Promise<IKernel> => {

@@ -2,11 +2,11 @@
 // Distributed under the terms of the Modified BSD License.
 
 declare module '../schema/*.json' {
-  const res: string;
-  export default res;
+  const value: string;
+  export default value;
 }
 
-declare module '!!url-loader!*' {
-  const res: string;
-  export default res;
+declare module '*.svg' {
+  const value: string;
+  export default value;
 }
