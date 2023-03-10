@@ -19,7 +19,7 @@ PIPLITE_PY_PACKAGE = PYODIDE_KERNEL_PACKAGE / "py" / "piplite"
 
 def get_version():
     cmd = run([HATCH_VERSION], capture_output=True, shell=True, check=True, cwd=ROOT)
-    return cmd.stdout.decode('utf-8').strip().split("\n")[-1]
+    return cmd.stdout.decode("utf-8").strip().split("\n")[-1]
 
 
 def next_version():
