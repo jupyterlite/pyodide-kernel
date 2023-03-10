@@ -1,33 +1,26 @@
 """a JupyterLite addon for supporting the pyodide distribution"""
 
-import json
 import os
 import re
 import urllib.parse
 from pathlib import Path
 
 import doit.tools
+from jupyterlite.constants import (
+    JUPYTERLITE_JSON,
+)
 from traitlets import Unicode, default
 
-from jupyterlite.constants import (
-    JSON_FMT,
-    JUPYTER_CONFIG_DATA,
-    JUPYTERLITE_JSON,
-    LITE_PLUGIN_SETTINGS,
-    UTF8,
-)
-from jupyterlite.addons.base import BaseAddon
-
-from .constants import (
-    PYODIDE_URL,
+from ._base import _BaseAddon
+from ..constants import (
     PYODIDE,
     PYODIDE_JS,
     PYODIDE_REPODATA,
-    PYOLITE_PLUGIN_ID,
+    PYODIDE_URL,
 )
 
 
-class PyodideAddon(BaseAddon):
+class PyodideAddon(_BaseAddon):
     __all__ = ["status", "post_init", "build", "post_build", "check"]
 
     # traits
@@ -136,22 +129,20 @@ class PyodideAddon(BaseAddon):
 
     def check(self, manager):
         """ensure the pyodide configuration is sound"""
-        jupyterlite_json = manager.output_dir / JUPYTERLITE_JSON
+        for app in [None, *manager.apps]:
+            app_dir = manager.output_dir / app if app else manager.output_dir
+            jupyterlite_json = app_dir / JUPYTERLITE_JSON
 
-        yield self.task(
-            name="config",
-            file_dep=[jupyterlite_json],
-            actions=[(self.check_config_paths, [jupyterlite_json])],
-        )
+            yield self.task(
+                name=f"config:{jupyterlite_json.relative_to(manager.output_dir)}",
+                file_dep=[jupyterlite_json],
+                actions=[(self.check_config_paths, [jupyterlite_json])],
+            )
 
     def check_config_paths(self, jupyterlite_json):
-        config = json.loads(jupyterlite_json.read_text(**UTF8))
-        pyodide_url = (
-            config.setdefault(JUPYTER_CONFIG_DATA, {})
-            .setdefault(LITE_PLUGIN_SETTINGS, {})
-            .setdefault(PYOLITE_PLUGIN_ID, {})
-            .get(PYODIDE_URL)
-        )
+        config = self.get_pyodide_settings(jupyterlite_json)
+
+        pyodide_url = config.get(PYODIDE_URL)
 
         if not pyodide_url or not pyodide_url.startswith("./"):
             return
@@ -163,19 +154,14 @@ class PyodideAddon(BaseAddon):
         pyodide_repodata = pyodide_path / PYODIDE_REPODATA
         assert pyodide_repodata.exists(), f"{pyodide_repodata} not found"
 
-    def patch_jupyterlite_json(self, jupyterlite_json, output_js):
+    def patch_jupyterlite_json(self, config_path, output_js):
         """update jupyter-lite.json to use the local pyodide"""
-        config = json.loads(jupyterlite_json.read_text(**UTF8))
-        pyolite_config = (
-            config.setdefault(JUPYTER_CONFIG_DATA, {})
-            .setdefault(LITE_PLUGIN_SETTINGS, {})
-            .setdefault(PYOLITE_PLUGIN_ID, {})
-        )
+        settings = self.get_pyodide_settings(config_path)
+
         url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
-        if pyolite_config.get(PYODIDE_URL) != url:
-            pyolite_config[PYODIDE_URL] = url
-            jupyterlite_json.write_text(json.dumps(config, **JSON_FMT), **UTF8)
-            self.maybe_timestamp(jupyterlite_json)
+        if settings.get(PYODIDE_URL) != url:
+            settings[PYODIDE_URL] = url
+            self.set_pyodide_settings(config_path, settings)
 
     def cache_pyodide(self, path_or_url):
         """copy pyodide to the cache"""

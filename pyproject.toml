@@ -50,13 +50,19 @@ PyPI = "https://pypi.org/project/jupyterlite-pyodide-kernel"
 jupyter-piplite = "jupyterlite_pyodide_kernel.app:main"
 
 [project.entry-points."jupyterlite.addon.v0"]
-jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.piplite:PipliteAddon"
-jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.pyodide:PyodideAddon"
+jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.addons.piplite:PipliteAddon"
+jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:PyodideAddon"
 
 [project.optional-dependencies]
 dev = [
     "build",
     "hatch",
+    "jupyterlab >=3.5.3,<3.6",
+]
+
+lint = [
+    "black",
+    "ruff",
 ]
 
 test = [
@@ -76,8 +82,7 @@ docs = [
     # TODO: restore
     # "jupyterlite[mathjax,libarchive,lab]>=0.1.0b19",
     "jupyter-server-mathjax",
-    "libarchive-c",
-    "jupyterlab >=3.5.3,<3.6"
+    "libarchive-c"
 ]
 
 [tool.hatch.metadata]
@@ -106,12 +111,13 @@ include = [
 ]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel"
-"install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel/install.json"
+"jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension"
+"install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension/install.json"
 
 [tool.pytest.ini_options]
 addopts = [
-    "--ff",
+    "--pyargs",
+    "jupyterlite_pyodide_kernel",
     "-vv",
     # asyncio
     "--script-launch-mode=subprocess",
@@ -120,7 +126,7 @@ addopts = [
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=93",
+    "--cov-fail-under=97",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",

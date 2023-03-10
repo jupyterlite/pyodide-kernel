@@ -7,3 +7,8 @@ declare module '*all.json' {
   const res: string;
   export default res;
 }
+
+declare module '../schema/*.json' {
+  const res: string;
+  export default res;
+}

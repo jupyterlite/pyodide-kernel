@@ -1,3 +1,4 @@
+"""CLI entrypoint for managing piplite wheels"""
 from pathlib import Path
 
 from jupyter_core.application import JupyterApp
@@ -5,7 +6,7 @@ from jupyterlite.app import DescribedMixin
 from jupyterlite.trait_types import CPath
 
 from ._version import __version__
-from .piplite import list_wheels
+from .addons.piplite import list_wheels
 
 
 class PipliteIndex(DescribedMixin, JupyterApp):
@@ -42,7 +43,7 @@ class PipliteIndex(DescribedMixin, JupyterApp):
             raise ValueError(f"{self.wheel_dir} does not exist")
         if not list_wheels(self.wheel_dir):
             raise ValueError(f"no supported wheels found in {self.wheel_dir}")
-        from .piplite import write_wheel_index
+        from .addons.piplite import write_wheel_index
 
         write_wheel_index(self.wheel_dir)
 

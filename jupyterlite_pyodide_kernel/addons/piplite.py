@@ -9,33 +9,31 @@ from pathlib import Path
 from typing import Tuple as _Tuple
 
 import doit.tools
-from traitlets import Unicode
-
-from jupyterlite.trait_types import TypedTuple
-
 from jupyterlite.constants import (
     ALL_JSON,
     JSON_FMT,
-    JUPYTER_CONFIG_DATA,
     JUPYTERLITE_JSON,
     LAB_EXTENSIONS,
-    LITE_PLUGIN_SETTINGS,
     UTF8,
 )
-from jupyterlite.addons.base import BaseAddon
+from jupyterlite.trait_types import TypedTuple
+from traitlets import Unicode
 
-from .constants import (
+from ._base import _BaseAddon
+
+from ..constants import (
     ALL_WHL,
     PIPLITE_INDEX_SCHEMA,
     PIPLITE_URLS,
     PKG_JSON_PIPLITE,
     PKG_JSON_WHEELDIR,
-    PYOLITE_PLUGIN_ID,
+    PYODIDE_KERNEL_NPM_NAME,
     PYPI_WHEELS,
+    KERNEL_SETTINGS_SCHEMA,
 )
 
 
-class PipliteAddon(BaseAddon):
+class PipliteAddon(_BaseAddon):
     __all__ = ["post_init", "build", "post_build", "check"]
 
     # traits
@@ -64,6 +62,26 @@ class PipliteAddon(BaseAddon):
         """where labextensions will go in the output folder"""
         return self.manager.output_dir / LAB_EXTENSIONS
 
+    @property
+    def output_kernel_extension(self):
+        """the location of the Pyodide kernel labextension static assets"""
+        return self.output_extensions / PYODIDE_KERNEL_NPM_NAME
+
+    @property
+    def schemas(self):
+        """the path to the as-deployed schema in the labextension"""
+        return self.output_kernel_extension / "static/schema"
+
+    @property
+    def piplite_schema(self):
+        """the schema for Warehouse-like API indexes"""
+        return self.schemas / PIPLITE_INDEX_SCHEMA
+
+    @property
+    def settings_schema(self):
+        """the schema for the Pyodide kernel labextension"""
+        return self.schemas / KERNEL_SETTINGS_SCHEMA
+
     def post_init(self, manager):
         """handle downloading of wheels"""
         for path_or_url in self.piplite_urls:
@@ -75,7 +93,7 @@ class PipliteAddon(BaseAddon):
             yield from self.resolve_one_wheel(str(wheel.resolve()))
 
     def post_build(self, manager):
-        """update the root jupyter-lite.json with pipliteUrls"""
+        """update the root jupyter-lite.json with user-provided ``pipliteUrls``"""
         jupyterlite_json = manager.output_dir / JUPYTERLITE_JSON
         whl_metas = []
 
@@ -118,40 +136,51 @@ class PipliteAddon(BaseAddon):
             )
 
     def check(self, manager):
-        """verify that all Wheel API are valid (sorta)"""
-        jupyterlite_json = manager.output_dir / JUPYTERLITE_JSON
-        if not jupyterlite_json.exists():
+        """verify that all JSON for settings and Warehouse API are valid"""
+
+        for config_path in self.get_output_config_paths():
+            yield from self.check_one_config_path(config_path)
+
+    def check_one_config_path(self, config_path):
+        """verify the settings and Warehouse API for a single jupyter-lite config"""
+        if not config_path.exists():
             return
-        config = json.loads(jupyterlite_json.read_text(**UTF8))
-        urls = (
-            config.get(JUPYTER_CONFIG_DATA, {})
-            .get(LITE_PLUGIN_SETTINGS, {})
-            .get(PYOLITE_PLUGIN_ID, {})
-            .get(PIPLITE_URLS, [])
+
+        rel_path = config_path.relative_to(self.manager.output_dir)
+        config = self.get_pyodide_settings(config_path)
+
+        yield self.task(
+            name=f"validate:settings:{rel_path}",
+            doc=f"validate {config_path} with the pyodide kernel settings schema",
+            actions=[
+                (self.validate_one_json_file, [self.settings_schema, None, config]),
+            ],
+            file_dep=[self.settings_schema, config_path],
         )
 
+        urls = config.get(PIPLITE_URLS, [])
+
         for wheel_index_url in urls:
-            if not wheel_index_url.startswith("./"):  # pragma: no cover
-                continue
+            yield from self.check_one_wheel_index(wheel_index_url)
 
-            wheel_index_url = wheel_index_url.split("?")[0].split("#")[0]
+    def check_one_wheel_index(self, wheel_index_url):
+        """validate one wheel index against the Warehouse schema"""
+        if not wheel_index_url.startswith("./"):  # pragma: no cover
+            return
 
-            path = manager.output_dir / wheel_index_url
+        wheel_index_url = wheel_index_url.split("?")[0].split("#")[0]
 
-            if not path.exists():  # pragma: no cover
-                continue
+        path = self.manager.output_dir / wheel_index_url
 
-            yield self.task(
-                name=f"validate:{wheel_index_url}",
-                doc=f"validate {wheel_index_url} with the piplite API schema",
-                file_dep=[path],
-                actions=[
-                    (
-                        self.validate_one_json_file,
-                        [manager.output_dir / PIPLITE_INDEX_SCHEMA, path],
-                    )
-                ],
-            )
+        if not path.exists():  # pragma: no cover
+            return
+
+        yield self.task(
+            name=f"validate:wheels:{wheel_index_url}",
+            doc=f"validate {wheel_index_url} with the piplite API schema",
+            file_dep=[path],
+            actions=[(self.validate_one_json_file, [self.piplite_schema, path])],
+        )
 
     def resolve_one_wheel(self, path_or_url):
         """download a single wheel, and copy to the cache"""
@@ -198,19 +227,14 @@ class PipliteAddon(BaseAddon):
             actions=[(self.copy_one, [wheel, dest])],
         )
 
-    def patch_jupyterlite_json(self, jupyterlite_json, whl_index, whl_metas, pkg_jsons):
+    def patch_jupyterlite_json(self, config_path, user_whl_index, whl_metas, pkg_jsons):
         """add the piplite wheels to jupyter-lite.json"""
-        config = json.loads(jupyterlite_json.read_text(**UTF8))
-        old_urls = (
-            config.setdefault(JUPYTER_CONFIG_DATA, {})
-            .setdefault(LITE_PLUGIN_SETTINGS, {})
-            .setdefault(PYOLITE_PLUGIN_ID, {})
-            .get(PIPLITE_URLS, [])
-        )
+        plugin_config = self.get_pyodide_settings(config_path)
+        old_urls = plugin_config.get(PIPLITE_URLS, [])
 
         new_urls = []
 
-        # first add user-specified wheels
+        # first add user-specified wheels from piplite_urls
         if whl_metas:
             metadata = {}
             for whl_meta in whl_metas:
@@ -218,20 +242,22 @@ class PipliteAddon(BaseAddon):
                 whl = self.output_wheels / whl_meta.name.replace(".json", "")
                 metadata[whl] = meta["name"], meta["version"], meta["release"]
 
-            whl_index = write_wheel_index(self.output_wheels, metadata)
-            whl_index_url, whl_index_url_with_sha = self.get_index_urls(whl_index)
+            write_wheel_index(self.output_wheels, metadata)
+            user_whl_index_url, user_whl_index_url_with_sha = self.get_index_urls(
+                user_whl_index
+            )
 
             added_build = False
 
             for url in old_urls:
-                if url.split("#")[0].split("?")[0] == whl_index_url:
-                    new_urls += [whl_index_url_with_sha]
+                if url.split("#")[0].split("?")[0] == user_whl_index_url:
+                    new_urls += [user_whl_index_url_with_sha]
                     added_build = True
                 else:
                     new_urls += [url]
 
             if not added_build:
-                new_urls = [whl_index_url_with_sha, *new_urls]
+                new_urls = [user_whl_index_url_with_sha, *new_urls]
         else:
             new_urls = old_urls
 
@@ -243,17 +269,13 @@ class PipliteAddon(BaseAddon):
                 pkg_whl_index = pkg_json.parent / wheel_dir / ALL_JSON
                 if pkg_whl_index.exists():
                     pkg_whl_index_url_with_sha = self.get_index_urls(pkg_whl_index)[1]
-                    new_urls += [pkg_whl_index_url_with_sha]
+                    if pkg_whl_index_url_with_sha not in new_urls:
+                        new_urls += [pkg_whl_index_url_with_sha]
 
         # ... and only update if actually changed
         if new_urls:
-            config[JUPYTER_CONFIG_DATA][LITE_PLUGIN_SETTINGS][PYOLITE_PLUGIN_ID][
-                PIPLITE_URLS
-            ] = new_urls
-
-            jupyterlite_json.write_text(json.dumps(config, **JSON_FMT), **UTF8)
-
-            self.maybe_timestamp(jupyterlite_json)
+            plugin_config[PIPLITE_URLS] = new_urls
+            self.set_pyodide_settings(config_path, plugin_config)
 
     def get_index_urls(self, whl_index):
         """get output dir relative URLs for all.json files"""

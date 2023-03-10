@@ -26,7 +26,9 @@
     "lib/*.js.map",
     "lib/*.js",
     "style/*.css",
-    "style/index.js"
+    "style/**/*.svg",
+    "style/index.js",
+    "schema/*.json"
   ],
   "scripts": {
     "build": "jlpm build:lib && jlpm build:labextension:dev",
