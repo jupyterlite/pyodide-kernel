@@ -229,7 +229,9 @@ class PipliteAddon(BaseAddon):
 
     def patch_jupyterlite_json(self, config_path, user_whl_index, whl_metas, pkg_jsons):
         """add the piplite wheels to jupyter-lite.json"""
-        plugin_config = self.get_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID)
+        plugin_config = self.get_lite_plugin_settings(
+            config_path, PYODIDE_KERNEL_PLUGIN_ID
+        )
         old_urls = plugin_config.get(PIPLITE_URLS, [])
 
         new_urls = []
@@ -275,7 +277,9 @@ class PipliteAddon(BaseAddon):
         # ... and only update if actually changed
         if new_urls:
             plugin_config[PIPLITE_URLS] = new_urls
-            self.set_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID, plugin_config)
+            self.set_lite_plugin_settings(
+                config_path, PYODIDE_KERNEL_PLUGIN_ID, plugin_config
+            )
 
     def get_index_urls(self, whl_index):
         """get output dir relative URLs for all.json files"""
