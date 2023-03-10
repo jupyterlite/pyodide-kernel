@@ -9,14 +9,14 @@ from pathlib import Path
 from typing import Tuple as _Tuple
 
 import doit.tools
-from jupyterlite.constants import (
+from jupyterlite_core.constants import (
     ALL_JSON,
     JSON_FMT,
     JUPYTERLITE_JSON,
     LAB_EXTENSIONS,
     UTF8,
 )
-from jupyterlite.trait_types import TypedTuple
+from jupyterlite_core.trait_types import TypedTuple
 from traitlets import Unicode
 
 from ._base import _BaseAddon

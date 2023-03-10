@@ -6,7 +6,7 @@ import urllib.parse
 from pathlib import Path
 
 import doit.tools
-from jupyterlite.constants import (
+from jupyterlite_core.constants import (
     JUPYTERLITE_JSON,
 )
 from traitlets import Unicode, default
