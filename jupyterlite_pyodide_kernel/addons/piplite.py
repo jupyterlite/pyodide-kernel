@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Tuple as _Tuple
 
 import doit.tools
+from jupyterlite_core.addons.base import BaseAddon
 from jupyterlite_core.constants import (
     ALL_JSON,
     JSON_FMT,
@@ -18,8 +19,6 @@ from jupyterlite_core.constants import (
 )
 from jupyterlite_core.trait_types import TypedTuple
 from traitlets import Unicode
-
-from ._base import _BaseAddon
 
 from ..constants import (
     ALL_WHL,
@@ -33,7 +32,7 @@ from ..constants import (
 )
 
 
-class PipliteAddon(_BaseAddon):
+class PipliteAddon(BaseAddon):
     __all__ = ["post_init", "build", "post_build", "check"]
 
     # traits

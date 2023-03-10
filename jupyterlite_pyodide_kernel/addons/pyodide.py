@@ -6,12 +6,12 @@ import urllib.parse
 from pathlib import Path
 
 import doit.tools
+from jupyterlite_core.addons.base import BaseAddon
 from jupyterlite_core.constants import (
     JUPYTERLITE_JSON,
 )
 from traitlets import Unicode, default
 
-from ._base import _BaseAddon
 from ..constants import (
     PYODIDE,
     PYODIDE_JS,
@@ -20,7 +20,7 @@ from ..constants import (
 )
 
 
-class PyodideAddon(_BaseAddon):
+class PyodideAddon(BaseAddon):
     __all__ = ["status", "post_init", "build", "post_build", "check"]
 
     # traits
