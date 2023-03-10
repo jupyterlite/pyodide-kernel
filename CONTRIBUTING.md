@@ -66,10 +66,6 @@ Serve the `build/` directory as `http://127.0.0.1:8000`, which contains:
 
 ```bash
 python -m pip install -e .[dev,test,docs]
-
-# Temporary while the Pyodide kernel is being migrated to a separate repo
-# TODO: remove
-python -m pip install https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite-0.1.0b18-py3-none-any.whl
 ```
 
 | provides | requires                        | run after changing |

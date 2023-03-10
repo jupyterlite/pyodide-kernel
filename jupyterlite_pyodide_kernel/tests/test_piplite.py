@@ -5,7 +5,7 @@ import shutil
 import pytest
 from pytest import mark
 
-from jupyterlite.constants import (
+from jupyterlite_core.constants import (
     JUPYTERLITE_IPYNB,
     JUPYTERLITE_JSON,
     UTF8,

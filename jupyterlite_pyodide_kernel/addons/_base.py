@@ -8,8 +8,8 @@ when these features are added upstream:
 import json
 from pathlib import Path
 from typing import Generator, Dict, Any
-from jupyterlite.addons.base import BaseAddon
-from jupyterlite.constants import (
+from jupyterlite_core.addons.base import BaseAddon
+from jupyterlite_core.constants import (
     JUPYTERLITE_IPYNB,
     JUPYTERLITE_JSON,
     UTF8,
