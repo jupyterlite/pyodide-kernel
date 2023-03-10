@@ -162,7 +162,7 @@ class PyodideAddon(BaseAddon):
         url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
         if settings.get(PYODIDE_URL) != url:
             settings[PYODIDE_URL] = url
-            self.set_lite_plugin_settings(config_path, settings)
+            self.set_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID, settings)
 
     def cache_pyodide(self, path_or_url):
         """copy pyodide to the cache"""
