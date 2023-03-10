@@ -14,6 +14,7 @@ from traitlets import Unicode, default
 
 from ..constants import (
     PYODIDE,
+    PYODIDE_KERNEL_PLUGIN_ID,
     PYODIDE_JS,
     PYODIDE_REPODATA,
     PYODIDE_URL,
@@ -140,7 +141,7 @@ class PyodideAddon(BaseAddon):
             )
 
     def check_config_paths(self, jupyterlite_json):
-        config = self.get_lite_plugin_settings(jupyterlite_json)
+        config = self.get_lite_plugin_settings(jupyterlite_json, PYODIDE_KERNEL_PLUGIN_ID)
 
         pyodide_url = config.get(PYODIDE_URL)
 
@@ -156,7 +157,7 @@ class PyodideAddon(BaseAddon):
 
     def patch_jupyterlite_json(self, config_path, output_js):
         """update jupyter-lite.json to use the local pyodide"""
-        settings = self.get_lite_plugin_settings(config_path)
+        settings = self.get_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID)
 
         url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
         if settings.get(PYODIDE_URL) != url:

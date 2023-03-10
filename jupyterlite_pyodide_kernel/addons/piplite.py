@@ -27,6 +27,7 @@ from ..constants import (
     PKG_JSON_PIPLITE,
     PKG_JSON_WHEELDIR,
     PYODIDE_KERNEL_NPM_NAME,
+    PYODIDE_KERNEL_PLUGIN_ID,
     PYPI_WHEELS,
     KERNEL_SETTINGS_SCHEMA,
 )
@@ -146,7 +147,7 @@ class PipliteAddon(BaseAddon):
             return
 
         rel_path = config_path.relative_to(self.manager.output_dir)
-        config = self.get_lite_plugin_settings(config_path)
+        config = self.get_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID)
 
         yield self.task(
             name=f"validate:settings:{rel_path}",
@@ -228,7 +229,7 @@ class PipliteAddon(BaseAddon):
 
     def patch_jupyterlite_json(self, config_path, user_whl_index, whl_metas, pkg_jsons):
         """add the piplite wheels to jupyter-lite.json"""
-        plugin_config = self.get_lite_plugin_settings(config_path)
+        plugin_config = self.get_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID)
         old_urls = plugin_config.get(PIPLITE_URLS, [])
 
         new_urls = []
