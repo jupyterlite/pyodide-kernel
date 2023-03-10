@@ -140,7 +140,7 @@ class PyodideAddon(BaseAddon):
             )
 
     def check_config_paths(self, jupyterlite_json):
-        config = self.get_pyodide_settings(jupyterlite_json)
+        config = self.get_lite_plugin_settings(jupyterlite_json)
 
         pyodide_url = config.get(PYODIDE_URL)
 
@@ -156,12 +156,12 @@ class PyodideAddon(BaseAddon):
 
     def patch_jupyterlite_json(self, config_path, output_js):
         """update jupyter-lite.json to use the local pyodide"""
-        settings = self.get_pyodide_settings(config_path)
+        settings = self.get_lite_plugin_settings(config_path)
 
         url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
         if settings.get(PYODIDE_URL) != url:
             settings[PYODIDE_URL] = url
-            self.set_pyodide_settings(config_path, settings)
+            self.set_lite_plugin_settings(config_path, settings)
 
     def cache_pyodide(self, path_or_url):
         """copy pyodide to the cache"""
