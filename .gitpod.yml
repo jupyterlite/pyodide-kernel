@@ -12,7 +12,7 @@ tasks:
     init: |
       python -m venv ..
       source ../bin/activate
-      python -m pip install -e ".[dev,test,docs]"
+      python -m pip install -e ".[dev,docs,lint,test]"
     command: |
       source ../bin/activate
       jlpm
