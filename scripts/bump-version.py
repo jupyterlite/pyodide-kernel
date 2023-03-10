@@ -18,14 +18,15 @@ PIPLITE_PY_PACKAGE = PYODIDE_KERNEL_PACKAGE / "py" / "piplite"
 
 
 def get_version():
-    return run(HATCH_VERSION).split("\n")[-1]
+    cmd = run([HATCH_VERSION], capture_output=True, shell=True, check=True, cwd=ROOT)
+    return cmd.stdout.decode('utf-8').strip().split("\n")[-1]
 
 
 def next_version():
     v = parse_version(get_version())
     if v.is_prerelease:
-        return f"{vc.major}.{vc.minor}.{vc.micro}{vc.pre[0]}{vc.pre[1] + 1}"
-    return f"{vc.major}.{vc.minor}.{vc.micro + 1}"
+        return f"{v.major}.{v.minor}.{v.micro}{v.pre[0]}{v.pre[1] + 1}"
+    return f"{v.major}.{v.minor}.{v.micro + 1}"
 
 
 def bump():
