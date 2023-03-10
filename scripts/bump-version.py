@@ -3,10 +3,13 @@
 
 import argparse
 import json
+from packaging.version import parse as parse_version
 from pathlib import Path
 from subprocess import run
 
+
 ENC = dict(encoding="utf-8")
+HATCH_VERSION = "hatch version"
 ROOT = Path(__file__).parent.parent
 PYODIDE_KERNEL_PACKAGE = ROOT / "packages" / "pyodide-kernel"
 PYODIDE_PACKAGE_JSON = PYODIDE_KERNEL_PACKAGE / "package.json"
@@ -14,18 +17,29 @@ PYODIDE_KERNEL_PY_PACKAGE = PYODIDE_KERNEL_PACKAGE / "py" / "pyodide-kernel"
 PIPLITE_PY_PACKAGE = PYODIDE_KERNEL_PACKAGE / "py" / "piplite"
 
 
+def get_version():
+    return run(HATCH_VERSION).split("\n")[-1]
+
+
+def next_version():
+    v = parse_version(get_version())
+    if v.is_prerelease:
+        return f"{vc.major}.{vc.minor}.{vc.micro}{vc.pre[0]}{vc.pre[1] + 1}"
+    return f"{vc.major}.{vc.minor}.{vc.micro + 1}"
+
+
 def bump():
     parser = argparse.ArgumentParser()
     parser.add_argument("version")
     args = parser.parse_args()
-    py_version = args.version
+    py_version = next_version() if args.version == "next" else args.version
     js_version = (
         py_version.replace("a", "-alpha.").replace("b", "-beta.").replace("rc", "-rc.")
     )
 
     # bump the Python version with hatch for each package
     for package in [ROOT, PYODIDE_KERNEL_PY_PACKAGE, PIPLITE_PY_PACKAGE]:
-        run(f"hatch version {py_version}", shell=True, check=True, cwd=package)
+        run(f"{HATCH_VERSION} {py_version}", shell=True, check=True, cwd=package)
 
     # bump the js version
     pyodide_kernel_json = json.loads(PYODIDE_PACKAGE_JSON.read_text(**ENC))

@@ -13,7 +13,13 @@ https://github.com/jupyterlite/pyodide-kernel/actions:
 
 ### Specifying a version spec
 
-You can specify the Python version directly as the `version_spec` when using the
+The `next` version spec is supported and will bump the packages as follows. For example:
+
+- `0.1.0a0` -> `0.1.0a1`
+- `0.1.0b7` -> `0.1.0b8`
+- `0.1.0` -> `0.1.1`
+
+You can also specify the Python version directly as the `version_spec` when using the
 releaser workflows. For example:
 
 - `0.1.0b8`
