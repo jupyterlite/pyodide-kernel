@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://jupyterlite-pyodide-kernel.readthedocs.org/en/latest/reference/schema/package-v0.html#",
+  "title": "Pyodide Kernel JS Package properties",
+  "description": "Pyodide Kernel-specific ``package.json`` configuration.",
+  "type": "object",
+  "properties": {
+    "pyodideKernel": {
+      "description": "information about packages that contribute to the pyodide kernel",
+      "type": "object",
+      "properties": {
+        "packages": {
+          "description": "a map of paths to the versions of the wheel they would build",
+          "$ref": "#/definitions/package-versions"
+        },
+        "wheelDir": {
+          "description": "a path to a directory containing pyodide-compatible wheels",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "package-versions": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "description": "a path to a package that can be built with `pyproject-build`",
+          "$ref": "#/definitions/pep-440-version"
+        }
+      }
+    },
+    "pep-440-version": {
+      "type": "string",
+      "pattern": "^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\\.post(0|[1-9][0-9]*))?(\\.dev(0|[1-9][0-9]*))?$"
+    }
+  }
+}

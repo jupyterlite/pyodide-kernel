@@ -69,7 +69,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "pyodide-kernel": {
+  "pyodideKernel": {
     "packages": {
       "py/ipykernel": "6.9.2",
       "py/jedi": "0.18.2",

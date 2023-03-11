@@ -20,6 +20,11 @@ export * as PIPLITE_INDEX_SCHEMA from '../schema/piplite.v0.schema.json';
 export * as REPODATA_INDEX_SCHEMA from '../schema/repodata.v0.schema.json';
 
 /**
+ * The schema for a ``package.json` that might impact pyodide-kernel.
+ */
+export * as PKG_JSON_PYODIDE_KERNEL_SCHEMA from '../schema/package.v0.schema.json';
+
+/**
  * An interface for Pyodide workers.
  */
 export interface IPyodideWorkerKernel extends IWorkerKernel {

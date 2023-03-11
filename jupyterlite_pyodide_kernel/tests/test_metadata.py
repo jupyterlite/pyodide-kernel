@@ -1,3 +1,4 @@
+"""verify the labextension metadata is correct"""
 import jupyterlite_pyodide_kernel
 
 

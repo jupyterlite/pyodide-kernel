@@ -83,7 +83,7 @@
   "jupyterlite": {
     "liteExtension": true
   },
-  "piplite": {
+  "pyodideKernel": {
     "wheelDir": "static/pypi"
   }
 }

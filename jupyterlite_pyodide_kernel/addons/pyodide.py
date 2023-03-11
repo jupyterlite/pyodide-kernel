@@ -3,35 +3,57 @@
 import os
 import re
 import urllib.parse
+import json
 from pathlib import Path
+from typing import Optional, List
 
 import doit.tools
+from jupyterlite_core.manager import LiteManager
 from jupyterlite_core.constants import (
     JUPYTERLITE_JSON,
+    UTF8,
+    JSON_FMT,
 )
-from traitlets import Unicode, default
+from traitlets import Unicode, default, Bool
 
 from ._base import _BaseAddon
 from ..constants import (
+    PKG_JSON_SCHEMA,
     PYODIDE,
     PYODIDE_JS,
     PYODIDE_REPODATA,
     PYODIDE_URL,
+    PYPI_WHEELS,
+    REPODATA_JSON,
+    REPODATA_SCHEMA,
+    REPODATA_URLS,
 )
+from ..wheel_utils import write_repo_index, list_wheels, get_wheel_repodata
 
 
 class PyodideAddon(_BaseAddon):
     __all__ = ["status", "post_init", "build", "post_build", "check"]
+
+    # CLI
+    aliases = {
+        "pyodide": "PyodideAddon.pyodide_url",
+    }
+
+    flags = {
+        "pyodide-install-on-import": (
+            {"PyodideAddon": {"install_on_import": True}},
+            "Index wheels by import names to install when imported",
+        )
+    }
 
     # traits
     pyodide_url: str = Unicode(
         allow_none=True, help="Local path or URL of a pyodide distribution tarball"
     ).tag(config=True)
 
-    # CLI
-    aliases = {
-        "pyodide": "PyodideAddon.pyodide_url",
-    }
+    install_on_import: bool = Bool(
+        False, help="Index wheels by import names to install when imported"
+    ).tag(config=True)
 
     @default("pyodide_url")
     def _default_pyodide_url(self):
@@ -52,7 +74,17 @@ class PyodideAddon(_BaseAddon):
         """a well-known path where pyodide might be stored"""
         return self.manager.lite_dir / "static" / PYODIDE
 
-    def status(self, manager):
+    @property
+    def repodata_schema(self) -> Path:
+        """the schema for pyodide repodata"""
+        return self.schemas / REPODATA_SCHEMA
+
+    @property
+    def package_json_schema(self) -> Path:
+        """the schema for pyodide repodata"""
+        return self.schemas / PKG_JSON_SCHEMA
+
+    def status(self, manager: LiteManager):
         """report on the status of pyodide"""
         yield self.task(
             name="pyodide",
@@ -70,14 +102,14 @@ class PyodideAddon(_BaseAddon):
             ],
         )
 
-    def post_init(self, manager):
+    def post_init(self, manager: LiteManager):
         """handle downloading of pyodide"""
         if self.pyodide_url is None:
             return
 
         yield from self.cache_pyodide(self.pyodide_url)
 
-    def build(self, manager):
+    def build(self, manager: LiteManager):
         """copy a local (cached or well-known) pyodide into the output_dir"""
         cached_pyodide = self.pyodide_cache / PYODIDE / PYODIDE
 
@@ -108,39 +140,132 @@ class PyodideAddon(_BaseAddon):
 
     def post_build(self, manager):
         """configure jupyter-lite.json for pyodide"""
-        if not self.well_known_pyodide.exists() and self.pyodide_url is None:
-            return
-
+        repo_index: Optional[Path] = None
         jupyterlite_json = manager.output_dir / JUPYTERLITE_JSON
+        file_dep: List[Path] = []
+        whl_repos: List[Path] = []
+        targets: list[Path] = []
 
-        output_js = self.output_pyodide / PYODIDE_JS
+        if self.install_on_import:
+            wheels = list_wheels(self.output_wheels)
 
-        yield self.task(
-            name=f"patch:{JUPYTERLITE_JSON}",
-            doc=f"ensure {JUPYTERLITE_JSON} includes any piplite wheels",
-            file_dep=[output_js],
-            actions=[
-                (
-                    self.patch_jupyterlite_json,
-                    [jupyterlite_json, output_js],
+            for wheel in wheels:
+                whl_repo = self.wheel_cache / f"{wheel.name}.repodata.json"
+                whl_repos += [whl_repo]
+
+                yield self.task(
+                    name=f"meta:{whl_repo.name}",
+                    doc=f"ensure {wheel} repodata",
+                    file_dep=[wheel],
+                    actions=[
+                        (doit.tools.create_folder, [whl_repo.parent]),
+                        (self.repodata_wheel, [wheel, whl_repo]),
+                    ],
+                    targets=[whl_repo],
                 )
-            ],
-        )
 
-    def check(self, manager):
-        """ensure the pyodide configuration is sound"""
-        for app in [None, *manager.apps]:
-            app_dir = manager.output_dir / app if app else manager.output_dir
-            jupyterlite_json = app_dir / JUPYTERLITE_JSON
+            if whl_repos:
+                repo_index = self.manager.output_dir / PYPI_WHEELS / REPODATA_JSON
+                targets += [repo_index]
 
+        file_dep += whl_repos
+
+        output_js = None
+
+        if self.well_known_pyodide.exists() or self.pyodide_url:
+            output_js = self.output_pyodide / PYODIDE_JS
+            file_dep += [output_js]
+
+        if whl_repos or output_js:
             yield self.task(
-                name=f"config:{jupyterlite_json.relative_to(manager.output_dir)}",
-                file_dep=[jupyterlite_json],
-                actions=[(self.check_config_paths, [jupyterlite_json])],
+                name=f"patch:{JUPYTERLITE_JSON}",
+                doc=(
+                    f"ensure {JUPYTERLITE_JSON} includes pyodide.js URL "
+                    "and maybe pyodide repodata"
+                ),
+                file_dep=file_dep,
+                actions=[
+                    (
+                        self.patch_jupyterlite_json,
+                        [jupyterlite_json, output_js, whl_repos, repo_index],
+                    )
+                ],
+                targets=targets,
             )
 
-    def check_config_paths(self, jupyterlite_json):
-        config = self.get_pyodide_settings(jupyterlite_json)
+    def patch_jupyterlite_json(
+        self,
+        config_path: Path,
+        output_js: Optional[Path],
+        whl_repos: List[Path],
+        repo_index: Optional[Path],
+    ):
+        """update ``jupyter-lite.json`` to use the local pyodide and wheels"""
+        plugin_config = self.get_pyodide_settings(config_path)
+        repodata_urls = []
+        needs_save = False
+
+        # ...then maybe add repodata
+        if self.install_on_import:
+            repodata_urls = self.update_repo_index(plugin_config, repo_index, whl_repos)
+
+            # ...then add wheels from federated extensions...
+            for pkg_json in self.get_output_labextension_packages():
+                pkg_repodata_url = self.get_package_wheel_index_url(
+                    pkg_json, REPODATA_JSON
+                )
+                if pkg_repodata_url and pkg_repodata_url not in repodata_urls:
+                    repodata_urls += [pkg_repodata_url]
+
+        if output_js:
+            url = "./{}".format(
+                output_js.relative_to(self.manager.output_dir).as_posix()
+            )
+            if plugin_config.get(PYODIDE_URL) != url:
+                needs_save = True
+                plugin_config[PYODIDE_URL] = url
+        elif plugin_config.get(PYODIDE_URL):
+            plugin_config.pop(PYODIDE_URL)
+            needs_save = True
+
+        if self.install_on_import:
+            if repodata_urls and plugin_config.get(REPODATA_URLS) != repodata_urls:
+                plugin_config[REPODATA_URLS] = repodata_urls
+                needs_save = True
+
+        if needs_save:
+            self.set_pyodide_settings(config_path, plugin_config)
+
+    def check(self, manager: LiteManager):
+        """ensure the pyodide configuration is sound"""
+        for config_path in self.get_output_config_paths():
+            yield from self.check_one_config_path(config_path)
+
+        for pkg_json in self.get_output_labextension_packages():
+            yield from self.check_one_package_json(pkg_json)
+
+    def check_one_config_path(self, config_path: Path):
+        """verify the JS and repodata for a single jupyter-lite config"""
+        if not config_path.exists():
+            return
+
+        rel_path = config_path.relative_to(self.manager.output_dir)
+        plugin_config = self.get_pyodide_settings(config_path)
+
+        yield self.task(
+            name=f"js:{rel_path}",
+            file_dep=[config_path],
+            actions=[(self.check_pyodide_js_files, [config_path])],
+        )
+
+        if self.install_on_import:
+            repo_urls = plugin_config.get(REPODATA_URLS, [])
+            if repo_urls:
+                yield from self.check_index_urls(repo_urls, self.repodata_schema)
+
+    def check_pyodide_js_files(self, config_path: Path):
+        """Ensure any local pyodide JS assets exist"""
+        config = self.get_pyodide_settings(config_path)
 
         pyodide_url = config.get(PYODIDE_URL)
 
@@ -154,14 +279,24 @@ class PyodideAddon(_BaseAddon):
         pyodide_repodata = pyodide_path / PYODIDE_REPODATA
         assert pyodide_repodata.exists(), f"{pyodide_repodata} not found"
 
-    def patch_jupyterlite_json(self, config_path, output_js):
-        """update jupyter-lite.json to use the local pyodide"""
-        settings = self.get_pyodide_settings(config_path)
+    def check_one_package_json(self, pkg_json: Path):
+        """validate ``pyodideKernel`` settings in a  labextension's ``package.json``"""
+        if not pkg_json.exists():  # pragma: no cover
+            return
 
-        url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
-        if settings.get(PYODIDE_URL) != url:
-            settings[PYODIDE_URL] = url
-            self.set_pyodide_settings(config_path, settings)
+        rel_path = pkg_json.parent.relative_to(self.manager.output_dir)
+
+        yield self.task(
+            name=f"validate:package:{rel_path}",
+            doc=f"validate pyodideKernel data in {rel_path}",
+            actions=[
+                (
+                    self.validate_one_json_file,
+                    [self.package_json_schema, pkg_json],
+                ),
+            ],
+            file_dep=[self.package_json_schema, pkg_json],
+        )
 
     def cache_pyodide(self, path_or_url):
         """copy pyodide to the cache"""
@@ -220,3 +355,43 @@ class PyodideAddon(_BaseAddon):
             ],
             actions=[(self.extract_one, [local_path, dest])],
         )
+
+    def update_repo_index(self, plugin_config, repo_index: Path, whl_repos):
+        """Ensure the repodata index is up-to-date, reporting new URLs."""
+        old_urls = plugin_config.get(REPODATA_URLS, [])
+
+        if not whl_repos:
+            return old_urls
+
+        new_urls = []
+        metadata = {}
+        for whl_repo in whl_repos:
+            meta = json.loads(whl_repo.read_text(**UTF8))
+            whl = self.output_wheels / whl_repo.name.replace(".json", "")
+            metadata[whl] = meta["name"], meta["version"], meta
+
+        write_repo_index(self.output_wheels, metadata)
+        repo_index_url, repo_index_url_with_sha = self.get_index_urls(repo_index)
+
+        added_build = False
+
+        for url in old_urls:
+            if url.split("#")[0].split("?")[0] == repo_index_url:
+                new_urls += [repo_index_url_with_sha]
+                added_build = True
+            else:
+                new_urls += [url]
+
+        if not added_build:
+            new_urls = [repo_index_url_with_sha, *new_urls]
+
+        return new_urls
+
+    def repodata_wheel(self, whl_path: Path, whl_repo: Path) -> None:
+        """Write out the repodata for a wheel."""
+        pkg_entry = get_wheel_repodata(whl_path)[2]
+        whl_repo.write_text(
+            json.dumps(pkg_entry, **JSON_FMT),
+            **UTF8,
+        )
+        self.maybe_timestamp(whl_repo)

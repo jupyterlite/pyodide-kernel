@@ -95,6 +95,8 @@ def test_piplite_urls(
         },
         "PipliteAddon": {
             "piplite_urls": piplite_urls,
+        },
+        "PyodideAddon": {
             "install_on_import": install_on_import,
         },
     }

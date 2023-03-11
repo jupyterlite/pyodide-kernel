@@ -44,8 +44,8 @@ def bump():
 
     # bump the js version
     pyodide_kernel_json = json.loads(PYODIDE_PACKAGE_JSON.read_text(**ENC))
-    pyodide_kernel_json["pyodide-kernel"]["packages"]["py/pyodide-kernel"] = py_version
-    pyodide_kernel_json["pyodide-kernel"]["packages"]["py/piplite"] = py_version
+    pyodide_kernel_json["pyodideKernel"]["packages"]["py/pyodide-kernel"] = py_version
+    pyodide_kernel_json["pyodideKernel"]["packages"]["py/piplite"] = py_version
     PYODIDE_PACKAGE_JSON.write_text(json.dumps(pyodide_kernel_json, indent=2), **ENC)
 
     # bump the JS version with lerna

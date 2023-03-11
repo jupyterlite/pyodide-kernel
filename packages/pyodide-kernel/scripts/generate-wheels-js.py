@@ -35,7 +35,7 @@ SOURCE_DATE_EPOCH = (
 )
 PYODIDE_KERNEL_PACKAGES = {
     PYODIDE_KERNEL_PACKAGE / py_pkg: version
-    for py_pkg, version in PYODIDE_KERNEL_PACKAGE_JSON.get("pyodide-kernel", {})
+    for py_pkg, version in PYODIDE_KERNEL_PACKAGE_JSON.get("pyodideKernel", {})
     .get("packages", {})
     .items()
 }

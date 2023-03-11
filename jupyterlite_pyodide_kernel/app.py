@@ -6,7 +6,7 @@ from jupyterlite_core.app import DescribedMixin
 from jupyterlite_core.trait_types import CPath
 
 from ._version import __version__
-from .addons.piplite import list_wheels
+from .wheel_utils import list_wheels, write_repo_index, write_wheel_index
 
 
 class PipliteIndex(DescribedMixin, JupyterApp):
@@ -22,7 +22,7 @@ class PipliteIndex(DescribedMixin, JupyterApp):
             "jupyterlab": {
                 "extension": true
             },
-            "piplite": {
+            "jupyterlite-pyodide-kernel": {
                 "wheelDir": "./pypi"
             }
         }
@@ -43,7 +43,6 @@ class PipliteIndex(DescribedMixin, JupyterApp):
             raise ValueError(f"{self.wheel_dir} does not exist")
         if not list_wheels(self.wheel_dir):
             raise ValueError(f"no supported wheels found in {self.wheel_dir}")
-        from .addons.piplite import write_repo_index, write_wheel_index
 
         write_wheel_index(self.wheel_dir)
         write_repo_index(self.wheel_dir)

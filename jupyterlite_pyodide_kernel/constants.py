@@ -17,19 +17,18 @@ PYPI_WHEELS = "pypi"
 PYODIDE_KERNEL_PLUGIN_ID = "@jupyterlite/pyodide-kernel-extension:kernel"
 #: the npm name of the pyodide kernel
 PYODIDE_KERNEL_NPM_NAME = PYODIDE_KERNEL_PLUGIN_ID.split(":")[0]
-#: the package.json key for piplite
-PKG_JSON_PIPLITE = "piplite"
+#: the package.json key for pyodide-kernel metadata
+PKG_JSON_PYODIDE_KERNEL = "pyodideKernel"
 #: the package.json/piplite key for wheels
 PKG_JSON_WHEELDIR = "wheelDir"
+#: the schema for a pyodide-kernel-compatible ``package.json``
+PKG_JSON_SCHEMA = "package.v0.schema.json"
 
 #: where we put wheels, for now
 PYODIDE_URL = "pyodideUrl"
 
 #: the key for pyodide-compatible repodata.json
 REPODATA_URLS = "repodataUrls"
-
-#: the schema for pyodidate-compatible repodata
-REPODATA_SCHEMA = "repodata.v0.schema.json"
 
 #: where setuptools wheels store their exported modules
 TOP_LEVEL_TXT = "top_level.txt"

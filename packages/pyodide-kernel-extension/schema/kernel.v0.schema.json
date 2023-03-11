@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://jupyterlite-pyodide-kernel.readthedocs.org/en/latest/reference/schema/settings-v0.html#",
   "title": "Pyodide Kernel Settings Schema v0",
-  "description": "Pyodide Kernel-specific configuration values.",
+  "description": "Pyodide Kernel extension-specific configuration values, as stored in `jupyter-lite.json`",
   "type": "object",
   "properties": {
     "pyodideUrl": {
