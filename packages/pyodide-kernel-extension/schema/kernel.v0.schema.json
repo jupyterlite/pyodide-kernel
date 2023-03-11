@@ -24,6 +24,14 @@
       },
       "default": [],
       "format": "uri"
+    },
+    "repodataUrls": {
+      "description": "Paths to pyodide-compatible ``repodata.json`` files.",
+      "default": [],
+      "items": {
+        "type": "string",
+        "format": "uri"
+      }
     }
   }
 }

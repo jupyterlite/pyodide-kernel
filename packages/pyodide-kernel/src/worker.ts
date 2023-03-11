@@ -7,7 +7,7 @@ import type { DriveFS } from '@jupyterlite/contents';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
-export class PyodideRemoteKernel {
+export class PyodideRemoteKernel implements IPyodideWorkerKernel {
   constructor() {
     this._initialized = new Promise((resolve, reject) => {
       this._initializer = { resolve, reject };
@@ -53,6 +53,21 @@ export class PyodideRemoteKernel {
     this._pyodide = await loadPyodide({ indexURL: indexUrl });
   }
 
+  /**
+   * Fetch the repodata URL, and resolve all filename URLs
+   */
+  async fetchRepodata(url: string): Promise<IPyodideWorkerKernel.IRepoData> {
+    const response = await fetch(url);
+    const repodata: IPyodideWorkerKernel.IRepoData = await response.json();
+    for (const [packageName, packageData] of Object.entries(repodata.packages)) {
+      if (packageData) {
+        const file_name = new URL(packageData.file_name, url).toString();
+        repodata.packages[packageName] = { ...packageData, file_name };
+      }
+    }
+    return repodata;
+  }
+
   protected async initPackageManager(
     options: IPyodideWorkerKernel.IOptions
   ): Promise<void> {
@@ -60,11 +75,13 @@ export class PyodideRemoteKernel {
       throw new Error('Uninitialized');
     }
 
-    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls } = this._options;
+    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, repodataUrls } =
+      this._options;
 
+    // this is the only use of `loadPackage`, allow `piplite` to handle the rest
     await this._pyodide.loadPackage(['micropip']);
 
-    // get piplite early enough to impact pyodide dependencies
+    // get piplite early enough to impact Pyodide dependencies
     await this._pyodide.runPythonAsync(`
       import micropip
       await micropip.install('${pipliteWheelUrl}', keep_going=True)
@@ -72,17 +89,43 @@ export class PyodideRemoteKernel {
       piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}
       piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}
     `);
+
+    if (repodataUrls.length) {
+      const API = (this._pyodide as any)._api;
+      const repodataPromises: Promise<IPyodideWorkerKernel.IRepoData>[] = [];
+      for (const url of repodataUrls) {
+        repodataPromises.push(this.fetchRepodata(url));
+      }
+
+      const repodataResults = await Promise.all(repodataPromises);
+
+      for (const repo of repodataResults) {
+        API.repodata_packages = {
+          ...API.repodata_packages,
+          ...repo.packages,
+        };
+      }
+
+      for (const packageName of Object.keys(API.repodata_packages)) {
+        const packageData: IPyodideWorkerKernel.IRepoDataPackage =
+          API.repodata_packages[packageName];
+
+        for (const importName of packageData.imports) {
+          API._import_name_to_package_name.set(importName, packageName);
+        }
+      }
+    }
   }
 
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     // from this point forward, only use piplite (but not %pip)
     await this._pyodide.runPythonAsync(`
-      await piplite.install(['sqlite3'], keep_going=True);
-      await piplite.install(['ipykernel'], keep_going=True);
+      await piplite.install(['sqlite3', 'jedi', 'decorator', 'pygments', 'six', 'ipykernel'], keep_going=True);
       await piplite.install(['pyodide_kernel'], keep_going=True);
       await piplite.install(['ipython'], keep_going=True);
       import pyodide_kernel
     `);
+
     // cd to the kernel location
     if (options.mountDrive && this._localPath) {
       await this._pyodide.runPythonAsync(`
@@ -336,7 +379,7 @@ export class PyodideRemoteKernel {
 
     return {
       comms: results,
-      status: 'ok',
+      status: 'ok' as any,
     };
   }
 

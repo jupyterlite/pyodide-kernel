@@ -1,0 +1,2 @@
+class KeyPressEvent:
+    pass

@@ -13,18 +13,24 @@ from jupyterlite_core.constants import (
     LITE_PLUGIN_SETTINGS,
     JSON_FMT,
     JUPYTER_CONFIG_DATA,
+    ALL_JSON,
 )
 
 from jupyterlite_pyodide_kernel.constants import (
     PYODIDE_KERNEL_PLUGIN_ID,
     DISABLE_PYPI_FALLBACK,
+    PIPLITE_URLS,
+    PYPI_WHEELS,
+    REPODATA_JSON,
 )
 
 from .conftest import WHEELS, PYODIDE_KERNEL_EXTENSION
 
 
-def has_wheel_after_build(an_empty_lite_dir, script_runner):
-    """run a build, expecting the fixture wheel to be there"""
+def has_wheel_after_build(an_empty_lite_dir, script_runner, install_on_import=False):
+    """run a build, expecting the fixture wheel, ``all.json`` (and maybe
+    ``repodata.json``) to be there
+    """
     build = script_runner.run("jupyter", "lite", "build", cwd=str(an_empty_lite_dir))
     assert build.success
 
@@ -33,25 +39,37 @@ def has_wheel_after_build(an_empty_lite_dir, script_runner):
 
     output = an_empty_lite_dir / "_output"
 
-    lite_json = output / "jupyter-lite.json"
+    lite_json = output / JUPYTERLITE_JSON
     lite_data = json.loads(lite_json.read_text(encoding="utf-8"))
-    assert lite_data["jupyter-config-data"]["litePluginSettings"][
+    assert lite_data[JUPYTER_CONFIG_DATA][LITE_PLUGIN_SETTINGS][
         PYODIDE_KERNEL_PLUGIN_ID
-    ]["pipliteUrls"], "bad wheel urls"
+    ][PIPLITE_URLS], "bad wheel urls"
 
-    wheel_out = output / "pypi"
+    wheel_out = output / PYPI_WHEELS
     assert (wheel_out / WHEELS[0].name).exists()
-    wheel_index = output / "pypi/all.json"
+    wheel_index = output / PYPI_WHEELS / ALL_JSON
     wheel_index_text = wheel_index.read_text(encoding="utf-8")
     assert WHEELS[0].name in wheel_index_text, wheel_index_text
+
+    repodata = output / PYPI_WHEELS / REPODATA_JSON
+    if install_on_import:
+        assert repodata.exists()
+    else:
+        assert not repodata.exists()
 
 
 @mark.parametrize(
     "remote,folder",
     [[True, False], [False, False], [False, True]],
 )
+@mark.parametrize("install_on_import", [True, False])
 def test_piplite_urls(
-    an_empty_lite_dir, script_runner, remote, folder, a_fixture_server
+    an_empty_lite_dir,
+    script_runner,
+    remote,
+    folder,
+    a_fixture_server,
+    install_on_import,
 ):
     """can we include a single wheel?"""
     ext = WHEELS[0]
@@ -77,16 +95,17 @@ def test_piplite_urls(
         },
         "PipliteAddon": {
             "piplite_urls": piplite_urls,
+            "install_on_import": install_on_import,
         },
     }
 
     (an_empty_lite_dir / "jupyter_lite_config.json").write_text(json.dumps(config))
 
-    has_wheel_after_build(an_empty_lite_dir, script_runner)
+    has_wheel_after_build(an_empty_lite_dir, script_runner, install_on_import)
 
 
 def test_lite_dir_wheel(an_empty_lite_dir, script_runner):
-    wheel_dir = an_empty_lite_dir / "pypi"
+    wheel_dir = an_empty_lite_dir / PYPI_WHEELS
     wheel_dir.mkdir()
     shutil.copy2(WHEELS[0], wheel_dir / WHEELS[0].name)
 
@@ -115,7 +134,7 @@ def test_piplite_cli_win(script_runner, tmp_path, index_cmd, in_cwd):
     pargs = [] if in_cwd else [str(path)]
     build = script_runner.run(*index_cmd, *pargs, **kwargs)
     assert build.success
-    assert json.loads((path / "all.json").read_text(encoding="utf-8"))
+    assert json.loads((path / ALL_JSON).read_text(encoding="utf-8"))
 
 
 @pytest.fixture(params=[JUPYTERLITE_IPYNB, JUPYTERLITE_JSON])

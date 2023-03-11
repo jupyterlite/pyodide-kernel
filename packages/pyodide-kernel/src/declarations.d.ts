@@ -8,6 +8,11 @@ declare module '*all.json' {
   export default res;
 }
 
+declare module '*repodata.json' {
+  const res: string;
+  export default res;
+}
+
 declare module '../schema/*.json' {
   const res: string;
   export default res;

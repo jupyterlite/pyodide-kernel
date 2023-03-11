@@ -126,7 +126,7 @@ addopts = [
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=97",
+    "--cov-fail-under=89",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",

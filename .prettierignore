@@ -13,3 +13,4 @@ CHANGELOG.md
 # generated
 _pypi.ts
 **/pypi/all.json
+**/pypi/repodata.json

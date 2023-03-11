@@ -43,9 +43,10 @@ class PipliteIndex(DescribedMixin, JupyterApp):
             raise ValueError(f"{self.wheel_dir} does not exist")
         if not list_wheels(self.wheel_dir):
             raise ValueError(f"no supported wheels found in {self.wheel_dir}")
-        from .addons.piplite import write_wheel_index
+        from .addons.piplite import write_repo_index, write_wheel_index
 
         write_wheel_index(self.wheel_dir)
+        write_repo_index(self.wheel_dir)
 
 
 class PipliteApp(DescribedMixin, JupyterApp):

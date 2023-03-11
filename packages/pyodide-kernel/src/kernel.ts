@@ -9,7 +9,7 @@ import { wrap } from 'comlink';
 
 import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
 
-import { allJSONUrl, pipliteWheelUrl } from './_pypi';
+import { allJSONUrl, repodataJSONUrl, pipliteWheelUrl } from './_pypi';
 
 /**
  * A kernel that executes Python code with Pyodide.
@@ -54,7 +54,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     const { pyodideUrl } = options;
     const indexUrl = pyodideUrl.slice(0, pyodideUrl.lastIndexOf('/') + 1);
     const baseUrl = PageConfig.getBaseUrl();
+
     const pipliteUrls = [...(options.pipliteUrls || []), allJSONUrl.default];
+    const repodataUrls = [...(options.repodataUrls || []), repodataJSONUrl.default];
 
     const disablePyPIFallback = !!options.disablePyPIFallback;
 
@@ -64,6 +66,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       indexUrl,
       pipliteWheelUrl: pipliteWheelUrl.default,
       pipliteUrls,
+      repodataUrls: repodataUrls,
       disablePyPIFallback,
       location: this.location,
       mountDrive: options.mountDrive,
@@ -308,6 +311,11 @@ export namespace PyodideKernel {
      * The URLs from which to attempt PyPI API requests
      */
     pipliteUrls: string[];
+
+    /**
+     * The URLs with which to patch repodata.json
+     */
+    repodataUrls: string[];
 
     /**
      * Do not try pypi.org if `piplite.install` fails against local URLs
