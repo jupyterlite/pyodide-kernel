@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$id": "https://jupyterlite-pyodide-kernel.readthedocs.org/en/latest/reference/schema/settings-v0.html#",
   "title": "Pyodide Kernel Settings Schema v0",
-  "description": "Pyodide-specific configuration values. Will be defined in another location in the future.",
+  "description": "Pyodide Kernel-specific configuration values.",
   "type": "object",
   "properties": {
     "pyodideUrl": {
@@ -19,15 +19,18 @@
     "pipliteUrls": {
       "description": "Paths to PyPI-compatible API endpoints for wheels. If ending in ``all.json``, assumed to be an aggregate, keyed by package name, with relative paths",
       "type": "array",
+      "uniqueItems": true,
       "items": {
-        "type": "string"
+        "type": "string",
+        "format": "uri"
       },
-      "default": [],
-      "format": "uri"
+      "default": []
     },
     "repodataUrls": {
       "description": "Paths to pyodide-compatible ``repodata.json`` files.",
       "default": [],
+      "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "string",
         "format": "uri"

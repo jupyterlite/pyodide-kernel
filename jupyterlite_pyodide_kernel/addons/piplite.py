@@ -236,15 +236,10 @@ class PipliteAddon(_BaseAddon):
                 continue
 
             yield self.task(
-                name=f"validate:{url}",
+                name=f"validate:{raw_url}",
                 doc=f"validate {url} against {schema}",
                 file_dep=[path],
-                actions=[
-                    (
-                        self.validate_one_json_file,
-                        [schema, path],
-                    )
-                ],
+                actions=[(self.validate_one_json_file, [schema, path])],
             )
 
     def resolve_one_wheel(self, path_or_url):
@@ -307,6 +302,7 @@ class PipliteAddon(_BaseAddon):
         warehouse_urls = self.update_warehouse_index(
             plugin_config, whl_index, whl_metas
         )
+        repodata_urls = []
 
         # ...then maybe add repodata
         if self.install_on_import:
@@ -332,7 +328,7 @@ class PipliteAddon(_BaseAddon):
                             pkg_repo_index
                         )[1]
                         if pkg_repo_index_url_with_sha not in repodata_urls:
-                            warehouse_urls += [pkg_repo_index_url_with_sha]
+                            repodata_urls += [pkg_repo_index_url_with_sha]
 
         needs_save = False
 

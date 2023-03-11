@@ -23,8 +23,9 @@
     "dist:pypi": "pyproject-build .",
     "dist": "jlpm dist:pypi && jlpm dist:npm",
     "docs:lite": "cd examples && jupyter lite build",
+    "docs:lite:check": "cd examples && jupyter lite check",
     "docs:sphinx": "sphinx-build -W -b html docs build/docs",
-    "docs": "jlpm docs:lite && jlpm docs:sphinx",
+    "docs": "jlpm docs:lite && jlpm docs:sphinx && jlpm docs:lite:check",
     "eslint:check": "eslint . --cache --ext .ts,.tsx",
     "eslint": "jlpm eslint:check --fix",
     "lint": "jlpm lint:js && jlpm lint:py",
@@ -54,8 +55,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "lerna": "^6.5.1",
     "prettier": "^2.8.0",
-    "rimraf": "^3.0.2",
-    "typescript": "~4.9.3",
+    "rimraf": "^4.4.0",
+    "typescript": "~4.9.4",
     "yarn-deduplicate": "^6.0.1",
     "npm-run-all": "^4.1.5"
   }

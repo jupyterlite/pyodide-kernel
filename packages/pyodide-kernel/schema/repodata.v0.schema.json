@@ -58,6 +58,7 @@
       "properties": {
         "depends": {
           "type": "array",
+          "uniqueItems": true,
           "description": "A list of PEP 503 normalized package names which this package depends on",
           "items": {
             "$ref": "#/definitions/a-pep-503-name"
@@ -88,6 +89,7 @@
         "imports": {
           "description": "The top-level import names which will trigger installation of this package",
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "string"
           }
