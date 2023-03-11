@@ -75,6 +75,10 @@ class _BaseAddon(BaseAddon):
         return self.output_kernel_extension / "static/schema"
 
     @property
+    def well_known_wheels(self) -> Path:
+        return self.manager.lite_dir / PYPI_WHEELS
+
+    @property
     def output_wheels(self) -> Path:
         """where wheels will go in the output folder"""
         return self.manager.output_dir / PYPI_WHEELS

@@ -1,0 +1,17 @@
+{
+  "packages": {
+    "sqlite3": {
+      "depends": [],
+      "file_name": "https://cdn.jsdelivr.net/pyodide/v0.22.1/full/sqlite3-1.0.0.zip",
+      "imports": [
+        "sqlite3",
+        "_sqlite3"
+      ],
+      "install_dir": "stdlib",
+      "name": "sqlite3",
+      "sha256": "0d1b4bff8e89b57633dc63989225c88e54ed86e7c7476c7ab7f5cd4638019819",
+      "shared_library": true,
+      "version": "1.0.0"
+    }
+  }
+}

@@ -5,7 +5,8 @@ import re
 import urllib.parse
 import json
 from pathlib import Path
-from typing import Optional, List
+from copy import deepcopy
+from typing import Optional, List, Dict, Any
 
 import doit.tools
 from jupyterlite_core.manager import LiteManager
@@ -18,6 +19,7 @@ from traitlets import Unicode, default, Bool
 
 from ._base import _BaseAddon
 from ..constants import (
+    ALL_WHEELISH,
     PKG_JSON_SCHEMA,
     PYODIDE,
     PYODIDE_JS,
@@ -84,6 +86,16 @@ class PyodideAddon(_BaseAddon):
         """the schema for pyodide repodata"""
         return self.schemas / PKG_JSON_SCHEMA
 
+    @property
+    def well_known_repodata(self) -> Path:
+        return self.well_known_wheels / REPODATA_JSON
+
+    @property
+    def well_known_repo_packages(self) -> Dict[str, Dict[str, Any]]:
+        if not self.well_known_repodata.exists():
+            return {}
+        return json.loads(self.well_known_repodata.read_text(**UTF8))["packages"]
+
     def status(self, manager: LiteManager):
         """report on the status of pyodide"""
         yield self.task(
@@ -120,23 +132,24 @@ class PyodideAddon(_BaseAddon):
         elif self.pyodide_url is not None:
             the_pyodide = cached_pyodide
 
-        if not the_pyodide:
-            return
+        if the_pyodide:
+            file_dep = [
+                p
+                for p in the_pyodide.rglob("*")
+                if not (p.is_dir() or self.is_ignored_sourcemap(p.name))
+            ]
 
-        file_dep = [
-            p
-            for p in the_pyodide.rglob("*")
-            if not (p.is_dir() or self.is_ignored_sourcemap(p.name))
-        ]
+            yield self.task(
+                name="copy:pyodide",
+                file_dep=file_dep,
+                targets=[
+                    self.output_pyodide / p.relative_to(the_pyodide) for p in file_dep
+                ],
+                actions=[(self.copy_one, [the_pyodide, self.output_pyodide])],
+            )
 
-        yield self.task(
-            name="copy:pyodide",
-            file_dep=file_dep,
-            targets=[
-                self.output_pyodide / p.relative_to(the_pyodide) for p in file_dep
-            ],
-            actions=[(self.copy_one, [the_pyodide, self.output_pyodide])],
-        )
+        for package_name, package_info in self.well_known_repo_packages.items():
+            yield from self.cache_one_repo_package(package_name, package_info)
 
     def post_build(self, manager):
         """configure jupyter-lite.json for pyodide"""
@@ -149,19 +162,21 @@ class PyodideAddon(_BaseAddon):
         if self.install_on_import:
             wheels = list_wheels(self.output_wheels)
 
+            # find normal wheels
             for wheel in wheels:
                 whl_repo = self.wheel_cache / f"{wheel.name}.repodata.json"
                 whl_repos += [whl_repo]
+                yield from self.build_one_wheel(wheel, whl_repo)
 
-                yield self.task(
-                    name=f"meta:{whl_repo.name}",
-                    doc=f"ensure {wheel} repodata",
-                    file_dep=[wheel],
-                    actions=[
-                        (doit.tools.create_folder, [whl_repo.parent]),
-                        (self.repodata_wheel, [wheel, whl_repo]),
-                    ],
-                    targets=[whl_repo],
+            # find stdlib/dynlib
+            for package_info in self.well_known_repo_packages.values():
+                file_name = str(package_info["file_name"])
+                url_info = urllib.parse.urlparse(file_name)
+                non_wheel = self.output_wheels / Path(url_info.path).name
+                non_whl_repo = self.wheel_cache / f"{non_wheel.name}.repodata.json"
+                whl_repos += [non_whl_repo]
+                yield from self.build_one_non_wheel(
+                    package_info, non_wheel, non_whl_repo
                 )
 
             if whl_repos:
@@ -192,6 +207,35 @@ class PyodideAddon(_BaseAddon):
                 ],
                 targets=targets,
             )
+
+    def build_one_wheel(self, wheel: Path, whl_repo: Path):
+        yield self.task(
+            name=f"meta:wheel:{whl_repo.name}",
+            doc=f"ensure {wheel} repodata",
+            file_dep=[wheel],
+            actions=[
+                (doit.tools.create_folder, [whl_repo.parent]),
+                (self.repodata_wheel, [wheel, whl_repo]),
+            ],
+            targets=[whl_repo],
+        )
+
+    def build_one_non_wheel(
+        self, package_info: Dict[str, Any], non_wheel: Path, non_whl_repo: Path
+    ):
+        package_info = deepcopy(package_info)
+        package_info["file_name"] = non_wheel.name
+
+        yield self.task(
+            name=f"meta:nonwheel:{non_whl_repo.name}",
+            doc=f"ensure {non_wheel} repodata",
+            file_dep=[self.well_known_repodata, non_wheel],
+            actions=[
+                (doit.tools.create_folder, [non_whl_repo.parent]),
+                lambda: json.dump(package_info, non_whl_repo.open("w"), **JSON_FMT),
+            ],
+            targets=[non_whl_repo],
+        )
 
     def patch_jupyterlite_json(
         self,
@@ -356,7 +400,7 @@ class PyodideAddon(_BaseAddon):
             actions=[(self.extract_one, [local_path, dest])],
         )
 
-    def update_repo_index(self, plugin_config, repo_index: Path, whl_repos):
+    def update_repo_index(self, plugin_config, repo_index: Path, whl_repos: List[Path]):
         """Ensure the repodata index is up-to-date, reporting new URLs."""
         old_urls = plugin_config.get(REPODATA_URLS, [])
 
@@ -367,10 +411,13 @@ class PyodideAddon(_BaseAddon):
         metadata = {}
         for whl_repo in whl_repos:
             meta = json.loads(whl_repo.read_text(**UTF8))
-            whl = self.output_wheels / whl_repo.name.replace(".json", "")
+            whl = self.output_wheels / meta["file_name"]
             metadata[whl] = meta["name"], meta["version"], meta
 
-        write_repo_index(self.output_wheels, metadata)
+        extensions = None
+        if self.install_on_import:
+            extensions = ALL_WHEELISH
+        write_repo_index(self.output_wheels, metadata, extensions)
         repo_index_url, repo_index_url_with_sha = self.get_index_urls(repo_index)
 
         added_build = False
@@ -395,3 +442,47 @@ class PyodideAddon(_BaseAddon):
             **UTF8,
         )
         self.maybe_timestamp(whl_repo)
+
+    def cache_one_repo_package(self, package_name, package_info):
+        """ensure a local cache of a repodata package"""
+        file_name = str(package_info["file_name"])
+        url_info = urllib.parse.urlparse(file_name)
+        scheme = url_info.scheme
+        cache_path: Optional[Path] = None
+
+        if not scheme:
+            on_disk = (self.well_known_wheels / file_name).resolve()
+            if on_disk.exists():
+                name = on_disk.name
+                cache_path = self.wheel_cache / name
+                yield self.task(
+                    name=f"repo:fetch:{package_name}:{name}",
+                    actions=[(self.copy_one, [on_disk, cache_path])],
+                    file_dep=[on_disk],
+                    targets=[cache_path],
+                )
+
+        elif scheme in ["http", "https", "file"]:
+            url = file_name
+            name = Path(url_info.path).name
+            cache_path = self.wheel_cache / name
+            yield self.task(
+                name=f"repo:fetch:{package_name}:{name}",
+                actions=[
+                    (self.fetch_one, [url, cache_path]),
+                ],
+                targets=[cache_path],
+            )
+
+        if cache_path is None:
+            raise ValueError(
+                f"Don't know what to do with {package_name}: {package_info}"
+            )
+
+        dest = self.output_wheels / cache_path.name
+        yield self.task(
+            name=f"repo:copy:{dest.name}",
+            actions=[(self.copy_one, [cache_path, dest])],
+            file_dep=[cache_path],
+            targets=[dest],
+        )

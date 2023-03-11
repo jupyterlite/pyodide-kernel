@@ -74,3 +74,5 @@ NOARCH_WHL = "py3-none-any.whl"
 WASM_WHL = "emscripten_*_wasm32.whl"
 
 ALL_WHL = [NOARCH_WHL, WASM_WHL]
+
+ALL_WHEELISH = [*ALL_WHL, "zip", "tar"]

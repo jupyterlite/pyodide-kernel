@@ -1,6 +1,6 @@
 """Utilties for working with wheels and package metadata."""
 import json
-from typing import List
+from typing import List, Optional
 from pathlib import Path
 import functools
 import re
@@ -26,9 +26,11 @@ from .constants import (
 )
 
 
-def list_wheels(wheel_dir: Path) -> List[Path]:
-    """Get all wheels we know how to handle in a directory"""
-    return sorted(sum([[*wheel_dir.glob(f"*{whl}")] for whl in ALL_WHL], []))
+def list_wheels(wheel_dir: Path, extensions: Optional[List[str]] = None) -> List[Path]:
+    """Get all files we know how to handle in a directory"""
+    extensions = extensions or ALL_WHL
+    wheelish = sum([[*wheel_dir.glob(f"*{ext}")] for ext in extensions], [])
+    return sorted(wheelish)
 
 
 def get_wheel_fileinfo(whl_path: Path):
@@ -195,12 +197,12 @@ def get_wheel_index(wheels: List[Path], metadata=None):
     return all_json
 
 
-def get_repo_index(wheels: List[Path], metadata=None):
+def get_repo_index(wheelish: List[Path], metadata=None):
     """Get the data for a ``repodata.json``."""
     metadata = metadata or {}
     repodata_json = {"packages": {}}
 
-    for whl_path in sorted(wheels):
+    for whl_path in sorted(wheelish):
         name, version, pkg_entry = metadata.get(whl_path) or get_wheel_repodata(
             whl_path
         )
@@ -223,9 +225,11 @@ def write_wheel_index(whl_dir: Path, metadata=None) -> Path:
     return wheel_index
 
 
-def write_repo_index(whl_dir: Path, metadata=None) -> Path:
+def write_repo_index(whl_dir: Path, metadata=None, extensions=None) -> Path:
     """Write out a ``repodata.json`` for a directory of wheels."""
     repo_index = Path(whl_dir) / REPODATA_JSON
-    index_data = get_repo_index(list_wheels(whl_dir), metadata)
+    wheelish = list_wheels(whl_dir, extensions)
+
+    index_data = get_repo_index(wheelish, metadata)
     repo_index.write_text(json.dumps(index_data, **JSON_FMT), **UTF8)
     return repo_index

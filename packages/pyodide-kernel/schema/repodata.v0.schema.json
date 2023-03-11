@@ -67,12 +67,12 @@
         "file_name": {
           "type": "string",
           "format": "uri",
-          "description": "A relative path or URL that resolves to a ``.whl`` file"
+          "description": "A relative path or URL that resolves to a ``.whl``, ``.zip`` or ``.tar`` file"
         },
         "install_dir": {
           "type": "string",
           "description": "The destination for the package: currently only generates ``site``",
-          "enum": ["site", "dynlib"]
+          "enum": ["site", "dynlib", "stdlib"]
         },
         "name": {
           "description": "The PEP 503 name of the package.",
@@ -85,6 +85,9 @@
         "version": {
           "description": "The version of the package",
           "type": "string"
+        },
+        "shared_library": {
+          "type": "boolean"
         },
         "imports": {
           "description": "The top-level import names which will trigger installation of this package",

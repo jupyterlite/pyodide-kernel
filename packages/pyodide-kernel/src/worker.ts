@@ -78,18 +78,6 @@ export class PyodideRemoteKernel implements IPyodideWorkerKernel {
     const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, repodataUrls } =
       this._options;
 
-    // this is the only use of `loadPackage`, allow `piplite` to handle the rest
-    await this._pyodide.loadPackage(['micropip']);
-
-    // get piplite early enough to impact Pyodide dependencies
-    await this._pyodide.runPythonAsync(`
-      import micropip
-      await micropip.install('${pipliteWheelUrl}', keep_going=True)
-      import piplite.piplite
-      piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}
-      piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}
-    `);
-
     if (repodataUrls.length) {
       const API = (this._pyodide as any)._api;
       const repodataPromises: Promise<IPyodideWorkerKernel.IRepoData>[] = [];
@@ -115,6 +103,18 @@ export class PyodideRemoteKernel implements IPyodideWorkerKernel {
         }
       }
     }
+
+    // this is the only use of `loadPackage`, allow `piplite` to handle the rest
+    await this._pyodide.loadPackage(['micropip']);
+
+    // get piplite early enough to impact Pyodide dependencies
+    await this._pyodide.runPythonAsync(`
+      import micropip
+      await micropip.install('${pipliteWheelUrl}', keep_going=True)
+      import piplite.piplite
+      piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}
+      piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}
+    `);
   }
 
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
