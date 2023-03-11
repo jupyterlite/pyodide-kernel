@@ -1,27 +1,24 @@
-"""Validate the integrity of the repo.
-
-Assumes:
-- a ``git`` checkout
-- the labextension has already been built with ``jlpm build``
-"""
+"""Validate the integrity of the repo (or source checkout)"""
 import pytest
 import json
 from pathlib import Path
 
 from jupyterlite_core.constants import UTF8
 from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
-from .conftest import IN_TREE_EXTENSION, HERE
+from .conftest import HERE
 
 PACKAGES = HERE / "../../packages"
+KERNEL_PKG = PACKAGES / "pyodide-kernel"
+KERNEL_PKG_JSON = KERNEL_PKG / "package.json"
 
-if not IN_TREE_EXTENSION.exists():  # pragma: no cover
-    pytest.skip("not a source build, skipping repo tests", allow_module_level=True)
+if not KERNEL_PKG_JSON.exists():  # pragma: no cover
+    pytest.skip(
+        "not in a source checkout, skipping repo tests", allow_module_level=True
+    )
 
 
 def test_pyodide_version():
-    kernel_pkg = PACKAGES / "pyodide-kernel"
-    kernel_pkg_json = kernel_pkg / "package.json"
-    kernel_pkg_data = json.loads(kernel_pkg_json.read_text(**UTF8))
+    kernel_pkg_data = json.loads(KERNEL_PKG_JSON.read_text(**UTF8))
     assert (
         kernel_pkg_data["devDependencies"]["pyodide"] == PYODIDE_VERSION
     ), f"{kernel_pkg_data} pyodide devDependency is not {PYODIDE_VERSION}"
