@@ -69,6 +69,7 @@ test = [
     "pytest-console-scripts",
     "pytest-cov",
     "pytest-html",
+    "pytest-xdist",
     "pytest",
 ]
 
@@ -119,14 +120,17 @@ addopts = [
     "--pyargs",
     "jupyterlite_pyodide_kernel",
     "-vv",
+    "--ff",
     # asyncio
     "--script-launch-mode=subprocess",
+    # parallel
+    "-n=auto",
     # cov
     "--cov=jupyterlite_pyodide_kernel",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=89",
+    "--cov-fail-under=90",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",

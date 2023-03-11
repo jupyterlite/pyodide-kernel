@@ -333,13 +333,14 @@ class PipliteAddon(_BaseAddon):
         needs_save = False
 
         # ... and only update if actually changed
-        if warehouse_urls:
+        if warehouse_urls and plugin_config.get(PIPLITE_URLS) != warehouse_urls:
             plugin_config[PIPLITE_URLS] = warehouse_urls
             needs_save = True
 
-        if self.install_on_import and repodata_urls:
-            plugin_config[REPODATA_URLS] = repodata_urls
-            needs_save = True
+        if self.install_on_import:
+            if repodata_urls and plugin_config.get(REPODATA_URLS) != repodata_urls:
+                plugin_config[REPODATA_URLS] = repodata_urls
+                needs_save = True
 
         if needs_save:
             self.set_pyodide_settings(config_path, plugin_config)
