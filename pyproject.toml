@@ -118,10 +118,11 @@ include = [
 
 [tool.pytest.ini_options]
 addopts = [
-    "--pyargs",
-    "jupyterlite_pyodide_kernel",
     "-vv",
     "--ff",
+    # only test as-installed package
+    "--pyargs",
+    "jupyterlite_pyodide_kernel",
     # asyncio
     "--script-launch-mode=subprocess",
     # parallel

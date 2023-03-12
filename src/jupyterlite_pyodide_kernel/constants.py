@@ -39,6 +39,8 @@ WHL_RECORD = "RECORD"
 #: the pyodide index of wheels
 REPODATA_JSON = "repodata.json"
 
+#: extra known dependencies
+REPODATA_EXTRA_DEPENDS = {"ipython": ["sqlite3"]}
 
 #: the observed default environment of pyodide
 PYODIDE_MARKER_ENV = {

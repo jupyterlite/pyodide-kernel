@@ -288,6 +288,9 @@ class PyodideAddon(_BaseAddon):
         for pkg_json in self.get_output_labextension_packages():
             yield from self.check_one_package_json(pkg_json)
 
+        if self.install_on_import and self.pyodide_url:
+            yield from self.check_repodata_totality()
+
     def check_one_config_path(self, config_path: Path):
         """verify the JS and repodata for a single jupyter-lite config"""
         if not config_path.exists():
@@ -341,6 +344,59 @@ class PyodideAddon(_BaseAddon):
             ],
             file_dep=[self.package_json_schema, pkg_json],
         )
+
+    def check_repodata_totality(self):
+        """check whether the union of all repodata provides all dependencies."""
+        config_paths = sorted(self.get_output_config_paths())
+        yield dict(
+            name="repo:totality",
+            doc="check if the union of all repodata is complete",
+            file_dep=config_paths,
+            actions=[(self.check_totality, [config_paths])],
+        )
+
+    def check_totality(self, config_paths: List[Path]):
+        local_repo_packages: Dict[str, Any] = {}
+        for config_path in config_paths:
+            plugin_config = self.get_pyodide_settings(config_path)
+            for repo_url in plugin_config.get(REPODATA_URLS, []):
+                url = urllib.parse.urlparse(str(repo_url))
+                if url.scheme:
+                    self.log.warning(
+                        "non-local repodata %s in %s will not be checked",
+                        url,
+                        config_path.relative_to(self.manager.output_dir),
+                    )
+                    continue
+                repo_path = (config_path.parent / url.path).resolve()
+                repo_packages = json.loads(repo_path.read_text(**UTF8))["packages"]
+                local_repo_packages[repo_path.parent] = repo_packages
+
+        resolved = {}
+        for repo, packages in local_repo_packages.items():
+            for package_name, package_info in packages.items():
+                file_name = str(package_info["file_name"])
+                file_url = urllib.parse.urlparse(file_name)
+                if file_url.scheme:
+                    resolved[package_name] = "remote"
+                else:
+                    if (repo / file_url.path).exists():
+                        resolved[package_name] = "local"
+
+        missing_deps = {}
+        for repo, packages in local_repo_packages.items():
+            for package_name, package_info in packages.items():
+                for dep in package_info.get("depends", []):
+                    if dep not in resolved:
+                        missing_deps.setdefault(package_name, []).append(dep)
+
+        if missing_deps:
+            print(json.dumps(missing_deps, **JSON_FMT), flush=True)
+            message = (
+                "Repodata is not self-contained:"
+                f"""Dependencies missing for: {sorted(missing_deps)}"""
+            )
+            raise ValueError(message)
 
     def cache_pyodide(self, path_or_url):
         """copy pyodide to the cache"""

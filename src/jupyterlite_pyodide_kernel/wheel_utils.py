@@ -20,6 +20,7 @@ from .constants import (
     ALL_WHL,
     NOARCH_WHL,
     PYODIDE_MARKER_ENV,
+    REPODATA_EXTRA_DEPENDS,
     REPODATA_JSON,
     TOP_LEVEL_TXT,
     WHL_RECORD,
@@ -75,9 +76,11 @@ def get_wheel_repodata(whl_path: Path):
     depnendencies.
     """
     name, version, release = get_wheel_fileinfo(whl_path)
-    depends = get_wheel_depends(whl_path)
-    modules = get_wheel_modules(whl_path)
     normalized_name = get_normalized_name(name)
+    depends = get_wheel_depends(whl_path) + REPODATA_EXTRA_DEPENDS.get(
+        normalized_name, []
+    )
+    modules = get_wheel_modules(whl_path)
     pkg_entry = {
         "name": normalized_name,
         "version": version,
