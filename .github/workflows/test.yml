@@ -69,8 +69,10 @@ jobs:
       - name: Upload test config
         uses: actions/upload-artifact@v3
         with:
-          name: pyproject-toml
-          path: pyproject.toml
+          name: test-assets
+          path: |
+            pyproject.toml
+            examples
           if-no-files-found: error
 
   test:
@@ -145,7 +147,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: pyproject-toml
+          name: test-assets
 
       - name: Install test deps
         run: |-
@@ -157,6 +159,8 @@ jobs:
           jupyter labextension list 2>&1 | grep -ie "@jupyterlite/pyodide-kernel.*OK"
 
       - name: Run the tests
+        env:
+          LITE_PYODIDE_KERNEL_DEMO: ./examples
         run: pytest
 
       - name: Upload reports

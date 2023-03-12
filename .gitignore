@@ -5,7 +5,7 @@ node_modules/
 *.egg-info/
 .ipynb_checkpoints
 *.tsbuildinfo
-jupyterlite_pyodide_kernel/labextension
+src/jupyterlite_pyodide_kernel/labextension
 
 # Created by https://www.gitignore.io/api/python
 # Edit at https://www.gitignore.io/?templates=python
@@ -118,4 +118,4 @@ packages/pyodide-kernel/pypi/*.json
 _pypi.ts
 .jupyterlite.doit.db
 _output
-jupyterlite_pyodide_kernel/tests/fixtures/.pyodide*/
+src/jupyterlite_pyodide_kernel/tests/fixtures/.pyodide*/

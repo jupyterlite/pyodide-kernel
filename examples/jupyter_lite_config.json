@@ -2,10 +2,8 @@
   "LiteBuildConfig": {
     "contents": ["."],
     "output_dir": "../build/docs-app",
-    "ignore_sys_prefix": ["federated_extensions"],
     "federated_extensions": [
-      "https://files.pythonhosted.org/packages/df/82/4576cbc07ebace8c7734fe08b2c2f9123b7ebecd29e932a3b839b6bee2cb/jupyterlab_widgets-3.0.5-py3-none-any.whl",
-      "../jupyterlite_pyodide_kernel/labextension"
+      "https://files.pythonhosted.org/packages/df/82/4576cbc07ebace8c7734fe08b2c2f9123b7ebecd29e932a3b839b6bee2cb/jupyterlab_widgets-3.0.5-py3-none-any.whl"
     ],
     "cache_dir": "../build/.lite-cache"
   },

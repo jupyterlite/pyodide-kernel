@@ -7,22 +7,14 @@ build:
     nodejs: '18'
   apt_packages:
     - libarchive-dev
-
   jobs:
     pre_build:
+      - python -m pip install -r requirements-dev.txt
       - jlpm --frozen-lockfile
-      - jlpm build
+      - jlpm build:prod
       - jlpm dist
       # pre-build the lite site to isolate build errors
       - jlpm docs:lite
-
-python:
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - dev
-        - docs
 
 sphinx:
   builder: html

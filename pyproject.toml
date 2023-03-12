@@ -67,8 +67,8 @@ lint = [
 ]
 
 test = [
-    "pytest-console-scripts",
     "pytest-cov",
+    "pytest-console-scripts",
     "pytest-html",
     "pytest-xdist",
     "pytest",
@@ -87,20 +87,17 @@ docs = [
     "libarchive-c"
 ]
 
-[tool.hatch.metadata]
-allow-direct-references = true
-
 [tool.hatch.version]
-path = "jupyterlite_pyodide_kernel/_version.py"
+path = "src/jupyterlite_pyodide_kernel/_version.py"
 
 [tool.hatch.build.targets.sdist]
-artifacts = ["jupyterlite_pyodide_kernel/labextension"]
+artifacts = ["src/jupyterlite_pyodide_kernel/labextension"]
 exclude = [
     ".github",
-    "/jupyterlite_pyodide_kernel/tests/fixtures/.pyodide"
+    "/src/jupyterlite_pyodide_kernel/tests/fixtures/.pyodide"
 ]
 include = [
-    "/jupyterlite_pyodide_kernel",
+    "/src/jupyterlite_pyodide_kernel",
     "/package.json",
     "/install.json",
     "/ts*.json",
@@ -109,11 +106,14 @@ include = [
 
 [tool.hatch.build.targets.wheel]
 include = [
-    "/jupyterlite_pyodide_kernel",
+    "/src/jupyterlite_pyodide_kernel",
 ]
 
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
+
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension"
+"src/jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension"
 "install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension/install.json"
 
 [tool.pytest.ini_options]
@@ -126,20 +126,44 @@ addopts = [
     "--script-launch-mode=subprocess",
     # parallel
     "-n=auto",
-    # cov
+    # coverage scope
     "--cov=jupyterlite_pyodide_kernel",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-report=html:build/reports/htmlcov",
+    # coverage options
     "--cov-branch",
-    "--cov-fail-under=83",
-    "--no-cov-on-fail",
+    "--cov-context=test",
+    # coverage reporting
+    "--cov-report=html:build/reports/htmlcov",
+    "--cov-report=term-missing:skip-covered",
+    # coverage threshold (local will be slightly be higher)
+    "--cov-fail-under=92",
     # html
     "--html=build/reports/pytest.html",
     "--self-contained-html",
 ]
-testpaths = [
-    "tests/",
+
+[tool.coverage.run]
+data_file = "build/reports/.coverage"
+omit = [
+    "*/tests/*",
 ]
+
+[tool.coverage.html]
+show_contexts = true
+
+[tool.coverage.paths]
+jupyterlite_pyodide_kernel = [
+    "src/jupyterlite_pyodide_kernel",
+    "*/src/jupyterlite_pyodide_kernel"
+]
+omit = [
+    "*/tests/*",
+]
+
+[tool.coverage.report]
+omit = [
+    "*/tests/*",
+]
+
 
 [tool.jupyter-releaser.options]
 version_cmd = "python scripts/bump-version.py"

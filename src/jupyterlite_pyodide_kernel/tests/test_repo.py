@@ -7,7 +7,7 @@ from jupyterlite_core.constants import UTF8
 from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
 from .conftest import HERE
 
-PACKAGES = HERE / "../../packages"
+PACKAGES = HERE / "../../../packages"
 KERNEL_PKG = PACKAGES / "pyodide-kernel"
 KERNEL_PKG_JSON = KERNEL_PKG / "package.json"
 

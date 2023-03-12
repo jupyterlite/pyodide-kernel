@@ -31,15 +31,16 @@
     "schema/*.json"
   ],
   "scripts": {
-    "build": "jlpm build:lib && jlpm build:labextension:dev",
-    "build:prod": "jlpm build:lib && jlpm build:labextension",
+    "build": "jlpm build:lib && jlpm build:labextension:dev && jlpm dev",
+    "build:prod": "jlpm build:lib && jlpm build:labextension && jlpm dev",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc -b",
+    "dev": "cd ../../ && jupyter labextension develop --overwrite .",
     "dist": "cd ../../dist && npm pack ../packages/pyodide-kernel-extension",
     "clean": "jlpm clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
-    "clean:labextension": "rimraf ../../jupyterlite_pyodide_kernel/labextension",
+    "clean:labextension": "rimraf ../../src/jupyterlite_pyodide_kernel/labextension",
     "clean:all": "jlpm clean:lib && jlpm clean:labextension",
     "docs": "typedoc src",
     "watch": "run-p watch:src watch:labextension",
@@ -63,11 +64,15 @@
   },
   "jupyterlab": {
     "extension": true,
-    "outputDir": "../../jupyterlite_pyodide_kernel/labextension",
+    "outputDir": "../../src/jupyterlite_pyodide_kernel/labextension",
     "webpackConfig": "webpack.config.js",
     "sharedPackages": {
       "@jupyterlite/kernel": {
         "bundled": false,
+        "singleton": true
+      },
+      "@jupyterlite/pyodide-kernel": {
+        "bundled": true,
         "singleton": true
       },
       "@jupyterlite/server": {

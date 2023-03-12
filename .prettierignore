@@ -2,7 +2,7 @@ node_modules/
 **/node_modules
 **/lib
 **/package.json
-jupyterlite_pyodide_kernel/labextension/
+src/jupyterlite_pyodide_kernel/labextension/
 **/.pyodide/
 .pytest_cache/
 docs/
