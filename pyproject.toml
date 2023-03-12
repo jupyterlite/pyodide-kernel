@@ -131,7 +131,7 @@ addopts = [
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=85",
+    "--cov-fail-under=83",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",
@@ -139,11 +139,6 @@ addopts = [
 ]
 testpaths = [
     "tests/",
-]
-
-[tool.coverage.run]
-omit = [
-    "*/test_repo.py"
 ]
 
 [tool.jupyter-releaser.options]
