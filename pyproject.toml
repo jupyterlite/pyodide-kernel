@@ -141,6 +141,11 @@ testpaths = [
     "tests/",
 ]
 
+[tool.coverage.run]
+omit = [
+    "*/test_repo.py"
+]
+
 [tool.jupyter-releaser.options]
 version_cmd = "python scripts/bump-version.py"
 
