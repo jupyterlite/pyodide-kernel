@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 
 import pytest
-from jupyterlite_core.constants import UTF8
+from jupyterlite_core.constants import ALL_JSON, UTF8
 
 from jupyterlite_pyodide_kernel.constants import PYPI_WHEELS
 
@@ -37,6 +37,11 @@ def test_examples_good(script_runner, an_example_with_tarball):
 
     build = script_runner.run("jupyter", "lite", "build", **opts)
     assert build.success
+
+    output = an_example_with_tarball.parent / "build/docs-app"
+    assert (output / f"api/contents/{ALL_JSON}").exists()
+    assert (output / "files/intro.ipynb").exists()
+    assert not (output / f"files/{PYPI_WHEELS}").exists()
 
     archive = script_runner.run("jupyter", "lite", "archive", **opts)
     assert archive.success

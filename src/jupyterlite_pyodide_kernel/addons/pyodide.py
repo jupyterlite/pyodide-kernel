@@ -34,7 +34,7 @@ from ._base import _BaseAddon
 
 
 class PyodideAddon(_BaseAddon):
-    __all__ = ["status", "post_init", "build", "post_build", "check"]
+    __all__ = ["pre_status", "status", "post_init", "build", "post_build", "check"]
 
     # CLI
     aliases = {
@@ -95,6 +95,16 @@ class PyodideAddon(_BaseAddon):
         if not self.well_known_repodata.exists():
             return {}
         return json.loads(self.well_known_repodata.read_text(**UTF8))["packages"]
+
+    def pre_status(self, manager: LiteManager):
+        if self.well_known_repodata.exists():
+            re_repodata = REPODATA_JSON.replace(".", r"\.")
+
+            self.manager.ignore_contents = [*self.manager.ignore_contents, re_repodata]
+            yield dict(
+                name="ignore:contents:repodata",
+                actions=[lambda: self.log.info("ignoring %s", re_repodata)],
+            )
 
     def status(self, manager: LiteManager):
         """report on the status of pyodide"""
