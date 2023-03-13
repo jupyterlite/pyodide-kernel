@@ -1,13 +1,14 @@
 """Use the demo site for a more extensive test."""
-import shutil
-import os
-from pathlib import Path
 import json
-import pytest
+import os
+import shutil
+from pathlib import Path
 
+import pytest
 from jupyterlite_core.constants import UTF8
 
 from jupyterlite_pyodide_kernel.constants import PYPI_WHEELS
+
 from .conftest import HERE
 
 IN_TREE_EXAMPLES = HERE / "../../../examples"

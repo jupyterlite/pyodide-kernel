@@ -4,7 +4,8 @@ import json
 import re
 import urllib.parse
 from pathlib import Path
-from typing import Tuple as _Tuple, List as _List
+from typing import List as _List
+from typing import Tuple as _Tuple
 
 import doit.tools
 from jupyterlite_core.constants import (
@@ -13,20 +14,18 @@ from jupyterlite_core.constants import (
     JUPYTERLITE_JSON,
     UTF8,
 )
+from jupyterlite_core.manager import LiteManager
 from jupyterlite_core.trait_types import TypedTuple
 from traitlets import Unicode
 
-from ._base import _BaseAddon
-
 from ..constants import (
+    KERNEL_SETTINGS_SCHEMA,
     PIPLITE_INDEX_SCHEMA,
     PIPLITE_URLS,
     PYPI_WHEELS,
-    KERNEL_SETTINGS_SCHEMA,
 )
-from ..wheel_utils import list_wheels, write_wheel_index, get_wheel_fileinfo
-
-from jupyterlite_core.manager import LiteManager
+from ..wheel_utils import get_wheel_fileinfo, list_wheels, write_wheel_index
+from ._base import _BaseAddon
 
 
 class PipliteAddon(_BaseAddon):

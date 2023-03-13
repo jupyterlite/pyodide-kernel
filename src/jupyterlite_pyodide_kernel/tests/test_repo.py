@@ -1,10 +1,12 @@
 """Validate the integrity of the repo (or source checkout)"""
-import pytest
 import json
 from pathlib import Path
 
+import pytest
 from jupyterlite_core.constants import UTF8
+
 from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
+
 from .conftest import HERE
 
 PACKAGES = HERE / "../../../packages"

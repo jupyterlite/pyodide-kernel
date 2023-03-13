@@ -5,18 +5,19 @@ when these features are added upstream:
 
     https://github.com/jupyterlite/jupyterlite/issues/996
 """
-from pathlib import Path
 import json
 from hashlib import sha256
-from typing import Dict, Any, List, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 from jupyterlite_core.addons.base import BaseAddon
 from jupyterlite_core.constants import LAB_EXTENSIONS, UTF8
 
 from ..constants import (
     PKG_JSON_PYODIDE_KERNEL,
     PKG_JSON_WHEELDIR,
-    PYODIDE_KERNEL_PLUGIN_ID,
     PYODIDE_KERNEL_NPM_NAME,
+    PYODIDE_KERNEL_PLUGIN_ID,
     PYPI_WHEELS,
 )
 

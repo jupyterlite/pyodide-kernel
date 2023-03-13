@@ -1,23 +1,22 @@
 """a JupyterLite addon for supporting the pyodide distribution"""
 
+import json
 import os
 import re
 import urllib.parse
-import json
-from pathlib import Path
 from copy import deepcopy
-from typing import Optional, List, Dict, Any
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import doit.tools
-from jupyterlite_core.manager import LiteManager
 from jupyterlite_core.constants import (
+    JSON_FMT,
     JUPYTERLITE_JSON,
     UTF8,
-    JSON_FMT,
 )
-from traitlets import Unicode, default, Bool
+from jupyterlite_core.manager import LiteManager
+from traitlets import Bool, Unicode, default
 
-from ._base import _BaseAddon
 from ..constants import (
     ALL_WHEELISH,
     PKG_JSON_SCHEMA,
@@ -30,7 +29,8 @@ from ..constants import (
     REPODATA_SCHEMA,
     REPODATA_URLS,
 )
-from ..wheel_utils import write_repo_index, list_wheels, get_wheel_repodata
+from ..wheel_utils import get_wheel_repodata, list_wheels, write_repo_index
+from ._base import _BaseAddon
 
 
 class PyodideAddon(_BaseAddon):

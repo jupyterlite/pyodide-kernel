@@ -165,7 +165,6 @@ omit = [
     "*/tests/*",
 ]
 
-
 [tool.jupyter-releaser.options]
 version_cmd = "python scripts/bump-version.py"
 
@@ -183,3 +182,6 @@ before-build-python = [
 
 [tool.check-wheel-contents]
 ignore = ["W002"]
+
+[tool.ruff]
+select = ["E", "F", "W", "I"]

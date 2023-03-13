@@ -1,14 +1,13 @@
 """Utilties for working with wheels and package metadata."""
-import json
-from typing import List, Optional
-from pathlib import Path
-import functools
-import re
 import datetime
-import zipfile
+import functools
+import json
+import re
 import warnings
-
+import zipfile
 from hashlib import md5, sha256
+from pathlib import Path
+from typing import List, Optional
 
 from jupyterlite_core.constants import (
     ALL_JSON,

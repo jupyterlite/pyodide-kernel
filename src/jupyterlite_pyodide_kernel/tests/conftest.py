@@ -1,6 +1,7 @@
 """test configuration for jupyterlite-pyodide-kernel"""
-from pathlib import Path
 import sys
+from pathlib import Path
+
 import pytest
 from jupyterlite_core.tests.conftest import (
     a_fixture_server,
@@ -9,8 +10,8 @@ from jupyterlite_core.tests.conftest import (
 )
 
 from jupyterlite_pyodide_kernel.constants import (
-    PYODIDE_VERSION,
     PYODIDE_KERNEL_NPM_NAME,
+    PYODIDE_VERSION,
 )
 
 __all__ = [
