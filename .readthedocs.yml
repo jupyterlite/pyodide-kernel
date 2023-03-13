@@ -12,6 +12,7 @@ build:
       - python -m pip install -r requirements-dev.txt
       - jlpm --frozen-lockfile
       - jlpm build:prod
+      - jlpm dev
       - jlpm dist
       # pre-build the lite site to isolate build errors
       - jlpm docs:lite
