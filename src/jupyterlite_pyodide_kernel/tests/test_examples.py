@@ -1,5 +1,4 @@
 """Use the demo site for a more extensive test."""
-import pytest
 import shutil
 import os
 from pathlib import Path
