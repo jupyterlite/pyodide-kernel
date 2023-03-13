@@ -31,8 +31,8 @@
     "schema/*.json"
   ],
   "scripts": {
-    "build": "jlpm build:lib && jlpm build:labextension:dev && jlpm dev",
-    "build:prod": "jlpm build:lib && jlpm build:labextension && jlpm dev",
+    "build": "jlpm build:lib && jlpm build:labextension:dev",
+    "build:prod": "jlpm build:lib && jlpm build:labextension",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc -b",
