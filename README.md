@@ -20,8 +20,7 @@
 
 ## Install
 
-To install the Pyodide kernel labextension and the CLI addons for `jupyter lite`,
-run:
+To install the Pyodide kernel labextension and the CLI addons for `jupyter lite`, run:
 
 ```bash
 pip install jupyterlite-pyodide-kernel
