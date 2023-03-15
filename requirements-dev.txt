@@ -1,4 +1,4 @@
-# temporary requirements until more stable upstream releases are available
-jupyterlite @ https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite-0.1.0b18-py3-none-any.whl
-jupyterlite-core @ https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite_core-0.1.0b18-py3-none-any.whl
 -e ".[dev,lint,test,docs]"
+# temporary requirements when more stable upstream are not available
+# jupyterlite @ https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite-0.1.0b19-py3-none-any.whl
+# jupyterlite-core @ https://jupyterlite.rtfd.io/en/latest/_static/jupyterlite_core-0.1.0b19-py3-none-any.whl

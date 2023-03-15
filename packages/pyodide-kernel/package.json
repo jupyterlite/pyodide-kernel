@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "JupyterLite - Pyodide Kernel",
   "homepage": "https://github.com/jupyterlite/pyodide-kernel",
   "bugs": {
@@ -75,9 +75,9 @@
       "py/jedi": "0.18.2",
       "py/jupyterlab_widgets1/jupyterlab_widgets": "1.1.2",
       "py/jupyterlab_widgets3/jupyterlab_widgets": "3.0.5",
-      "py/piplite": "0.0.4",
+      "py/piplite": "0.0.5",
       "py/prompt_toolkit": "3.0.36",
-      "py/pyodide-kernel": "0.0.4",
+      "py/pyodide-kernel": "0.0.5",
       "py/widgetsnbextension3/widgetsnbextension": "3.6.0",
       "py/widgetsnbextension4/widgetsnbextension": "4.0.2"
     }
