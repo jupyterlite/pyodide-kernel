@@ -34,9 +34,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    # tmp
-    "jupyterlite-core ==0.1.0b19",
-    # "jupyterlite-core >=0.1.0b20,<0.2.0",
+    "jupyterlite-core >=0.1.0b20,<0.2.0",
     "pkginfo"
 ]
 
