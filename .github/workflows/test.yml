@@ -11,6 +11,7 @@ on:
 env:
   EXPECT_BUILD: |-
     _output/extensions/@jupyterlite/pyodide-kernel-extension/static/pypi/all.json
+  JUPYTERLITE_NO_LIBARCHIVE: 1
 
 jobs:
   build:
