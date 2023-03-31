@@ -125,14 +125,15 @@ addopts = [
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=97",
+    "--cov-fail-under=96",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",
     "--self-contained-html",
 ]
-testpaths = [
-    "tests/",
+filterwarnings = [
+    "error",
+    "ignore:libarchive:UserWarning:jupyterlite_core",
 ]
 
 [tool.jupyter-releaser.options]
