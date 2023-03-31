@@ -15,7 +15,7 @@ class Comm:
         primary=True,
         target_module=None,
         comm_id=None,
-        **kwargs
+        **kwargs,
     ):
         from IPython.core.getipython import get_ipython
 
@@ -146,11 +146,12 @@ class CommManager:
         self.targets = targets if targets is not None else {}
 
     def register_target(self, target_name, f):
-        """Register a callable f for a given target name
-        f will be called with two arguments when a comm_open message is received with `target`:
-        - the Comm instance
-        - the `comm_open` message itself.
-        f can be a Python callable or an import string for one.
+        """Register a callable ``f`` for a given target name
+        ``f`` will be called with two arguments when a comm_open message is
+        received with ``target``:
+        - the ``Comm`` instance
+        - the ``comm_open`` message itself.
+        ``f`` can be a Python callable or an import string for one.
         """
         if isinstance(f, str):
             f = import_item(f)

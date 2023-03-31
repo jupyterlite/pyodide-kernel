@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel-extension",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "JupyterLite - Pyodide Kernel Extension",
   "homepage": "https://github.com/jupyterlite/pyodide-kernel",
   "bugs": {
@@ -26,7 +26,9 @@
     "lib/*.js.map",
     "lib/*.js",
     "style/*.css",
-    "style/index.js"
+    "style/**/*.svg",
+    "style/index.js",
+    "schema/*.json"
   ],
   "scripts": {
     "build": "jlpm build:lib && jlpm build:labextension:dev",
@@ -48,7 +50,7 @@
     "@jupyterlab/coreutils": "^5.5.2",
     "@jupyterlite/contents": "^0.1.0-beta.18",
     "@jupyterlite/kernel": "^0.1.0-beta.18",
-    "@jupyterlite/pyodide-kernel": "^0.0.2",
+    "@jupyterlite/pyodide-kernel": "^0.0.5",
     "@jupyterlite/server": "^0.1.0-beta.18"
   },
   "devDependencies": {

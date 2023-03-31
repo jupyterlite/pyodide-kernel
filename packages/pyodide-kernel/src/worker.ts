@@ -62,7 +62,6 @@ export class PyodideRemoteKernel {
 
     const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls } = this._options;
 
-    // this is the only use of `loadPackage`, allow `piplite` to handle the rest
     await this._pyodide.loadPackage(['micropip']);
 
     // get piplite early enough to impact pyodide dependencies
