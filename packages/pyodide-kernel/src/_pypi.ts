@@ -3,5 +3,5 @@ export * as allJSONUrl from '../pypi/all.json';
 export * as ipykernelWheelUrl from '../pypi/ipykernel-6.9.2-py3-none-any.whl';
 export * as pipliteWheelUrl from '../pypi/piplite-0.0.5-py3-none-any.whl';
 export * as pyodide_kernelWheelUrl from '../pypi/pyodide_kernel-0.0.5-py3-none-any.whl';
-export * as widgetsnbextensionWheelUrl from '../pypi/widgetsnbextension-3.6.0-py3-none-any.whl';
-export * as widgetsnbextensionWheelUrl1 from '../pypi/widgetsnbextension-4.0.2-py3-none-any.whl';
+export * as widgetsnbextensionWheelUrl from '../pypi/widgetsnbextension-3.6.4-py3-none-any.whl';
+export * as widgetsnbextensionWheelUrl1 from '../pypi/widgetsnbextension-4.0.7-py3-none-any.whl';
