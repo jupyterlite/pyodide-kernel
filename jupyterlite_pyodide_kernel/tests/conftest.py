@@ -2,11 +2,13 @@
 from pathlib import Path
 import sys
 import pytest
+import jupyterlite_core.tests.conftest
 from jupyterlite_core.tests.conftest import (
     a_fixture_server,
     an_empty_lite_dir,
     an_unused_port,
 )
+
 
 from jupyterlite_pyodide_kernel.constants import (
     PYODIDE_VERSION,
@@ -24,6 +26,10 @@ __all__ = [
 
 HERE = Path(__file__).parent
 FIXTURES = HERE / "fixtures"
+
+# patch the upstream fixtures with local ones
+jupyterlite_core.tests.conftest.FIXTURES = FIXTURES
+
 
 IN_TREE_EXTENSION = (HERE / "../labextension").resolve()
 SHARE = Path(sys.prefix) / "share/jupyter/labextensions"

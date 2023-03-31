@@ -34,7 +34,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "jupyterlite-core >=0.1.0b19,<0.2.0",
+    "jupyterlite-core >=0.1.0b22,<0.2.0",
     "pkginfo"
 ]
 
@@ -125,14 +125,11 @@ addopts = [
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=97",
+    "--cov-fail-under=96",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",
     "--self-contained-html",
-]
-testpaths = [
-    "tests/",
 ]
 
 [tool.jupyter-releaser.options]

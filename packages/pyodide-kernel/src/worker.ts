@@ -149,7 +149,7 @@ export class PyodideRemoteKernel {
    * @param res The result object from the Pyodide evaluation
    */
   formatResult(res: any): any {
-    if (!this._pyodide.isPyProxy(res)) {
+    if (!(res instanceof this._pyodide.ffi.PyProxy)) {
       return res;
     }
     // TODO: this is a bit brittle
