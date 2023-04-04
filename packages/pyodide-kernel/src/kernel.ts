@@ -62,7 +62,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       baseUrl,
       pyodideUrl,
       indexUrl,
-      pipliteWheelUrl: options.pipliteWheelUrl ?? pipliteWheelUrl.default,
+      pipliteWheelUrl: options?.pipliteWheelUrl || pipliteWheelUrl.default,
       pipliteUrls,
       disablePyPIFallback,
       location: this.location,
@@ -307,7 +307,7 @@ export namespace PyodideKernel {
     /**
      * The URL to fetch piplite
      */
-    pipliteWheelUrl: string;
+    pipliteWheelUrl?: string;
 
     /**
      * The URLs from which to attempt PyPI API requests
