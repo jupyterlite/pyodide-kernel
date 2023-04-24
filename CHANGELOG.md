@@ -2,6 +2,23 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.7
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.0.6...6af9a12b844dae5d5ac1b7ad703bc0d20b2c8e19))
+
+### Enhancements made
+
+- Update to Pyodide `0.23.1` [#45](https://github.com/jupyterlite/pyodide-kernel/pull/45) ([@jtpio](https://github.com/jtpio))
+- 🎛 added `pipliteWheelUrl` option [#42](https://github.com/jupyterlite/pyodide-kernel/pull/42) ([@stevejpurves](https://github.com/stevejpurves))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-03-31&to=2023-04-24&type=c))
+
+[@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-03-31..2023-04-24&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-03-31..2023-04-24&type=Issues) | [@stevejpurves](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Astevejpurves+updated%3A2023-03-31..2023-04-24&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.6
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.0.5...55d8df5291d586255b5cd3e92c1d54bff4c32c8f))
@@ -19,8 +36,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-03-15&to=2023-03-31&type=c))
 
 [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2023-03-15..2023-03-31&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-03-15..2023-03-31&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-03-15..2023-03-31&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.5
 
