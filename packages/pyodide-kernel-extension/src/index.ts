@@ -12,7 +12,6 @@ import {
 import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
 import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
 
-export * as KERNEL_SETTINGS_SCHEMA from '../schema/kernel.v0.schema.json';
 import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
 
 const KERNEL_ICON_URL = `data:image/svg+xml;base64,${btoa(KERNEL_ICON_SVG_STR)}`;
