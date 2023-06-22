@@ -48,6 +48,11 @@ export namespace IPyodideWorkerKernel {
     indexUrl: string;
 
     /**
+     * The URL from which Pyodide will load the pyodide-lock.json file
+     */
+    pyodideLockFileURL: string;
+
+    /**
      * The URL of the `piplite` wheel for bootstrapping.
      */
     pipliteWheelUrl: string;
