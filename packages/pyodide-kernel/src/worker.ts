@@ -38,7 +38,7 @@ export class PyodideRemoteKernel {
   }
 
   protected async initRuntime(options: IPyodideWorkerKernel.IOptions): Promise<void> {
-    const { pyodideUrl, indexUrl, pyodidelockFileURL } = options;
+    const { pyodideUrl, indexUrl, pyodideLockFileURL } = options;
     let loadPyodide: typeof Pyodide.loadPyodide;
     if (pyodideUrl.endsWith('.mjs')) {
       // note: this does not work at all in firefox
@@ -50,7 +50,7 @@ export class PyodideRemoteKernel {
       importScripts(pyodideUrl);
       loadPyodide = (self as any).loadPyodide;
     }
-    this._pyodide = await loadPyodide({ indexURL: indexUrl, lockFileURL: pyodidelockFileURL});
+    this._pyodide = await loadPyodide({ indexURL: indexUrl, lockFileURL: pyodideLockFileURL});
   }
 
   protected async initPackageManager(
