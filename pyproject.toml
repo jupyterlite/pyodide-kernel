@@ -136,6 +136,10 @@ addopts = [
 version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
+before-bump-version = [
+    "python -m pip install jupyterlab~=3.5.3",
+    "jlpm"
+]
 before-build-npm = [
     "python -m pip install jupyterlab~=3.5.3 hatch",
     "python -m pip install -e .[dev]",
