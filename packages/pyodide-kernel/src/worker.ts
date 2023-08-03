@@ -350,8 +350,8 @@ export class PyodideRemoteKernel {
     await this.setup(parent);
 
     const res = this._kernel.comm_manager.comm_open(
-      null,
-      null,
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(null),
       this._pyodide.toPy(content)
     );
     const results = this.formatResult(res);
@@ -368,8 +368,8 @@ export class PyodideRemoteKernel {
     await this.setup(parent);
 
     const res = this._kernel.comm_manager.comm_msg(
-      null,
-      null,
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(null),
       this._pyodide.toPy(content)
     );
     const results = this.formatResult(res);
@@ -386,8 +386,8 @@ export class PyodideRemoteKernel {
     await this.setup(parent);
 
     const res = this._kernel.comm_manager.comm_close(
-      null,
-      null,
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(null),
       this._pyodide.toPy(content)
     );
     const results = this.formatResult(res);
