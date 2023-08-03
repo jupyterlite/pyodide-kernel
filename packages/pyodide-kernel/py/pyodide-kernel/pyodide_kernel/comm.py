@@ -1,5 +1,5 @@
 import comm
-from comm import BaseComm
+from comm import BaseComm, get_comm_manager, CommManager  # noqa
 
 from IPython.core.getipython import get_ipython
 
