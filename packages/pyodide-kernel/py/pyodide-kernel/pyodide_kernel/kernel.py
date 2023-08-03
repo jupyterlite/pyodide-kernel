@@ -1,7 +1,8 @@
 # This is our ipykernel mock
 import typing
 
-from ipykernel import CommManager
+from .comm import get_comm_manager, CommManager
+
 from IPython.utils.tokenutil import line_at_cursor, token_at_cursor
 from pyodide_js import loadPackagesFromImports as _load_packages_from_imports
 from traitlets import Any, Instance, default
@@ -23,7 +24,7 @@ class PyodideKernel(LoggingConfigurable):
 
     @default("comm_manager")
     def _default_comm_manager(self):
-        return CommManager(kernel=self)
+        return get_comm_manager()
 
     def get_parent(self):
         # TODO mimic ipykernel's get_parent signature

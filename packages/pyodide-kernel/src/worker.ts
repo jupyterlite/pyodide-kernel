@@ -79,6 +79,7 @@ export class PyodideRemoteKernel {
     await this._pyodide.runPythonAsync(`
       await piplite.install(['sqlite3'], keep_going=True);
       await piplite.install(['ipykernel'], keep_going=True);
+      await piplite.install(['comm'], keep_going=True);
       await piplite.install(['pyodide_kernel'], keep_going=True);
       await piplite.install(['ipython'], keep_going=True);
       import pyodide_kernel
@@ -348,7 +349,11 @@ export class PyodideRemoteKernel {
   async commOpen(content: any, parent: any) {
     await this.setup(parent);
 
-    const res = this._kernel.comm_manager.comm_open(this._pyodide.toPy(content));
+    const res = this._kernel.comm_manager.comm_open(
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(content)
+    );
     const results = this.formatResult(res);
 
     return results;
@@ -362,7 +367,11 @@ export class PyodideRemoteKernel {
   async commMsg(content: any, parent: any) {
     await this.setup(parent);
 
-    const res = this._kernel.comm_manager.comm_msg(this._pyodide.toPy(content));
+    const res = this._kernel.comm_manager.comm_msg(
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(content)
+    );
     const results = this.formatResult(res);
 
     return results;
@@ -376,7 +385,11 @@ export class PyodideRemoteKernel {
   async commClose(content: any, parent: any) {
     await this.setup(parent);
 
-    const res = this._kernel.comm_manager.comm_close(this._pyodide.toPy(content));
+    const res = this._kernel.comm_manager.comm_close(
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(null),
+      this._pyodide.toPy(content)
+    );
     const results = this.formatResult(res);
 
     return results;
