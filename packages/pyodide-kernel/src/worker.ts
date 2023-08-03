@@ -349,7 +349,7 @@ export class PyodideRemoteKernel {
   async commOpen(content: any, parent: any) {
     await this.setup(parent);
 
-    const res = this._kernel.comm_manager.comm_open(this._pyodide.toPy(content));
+    const res = this._kernel.comm_manager.comm_open(null, null, this._pyodide.toPy(content));
     const results = this.formatResult(res);
 
     return results;
@@ -363,7 +363,7 @@ export class PyodideRemoteKernel {
   async commMsg(content: any, parent: any) {
     await this.setup(parent);
 
-    const res = this._kernel.comm_manager.comm_msg(this._pyodide.toPy(content));
+    const res = this._kernel.comm_manager.comm_msg(null, null, this._pyodide.toPy(content));
     const results = this.formatResult(res);
 
     return results;
@@ -377,7 +377,7 @@ export class PyodideRemoteKernel {
   async commClose(content: any, parent: any) {
     await this.setup(parent);
 
-    const res = this._kernel.comm_manager.comm_close(this._pyodide.toPy(content));
+    const res = this._kernel.comm_manager.comm_close(null, null, this._pyodide.toPy(content));
     const results = this.formatResult(res);
 
     return results;
