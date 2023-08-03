@@ -1,3 +1,4 @@
+import comm
 from comm import BaseComm
 
 from IPython.core.getipython import get_ipython
