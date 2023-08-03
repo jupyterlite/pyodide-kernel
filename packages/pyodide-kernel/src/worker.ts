@@ -79,6 +79,7 @@ export class PyodideRemoteKernel {
     await this._pyodide.runPythonAsync(`
       await piplite.install(['sqlite3'], keep_going=True);
       await piplite.install(['ipykernel'], keep_going=True);
+      await piplite.install(['comm'], keep_going=True);
       await piplite.install(['pyodide_kernel'], keep_going=True);
       await piplite.install(['ipython'], keep_going=True);
       import pyodide_kernel

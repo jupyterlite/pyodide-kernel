@@ -1,9 +1,10 @@
 import sys
 
-from ipykernel.jsonutil import encode_images, json_clean
 from IPython.core.displayhook import DisplayHook
 from IPython.core.displaypub import DisplayPublisher
 from IPython.display import Image  # to replace previous base64-encoding shim
+
+from .jsonutil import encode_images, json_clean
 
 __all__ = ["LiteStream", "Image", "LiteDisplayHook", "LiteDisplayPublisher"]
 
