@@ -3,6 +3,8 @@
 __version__ = "6.9.2"
 __all__ = ["Comm", "CommManager", "__version__"]
 
+import re
+
 from .comm import Comm, CommManager
 
 # Build up version_info tuple for backwards compatibility
