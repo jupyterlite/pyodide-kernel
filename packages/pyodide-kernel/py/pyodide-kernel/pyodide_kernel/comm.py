@@ -4,7 +4,6 @@ from IPython.core.getipython import get_ipython
 
 
 class Comm(BaseComm):
-
     def publish_msg(self, msg_type, data=None, metadata=None, buffers=None, **keys):
         """Helper for sending a comm message on IOPub"""
         data = {} if data is None else data
