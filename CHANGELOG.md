@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.1.1
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.1.0...9912cad66e4457604642d64daf11d6c93f8e3d4c))
+
+### Maintenance and upkeep improvements
+
+- Bumped @jupyterlite packages [#55](https://github.com/jupyterlite/pyodide-kernel/pull/55) ([@andeplane](https://github.com/andeplane))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-08-03&to=2023-08-22&type=c))
+
+[@andeplane](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aandeplane+updated%3A2023-08-03..2023-08-22&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.1.0
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/v0.0.10...55d21e05415108123c8908722ae1b70b925eebac))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-08-03&to=2023-08-03&type=c))
 
 [@martinRenou](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3AmartinRenou+updated%3A2023-08-03..2023-08-03&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.10
 
