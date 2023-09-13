@@ -16,7 +16,7 @@
 ## Requirements
 
 - `python >=3.8`
-- `jupyterlite >=0.1.0b19`
+- `jupyterlite-core >=0.2.0a0`
 
 ## Install
 

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 0.1.x
   pull_request:
     branches:
       - '*'
@@ -19,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1

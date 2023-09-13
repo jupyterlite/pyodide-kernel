@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel-extension",
-  "version": "0.1.1",
+  "version": "0.2.0-alpha.0",
   "description": "JupyterLite - Pyodide Kernel Extension",
   "homepage": "https://github.com/jupyterlite/pyodide-kernel",
   "bugs": {
@@ -47,16 +47,16 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/coreutils": "^5.5.2",
-    "@jupyterlite/contents": "^0.1.2",
-    "@jupyterlite/kernel": "^0.1.2",
-    "@jupyterlite/pyodide-kernel": "^0.1.1",
-    "@jupyterlite/server": "^0.1.2"
+    "@jupyterlab/coreutils": "^6.0.5",
+    "@jupyterlite/contents": "^0.2.0-alpha.0",
+    "@jupyterlite/kernel": "^0.2.0-alpha.0",
+    "@jupyterlite/pyodide-kernel": "^0.2.0-alpha.0",
+    "@jupyterlite/server": "^0.2.0-alpha.0"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^3.5.0",
-    "rimraf": "~3.0.0",
-    "typescript": "~4.9.4"
+    "@jupyterlab/builder": "^4.0.5",
+    "rimraf": "^5.0.1",
+    "typescript": "~5.2.2"
   },
   "publishConfig": {
     "access": "public"

@@ -39,7 +39,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
     app: JupyterLiteServer,
     kernelspecs: IKernelSpecs,
     serviceWorker?: IServiceWorkerManager,
-    broadcastChannel?: IBroadcastChannelWrapper
+    broadcastChannel?: IBroadcastChannelWrapper,
   ) => {
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
