@@ -29,7 +29,7 @@ PYODIDE_REPODATA = "repodata.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 
 #: probably only compatible with this version of pyodide
-PYODIDE_VERSION = "0.23.4"
+PYODIDE_VERSION = "0.24.0"
 
 #: the only kind of noarch wheel piplite understands
 NOARCH_WHL = "py3-none-any.whl"
