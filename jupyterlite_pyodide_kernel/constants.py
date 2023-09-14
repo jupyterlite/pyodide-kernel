@@ -25,7 +25,7 @@ PYODIDE_URL = "pyodideUrl"
 #: where we put pyodide, for now
 PYODIDE = "pyodide"
 PYODIDE_JS = "pyodide.js"
-PYODIDE_REPODATA = "repodata.json"
+PYODIDE_LOCK = "pyodide-lock.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 
 #: probably only compatible with this version of pyodide
