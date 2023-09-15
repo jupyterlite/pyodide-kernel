@@ -33,7 +33,7 @@ source_suffix = ".md"
 # theme
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "github_url": P["urls"]["Homepage"],
+    "github_url": P["urls"]["Source"],
     "use_edit_page_button": True,
     "icon_links": [
         {
