@@ -15,7 +15,7 @@ from ._base import _BaseAddon
 from ..constants import (
     PYODIDE,
     PYODIDE_JS,
-    PYODIDE_REPODATA,
+    PYODIDE_LOCK,
     PYODIDE_URL,
 )
 
@@ -151,8 +151,8 @@ class PyodideAddon(_BaseAddon):
         assert pyodide_path.exists(), f"{pyodide_path} not found"
         pyodide_js = pyodide_path / PYODIDE_JS
         assert pyodide_js.exists(), f"{pyodide_js} not found"
-        pyodide_repodata = pyodide_path / PYODIDE_REPODATA
-        assert pyodide_repodata.exists(), f"{pyodide_repodata} not found"
+        pyodide_lock = pyodide_path / PYODIDE_LOCK
+        assert pyodide_lock.exists(), f"{pyodide_lock} not found"
 
     def patch_jupyterlite_json(self, config_path, output_js):
         """update jupyter-lite.json to use the local pyodide"""
@@ -216,7 +216,7 @@ class PyodideAddon(_BaseAddon):
             targets=[
                 # there are a lot of js/data files, but we actually talk about these...
                 dest / PYODIDE / PYODIDE_JS,
-                dest / PYODIDE / PYODIDE_REPODATA,
+                dest / PYODIDE / PYODIDE_LOCK,
             ],
             actions=[(self.extract_one, [local_path, dest])],
         )
