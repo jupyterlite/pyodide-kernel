@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.1.2
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.1.1...e39526f301bfb6b98aafb1d4b21700def0766160))
+
+### Enhancements made
+
+- pyodide 0.24.0, widget shim patches [#62](https://github.com/jupyterlite/pyodide-kernel/pull/62) ([@bollwyvl](https://github.com/bollwyvl))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-08-22&to=2023-09-15&type=c))
+
+[@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2023-08-22..2023-09-15&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-08-22..2023-09-15&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-08-22..2023-09-15&type=Issues) | [@michaelweinold](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Amichaelweinold+updated%3A2023-08-22..2023-09-15&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.1.1
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.1.0...9912cad66e4457604642d64daf11d6c93f8e3d4c))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-08-03&to=2023-08-22&type=c))
 
 [@andeplane](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aandeplane+updated%3A2023-08-03..2023-08-22&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.1.0
 
