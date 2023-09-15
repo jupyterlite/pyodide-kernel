@@ -49,7 +49,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   }
 
   protected initRemoteOptions(
-    options: PyodideKernel.IOptions
+    options: PyodideKernel.IOptions,
   ): IPyodideWorkerKernel.IOptions {
     const { pyodideUrl } = options;
     const indexUrl = pyodideUrl.slice(0, pyodideUrl.lastIndexOf('/') + 1);
@@ -147,7 +147,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
           msg.content,
           msg.metadata,
           msg.buffers,
-          msg.parentHeader
+          msg.parentHeader,
         );
         break;
       }
@@ -192,7 +192,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * @param msg The parent message.
    */
   async executeRequest(
-    content: KernelMessage.IExecuteRequestMsg['content']
+    content: KernelMessage.IExecuteRequestMsg['content'],
   ): Promise<KernelMessage.IExecuteReplyMsg['content']> {
     await this.ready;
     const result = await this._remoteKernel.execute(content, this.parent);
@@ -206,7 +206,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * @param msg The parent message.
    */
   async completeRequest(
-    content: KernelMessage.ICompleteRequestMsg['content']
+    content: KernelMessage.ICompleteRequestMsg['content'],
   ): Promise<KernelMessage.ICompleteReplyMsg['content']> {
     return await this._remoteKernel.complete(content, this.parent);
   }
@@ -219,7 +219,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * @returns A promise that resolves with the response message.
    */
   async inspectRequest(
-    content: KernelMessage.IInspectRequestMsg['content']
+    content: KernelMessage.IInspectRequestMsg['content'],
   ): Promise<KernelMessage.IInspectReplyMsg['content']> {
     return await this._remoteKernel.inspect(content, this.parent);
   }
@@ -232,7 +232,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * @returns A promise that resolves with the response message.
    */
   async isCompleteRequest(
-    content: KernelMessage.IIsCompleteRequestMsg['content']
+    content: KernelMessage.IIsCompleteRequestMsg['content'],
   ): Promise<KernelMessage.IIsCompleteReplyMsg['content']> {
     return await this._remoteKernel.isComplete(content, this.parent);
   }
@@ -245,7 +245,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * @returns A promise that resolves with the response message.
    */
   async commInfoRequest(
-    content: KernelMessage.ICommInfoRequestMsg['content']
+    content: KernelMessage.ICommInfoRequestMsg['content'],
   ): Promise<KernelMessage.ICommInfoReplyMsg['content']> {
     return await this._remoteKernel.commInfo(content, this.parent);
   }
