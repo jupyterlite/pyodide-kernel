@@ -54,7 +54,7 @@ export class PyodideRemoteKernel {
   }
 
   protected async initPackageManager(
-    options: IPyodideWorkerKernel.IOptions
+    options: IPyodideWorkerKernel.IOptions,
   ): Promise<void> {
     if (!this._options) {
       throw new Error('Uninitialized');
@@ -106,7 +106,7 @@ export class PyodideRemoteKernel {
    * Setup custom Emscripten FileSystem
    */
   protected async initFilesystem(
-    options: IPyodideWorkerKernel.IOptions
+    options: IPyodideWorkerKernel.IOptions,
   ): Promise<void> {
     if (options.mountDrive) {
       const mountpoint = '/drive';
@@ -178,7 +178,7 @@ export class PyodideRemoteKernel {
     const publishExecutionResult = (
       prompt_count: any,
       data: any,
-      metadata: any
+      metadata: any,
     ): void => {
       const bundle = {
         execution_count: prompt_count,
@@ -232,7 +232,7 @@ export class PyodideRemoteKernel {
     const updateDisplayDataCallback = (
       data: any,
       metadata: any,
-      transient: any
+      transient: any,
     ): void => {
       const bundle = {
         data: this.formatResult(data),
@@ -298,14 +298,14 @@ export class PyodideRemoteKernel {
    */
   async inspect(
     content: { code: string; cursor_pos: number; detail_level: 0 | 1 },
-    parent: any
+    parent: any,
   ) {
     await this.setup(parent);
 
     const res = this._kernel.inspect(
       content.code,
       content.cursor_pos,
-      content.detail_level
+      content.detail_level,
     );
     const results = this.formatResult(res);
     return results;
@@ -352,7 +352,7 @@ export class PyodideRemoteKernel {
     const res = this._kernel.comm_manager.comm_open(
       this._pyodide.toPy(null),
       this._pyodide.toPy(null),
-      this._pyodide.toPy(content)
+      this._pyodide.toPy(content),
     );
     const results = this.formatResult(res);
 
@@ -370,7 +370,7 @@ export class PyodideRemoteKernel {
     const res = this._kernel.comm_manager.comm_msg(
       this._pyodide.toPy(null),
       this._pyodide.toPy(null),
-      this._pyodide.toPy(content)
+      this._pyodide.toPy(content),
     );
     const results = this.formatResult(res);
 
@@ -388,7 +388,7 @@ export class PyodideRemoteKernel {
     const res = this._kernel.comm_manager.comm_close(
       this._pyodide.toPy(null),
       this._pyodide.toPy(null),
-      this._pyodide.toPy(content)
+      this._pyodide.toPy(content),
     );
     const results = this.formatResult(res);
 

@@ -20,7 +20,7 @@ const KERNEL_ICON_URL = `data:image/svg+xml;base64,${btoa(KERNEL_ICON_SVG_STR)}`
 /**
  * The default CDN fallback for Pyodide
  */
-const PYODIDE_CDN_URL = 'https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js';
+const PYODIDE_CDN_URL = 'https://cdn.jsdelivr.net/pyodide/v0.24.0/full/pyodide.js';
 
 /**
  * The id for the extension, and key in the litePlugins.
@@ -39,7 +39,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
     app: JupyterLiteServer,
     kernelspecs: IKernelSpecs,
     serviceWorker?: IServiceWorkerManager,
-    broadcastChannel?: IBroadcastChannelWrapper
+    broadcastChannel?: IBroadcastChannelWrapper,
   ) => {
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
