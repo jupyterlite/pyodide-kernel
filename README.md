@@ -16,7 +16,17 @@
 ## Requirements
 
 - `python >=3.8`
-- `jupyterlite >=0.1.0b19`
+
+### Compatibility
+
+|            status             | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` | `notebook` | `retrolab` |
+| :---------------------------: | :--------------------------: | :----------------: | :----------: | :--------: | ---------- |
+| [alpha](#prerelease-versions) |           `0.2.*`            |      `0.2.*`       |   `4.0.*`    |  `7.0.*`   | -          |
+|            stable             |           `0.1.*`            |      `0.1.*`       |   `3.5.*`    |     -      | `0.3.*`    |
+
+Installing the matching version of JupyterLab with your package manager can help ensure
+matching labextension assets and kernel dependencies, even though this kernel does not
+yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Notebook.
 
 ## Install
 
@@ -26,11 +36,43 @@ To install the Pyodide kernel labextension and the CLI addons for `jupyter lite`
 pip install jupyterlite-pyodide-kernel
 ```
 
-Then build your JupyterLite site:
+or with `conda`, `mamba`, `micromamba`, etc.
+
+```bash
+conda install -c conda-forge jupyterlite-pyodide-kernel
+```
+
+> For more options see the [development install](#development-install) or [contributing
+> guide][contrib].
+
+## Usage
+
+Build a JupyterLite site:
 
 ```bash
 jupyter lite build
 ```
+
+Some new CLI options are also available:
+
+```bash
+jupyter lite --help
+```
+
+This should show something like this:
+
+```bash
+  --piplite-wheels=<typedtuple-item-1>...
+      Local paths or URLs of piplite-compatible wheels to copy and index
+      Default: ()
+      Equivalent to: [--PipliteAddon.piplite_urls]
+  --pyodide=<Unicode>
+      Local path or URL of a pyodide distribution tarball
+      Default: ''
+      Equivalent to: [--PyodideAddon.pyodide_url]
+```
+
+## Learn more
 
 ⚠️ The documentation for advanced configuration is available from the main JupyterLite
 documentation site:
@@ -47,8 +89,28 @@ documentation site:
 To remove the extension, run:
 
 ```bash
-pip uninstall jupyterlite-pyodide-kernel
+pip uninstall jupyterlite-pyodide-kernel  # or howver you installed it
 ```
+
+## Prerelease Versions
+
+To install pre-release versions with `pip`:
+
+```bash
+pip install --upgrade --pre jupyterlite-pyodide-kernel
+```
+
+Or, similarly for the `conda` ecosystem, for `alpha` packages:
+
+```bash
+conda install \
+  -c conda-forge/label/jupyterlite_core_alpha \
+  -c conda-forge/label/jupyterlite_pyodide_kernel_alpha \
+  -c conda-forge \
+  jupyterlite-pyodide-kernel
+```
+
+> Note: `_beta` and `_rc` packages would follow a similar channel naming convention
 
 ## Development Install
 
@@ -57,7 +119,7 @@ Below is an short overview of getting up and running quickly. Please see the
 
 ### Development Requirements
 
-**Recommended** a Python virtual environment provided by a tool of choice, e.g.
+**Recommended** a Python virtual environment provided by a tool of choice, e.g. one of:
 
 - `virtualenv`
 - `mamba`
@@ -66,7 +128,7 @@ Below is an short overview of getting up and running quickly. Please see the
 Ensure the local development environment has:
 
 - `git`
-- `nodejs 18`
+- `nodejs 20`
 - `python >=3.8`
 
 ### Development Quick Start
@@ -78,7 +140,7 @@ npm run quickstart
 ```
 
 Then, serve the built demo site, documentation, and test reports with Python's built-in
-http server:
+HTTP server:
 
 ```bash
 jlpm serve
