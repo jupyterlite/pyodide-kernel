@@ -2,6 +2,26 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.0a2
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/v0.2.0a1...e223074ae9576e441affdee6ae5a53c44804ebe5))
+
+### Enhancements made
+
+- Update to Pyodide 0.24.1 [#69](https://github.com/jupyterlite/pyodide-kernel/pull/69) ([@jtpio](https://github.com/jtpio))
+
+### Documentation improvements
+
+- Fix Github URL in doc header [#64](https://github.com/jupyterlite/pyodide-kernel/pull/64) ([@pierre-haessig](https://github.com/pierre-haessig))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-09-21&to=2023-09-28&type=c))
+
+[@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-09-21..2023-09-28&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-09-21..2023-09-28&type=Issues) | [@lumberbot-app](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Alumberbot-app+updated%3A2023-09-21..2023-09-28&type=Issues) | [@pierre-haessig](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Apierre-haessig+updated%3A2023-09-21..2023-09-28&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.0a1
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.1.1...57ec58cb6bde410f858b16889282116c4867e21b))
@@ -16,8 +36,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-08-22&to=2023-09-21&type=c))
 
 [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2023-08-22..2023-09-21&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-08-22..2023-09-21&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-08-22..2023-09-21&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ameeseeksmachine+updated%3A2023-08-22..2023-09-21&type=Issues) | [@michaelweinold](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Amichaelweinold+updated%3A2023-08-22..2023-09-21&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.1.1
 
