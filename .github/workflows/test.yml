@@ -50,7 +50,7 @@ jobs:
         run: |-
           set -eux
           cd dist
-          ls | sort | sha256sum > SHA256SUMS
+          sha256sum * > SHA256SUMS
           cat SHA256SUMS
 
       - name: Build requirements files
