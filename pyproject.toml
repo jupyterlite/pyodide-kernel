@@ -34,7 +34,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "jupyterlite-core >=0.2.0a0,<0.3.0",
+    "jupyterlite-core >=0.2.0a4,<0.3.0",
     "pkginfo"
 ]
 
@@ -65,7 +65,7 @@ lint = [
 ]
 
 test = [
-    "pytest-console-scripts",
+    "pytest-console-scripts >=1.4.0",
     "pytest-cov",
     "pytest-html",
     "pytest",

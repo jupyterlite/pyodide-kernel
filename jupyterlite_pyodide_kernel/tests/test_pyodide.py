@@ -55,14 +55,14 @@ def test_pyodide(
 
     kwargs = dict(cwd=str(an_empty_lite_dir), env=env)
 
-    status = script_runner.run("jupyter", "lite", "status", *pargs, **kwargs)
+    status = script_runner.run(["jupyter", "lite", "status", *pargs], **kwargs)
     assert status.success, "status did NOT succeed"
 
-    build = script_runner.run("jupyter", "lite", "build", *pargs, **kwargs)
+    build = script_runner.run(["jupyter", "lite", "build", *pargs], **kwargs)
     assert build.success, "the build did NOT succeed"
 
     pyodide_path = an_empty_lite_dir / "_output/static/pyodide/pyodide.js"
     assert pyodide_path.exists(), "pyodide.js does not exist"
 
-    check = script_runner.run("jupyter", "lite", "check", *pargs, **kwargs)
+    check = script_runner.run(["jupyter", "lite", "check", *pargs], **kwargs)
     assert check.success, "the check did NOT succeed"
