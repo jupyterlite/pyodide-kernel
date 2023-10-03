@@ -10,7 +10,7 @@ build:
 
   jobs:
     pre_build:
-      - jlpm --frozen-lockfile
+      - jlpm --immutable
       - jlpm build
       - jlpm dist
       # pre-build the lite site to isolate build errors
