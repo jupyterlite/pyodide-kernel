@@ -52,14 +52,14 @@
     "watch": "tsc -b --watch"
   },
   "dependencies": {
-    "@jupyterlab/coreutils": "^6.0.5",
-    "@jupyterlite/contents": "^0.2.0-alpha.0",
-    "@jupyterlite/kernel": "^0.2.0-alpha.0",
+    "@jupyterlab/coreutils": "^6.0.6",
+    "@jupyterlite/contents": "^0.2.0-alpha.4",
+    "@jupyterlite/kernel": "^0.2.0-alpha.4",
     "comlink": "^4.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.22.17",
-    "@jupyterlab/testutils": "~4.0.5",
+    "@jupyterlab/testutils": "~4.0.6",
     "@types/jest": "^29.5.4",
     "esbuild": "^0.19.2",
     "jest": "^29.7.0",

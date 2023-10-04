@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel-root",
-  "version": "0.2.0-alpha.0",
+  "version": "0.2.0-alpha.4",
   "private": true,
   "workspaces": {
     "packages": [

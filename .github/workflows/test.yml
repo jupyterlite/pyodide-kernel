@@ -32,7 +32,7 @@ jobs:
         run: python -m pip install -v -e ".[dev,lint]"
 
       - name: Install JS dependencies
-        run: jlpm --frozen-lockfile
+        run: jlpm --immutable
 
       - name: Lint the JS
         run: jlpm lint:js:check
@@ -50,7 +50,7 @@ jobs:
         run: |-
           set -eux
           cd dist
-          ls | sort | sha256sum > SHA256SUMS
+          sha256sum * > SHA256SUMS
           cat SHA256SUMS
 
       - name: Build requirements files

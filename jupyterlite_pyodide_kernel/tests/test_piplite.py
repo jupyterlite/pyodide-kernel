@@ -25,10 +25,10 @@ from .conftest import WHEELS, PYODIDE_KERNEL_EXTENSION
 
 def has_wheel_after_build(an_empty_lite_dir, script_runner):
     """run a build, expecting the fixture wheel to be there"""
-    build = script_runner.run("jupyter", "lite", "build", cwd=str(an_empty_lite_dir))
+    build = script_runner.run(["jupyter", "lite", "build"], cwd=str(an_empty_lite_dir))
     assert build.success
 
-    check = script_runner.run("jupyter", "lite", "check", cwd=str(an_empty_lite_dir))
+    check = script_runner.run(["jupyter", "lite", "check"], cwd=str(an_empty_lite_dir))
     assert check.success
 
     output = an_empty_lite_dir / "_output"
@@ -95,14 +95,14 @@ def test_lite_dir_wheel(an_empty_lite_dir, script_runner):
 
 def test_piplite_cli_fail_missing(script_runner, tmp_path, index_cmd):
     path = tmp_path / "missing"
-    build = script_runner.run(*index_cmd, str(path))
+    build = script_runner.run([*index_cmd, str(path)])
     assert not build.success
 
 
 def test_piplite_cli_empty(script_runner, tmp_path, index_cmd):
     path = tmp_path / "empty"
     path.mkdir()
-    build = script_runner.run(*index_cmd, str(path))
+    build = script_runner.run([*index_cmd, str(path)])
     assert not build.success
 
 
@@ -113,7 +113,7 @@ def test_piplite_cli_win(script_runner, tmp_path, index_cmd, in_cwd):
     shutil.copy2(WHEELS[0], path / WHEELS[0].name)
     kwargs = {"cwd": str(path)} if in_cwd else {}
     pargs = [] if in_cwd else [str(path)]
-    build = script_runner.run(*index_cmd, *pargs, **kwargs)
+    build = script_runner.run([*index_cmd, *pargs], **kwargs)
     assert build.success
     assert json.loads((path / "all.json").read_text(encoding="utf-8"))
 
@@ -127,12 +127,12 @@ def test_validate_config(script_runner, a_lite_config_file):
     lite_dir = a_lite_config_file.parent
     output = lite_dir / "_output"
 
-    build = script_runner.run("jupyter", "lite", "build", cwd=str(lite_dir))
+    build = script_runner.run(["jupyter", "lite", "build"], cwd=str(lite_dir))
     assert build.success
     shutil.copy2(output / a_lite_config_file.name, a_lite_config_file)
     first_config_data = a_lite_config_file.read_text(**UTF8)
 
-    check = script_runner.run("jupyter", "lite", "check", cwd=str(lite_dir))
+    check = script_runner.run(["jupyter", "lite", "check"], cwd=str(lite_dir))
     assert check.success
     second_config_data = a_lite_config_file.read_text(**UTF8)
     assert first_config_data == second_config_data
@@ -147,10 +147,10 @@ def test_validate_config(script_runner, a_lite_config_file):
 
     third_config_data = json.dumps(whole_file, **JSON_FMT)
     a_lite_config_file.write_text(third_config_data, **UTF8)
-    rebuild = script_runner.run("jupyter", "lite", "build", cwd=str(lite_dir))
+    rebuild = script_runner.run(["jupyter", "lite", "build"], cwd=str(lite_dir))
     assert rebuild.success
 
-    recheck = script_runner.run("jupyter", "lite", "check", cwd=str(lite_dir))
+    recheck = script_runner.run(["jupyter", "lite", "check"], cwd=str(lite_dir))
     assert not recheck.success, third_config_data
 
     fourth_config_data = a_lite_config_file.read_text(**UTF8)
