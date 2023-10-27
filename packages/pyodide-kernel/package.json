@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel",
-  "version": "0.2.0-alpha.2",
+  "version": "0.2.0",
   "description": "JupyterLite - Pyodide Kernel",
   "homepage": "https://github.com/jupyterlite/pyodide-kernel",
   "bugs": {
@@ -53,8 +53,8 @@
   },
   "dependencies": {
     "@jupyterlab/coreutils": "^6.0.6",
-    "@jupyterlite/contents": "^0.2.0-alpha.4",
-    "@jupyterlite/kernel": "^0.2.0-alpha.4",
+    "@jupyterlite/contents": "^0.2.0",
+    "@jupyterlite/kernel": "^0.2.0",
     "comlink": "^4.4.1"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "hatchling >=1.4.0",
-    "jupyterlab >=4.0.5,<5.0.0a0",
+    "jupyterlab >=4.0.7,<5.0.0a0",
 ]
 build-backend = "hatchling.build"
 
@@ -25,6 +25,8 @@ license = { file = "LICENSE" }
 requires-python = ">=3.8"
 classifiers = [
     "Framework :: Jupyter",
+    "Framework :: Jupyter :: JupyterLab",
+    "Framework :: Jupyter :: JupyterLab :: 4",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -34,7 +36,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 dependencies = [
-    "jupyterlite-core >=0.2.0a4,<0.3.0",
+    "jupyterlite-core >=0.2.0,<0.3.0",
     "pkginfo"
 ]
 
@@ -56,7 +58,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:
 dev = [
     "build",
     "hatch",
-    "jupyterlab >=4.0.5,<5.0.0a0",
+    "jupyterlab >=4.0.7,<5.0.0a0",
 ]
 
 lint = [
@@ -72,7 +74,7 @@ test = [
 ]
 
 docs = [
-    "ipywidgets>=8.0,<9",
+    "ipywidgets >=8.1.1,<9",
     "jupyterlab-language-pack-fr-FR",
     "jupyterlab-language-pack-zh-CN",
     "myst-parser",
@@ -135,11 +137,11 @@ version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
 before-bump-version = [
-    "python -m pip install 'jupyterlab~=4.0.5'",
+    "python -m pip install 'jupyterlab~=4.0.7'",
     "jlpm"
 ]
 before-build-npm = [
-    "python -m pip install 'jupyterlab~=4.0.5' hatch",
+    "python -m pip install 'jupyterlab~=4.0.7' hatch",
     "python -m pip install -e .[dev]",
     "jlpm",
     "jlpm build:prod",

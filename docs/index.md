@@ -47,7 +47,7 @@
 </style>
 
 <iframe
-    src="./_static/retro/notebooks/index.html?path=intro.ipynb"
+    src="./_static/notebooks/index.html?path=intro.ipynb"
     style="width: 99%; border: solid 1px #999; height: 500px"
 ></iframe>
 
