@@ -43,7 +43,8 @@ html_theme_options = {
         },
     ],
     "pygment_light_style": "github-light",
-    "pygment_dark_style": "github-dark"
+    "pygment_dark_style": "github-dark",
+    "navigation_with_keys": False,
 }
 
 github_user, github_repo = P["urls"]["Source"].split("/")[-2:]
