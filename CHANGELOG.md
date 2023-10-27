@@ -2,6 +2,34 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.1.1...93c654a48b31cf830bfaf77709b29e83d2808b43))
+
+### Enhancements made
+
+- Update to Pyodide 0.24.1 [#69](https://github.com/jupyterlite/pyodide-kernel/pull/69) ([@jtpio](https://github.com/jtpio))
+- \[0.1.x\] pyodide 0.24.0, widget shim patches [#62](https://github.com/jupyterlite/pyodide-kernel/pull/62) ([@bollwyvl](https://github.com/bollwyvl))
+- Support jupyterlite-core 0.2.0a0 [#58](https://github.com/jupyterlite/pyodide-kernel/pull/58) ([@bollwyvl](https://github.com/bollwyvl))
+
+### Maintenance and upkeep improvements
+
+- Update versions for 0.2.0 release [#74](https://github.com/jupyterlite/pyodide-kernel/pull/74) ([@bollwyvl](https://github.com/bollwyvl))
+- Bump to jupyterlite-core 0.2.0a4, handle more log warnings [#72](https://github.com/jupyterlite/pyodide-kernel/pull/72) ([@bollwyvl](https://github.com/bollwyvl))
+- bootstrap removed [#71](https://github.com/jupyterlite/pyodide-kernel/pull/71) ([@savakarrohan](https://github.com/savakarrohan))
+
+### Documentation improvements
+
+- Fix Github URL in doc header [#64](https://github.com/jupyterlite/pyodide-kernel/pull/64) ([@pierre-haessig](https://github.com/pierre-haessig))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-08-22&to=2023-10-27&type=c))
+
+[@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2023-08-22..2023-10-27&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-08-22..2023-10-27&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-08-22..2023-10-27&type=Issues) | [@lumberbot-app](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Alumberbot-app+updated%3A2023-08-22..2023-10-27&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ameeseeksmachine+updated%3A2023-08-22..2023-10-27&type=Issues) | [@michaelweinold](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Amichaelweinold+updated%3A2023-08-22..2023-10-27&type=Issues) | [@pierre-haessig](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Apierre-haessig+updated%3A2023-08-22..2023-10-27&type=Issues) | [@savakarrohan](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Asavakarrohan+updated%3A2023-08-22..2023-10-27&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.0a2
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/v0.2.0a1...e223074ae9576e441affdee6ae5a53c44804ebe5))
@@ -19,8 +47,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-09-21&to=2023-09-28&type=c))
 
 [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-09-21..2023-09-28&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-09-21..2023-09-28&type=Issues) | [@lumberbot-app](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Alumberbot-app+updated%3A2023-09-21..2023-09-28&type=Issues) | [@pierre-haessig](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Apierre-haessig+updated%3A2023-09-21..2023-09-28&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.0a1
 

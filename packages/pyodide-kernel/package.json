@@ -73,8 +73,8 @@
   },
   "pyodide-kernel": {
     "packages": {
-      "py/pyodide-kernel": "0.2.0a2",
-      "py/piplite": "0.2.0a2",
+      "py/pyodide-kernel": "0.2.0",
+      "py/piplite": "0.2.0",
       "py/ipykernel": "6.9.2",
       "py/widgetsnbextension3/widgetsnbextension": "3.6.6",
       "py/widgetsnbextension4/widgetsnbextension": "4.0.9"
