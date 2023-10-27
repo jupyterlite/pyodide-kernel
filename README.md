@@ -19,10 +19,10 @@
 
 ### Compatibility
 
-| status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` | `notebook` | `retrolab` |
-| :----: | :--------------------------: | :----------------: | :----------: | :--------: | :--------: |
-| stable |           `0.2.*`            |      `0.2.*`       |   `4.0.*`    |  `7.0.*`   |     -      |
-| stable |           `0.1.*`            |      `0.1.*`       |   `3.5.*`    |     -      |  `0.3.*`   |
+| status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` |  `notebook`  |  `retrolab`  |
+| :----: | :--------------------------: | :----------------: | :----------: | :----------: | :----------: |
+| stable |           `0.2.*`            |    `>=0.2,<0.3`    | `>=4.0.7,<5` | `>=7.0.5,<8` |      -       |
+| stable |           `0.1.*`            |    `>=0.1,<0.2`    | `>=3.5,<3.6` |      -       | `>=0.3,<0.4` |
 
 Installing the matching version of JupyterLab with your package manager can help ensure
 matching labextension assets and kernel dependencies, even though this kernel does not

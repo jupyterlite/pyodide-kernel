@@ -2,7 +2,7 @@
 
 The final, user-facing products of `jupyterlite-pyodide-kernel` are:
 
-- the [distribution](#distributions) on `pyp.org` and `npmjs.org`
+- the [distribution](#distributions) on `pypi.org` and `npmjs.org`
 - the [documentation](#documentation) on ReadTheDocs
 
 Preparing for a [release], however, requires a number of intermediate steps.
@@ -18,7 +18,7 @@ and watch what it does to files on disk and in the terminal log.
 
 - `git`
 - `python >=3.8`
-- `nodejs >=18,<19`
+- `nodejs >=20,<21`
 
 ### Setup
 

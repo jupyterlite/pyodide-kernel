@@ -32,19 +32,20 @@ source_suffix = ".md"
 
 # theme
 html_theme = "pydata_sphinx_theme"
+html_logo =  "../packages/pyodide-kernel-extension/style/img/pyodide.svg"
+html_favicon = html_logo
 html_theme_options = {
     "github_url": P["urls"]["Source"],
-    "use_edit_page_button": True,
     "icon_links": [
-        {
-            "name": "PyPI",
-            "url": P["urls"]["PyPI"],
-            "icon": "fa-solid fa-box",
-        },
+       {"name": "PyPI", "url": P["urls"]["PyPI"], "icon": "fa-solid fa-box"}
     ],
+    "logo": {
+        "text": P["name"]
+    },
+    "navigation_with_keys": False,
     "pygment_light_style": "github-light",
     "pygment_dark_style": "github-dark",
-    "navigation_with_keys": False,
+    "use_edit_page_button": True,
 }
 
 github_user, github_repo = P["urls"]["Source"].split("/")[-2:]
@@ -57,16 +58,13 @@ html_context = {
 }
 # rely on the order of these to patch json, labextensions correctly
 html_static_path = [
+    "./_static",
     # as-built assets for testing "hot" downstreams against a PR without rebuilding
     "../dist",
     # as-built application, extensions, contents, and patched jupyter-lite.json
     "../build/docs-app",
 ]
 
-# TODO: add the pyodide logo
-# html_theme_options = {
-#    "logo": {
-#       "image_light": "TODO",
-#       "image_dark": "TODO",
-#    }
-# }
+html_css_files = [
+    "variables.css",
+]
