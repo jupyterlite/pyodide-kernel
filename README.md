@@ -19,10 +19,10 @@
 
 ### Compatibility
 
-|            status             | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` | `notebook` | `retrolab` |
-| :---------------------------: | :--------------------------: | :----------------: | :----------: | :--------: | ---------- |
-| [alpha](#prerelease-versions) |           `0.2.*`            |      `0.2.*`       |   `4.0.*`    |  `7.0.*`   | -          |
-|            stable             |           `0.1.*`            |      `0.1.*`       |   `3.5.*`    |     -      | `0.3.*`    |
+| status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` | `notebook` | `retrolab` |
+| :----: | :--------------------------: | :----------------: | :----------: | :--------: | :--------: |
+| stable |           `0.2.*`            |      `0.2.*`       |   `4.0.*`    |  `7.0.*`   |     -      |
+| stable |           `0.1.*`            |      `0.1.*`       |   `3.5.*`    |     -      |  `0.3.*`   |
 
 Installing the matching version of JupyterLab with your package manager can help ensure
 matching labextension assets and kernel dependencies, even though this kernel does not
@@ -89,7 +89,7 @@ documentation site:
 To remove the extension, run:
 
 ```bash
-pip uninstall jupyterlite-pyodide-kernel  # or howver you installed it
+pip uninstall jupyterlite-pyodide-kernel  # or however you installed it
 ```
 
 ## Prerelease Versions
