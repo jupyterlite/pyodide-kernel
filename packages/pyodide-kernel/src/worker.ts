@@ -77,6 +77,7 @@ export class PyodideRemoteKernel {
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     // from this point forward, only use piplite (but not %pip)
     await this._pyodide.runPythonAsync(`
+      await piplite.install(['ssl'], keep_going=True);
       await piplite.install(['sqlite3'], keep_going=True);
       await piplite.install(['ipykernel'], keep_going=True);
       await piplite.install(['comm'], keep_going=True);
