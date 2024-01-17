@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.1
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.2.0...5f0ba870fb92baa96c1c847e6ae1fdae608409df))
+
+### Bugs fixed
+
+- Install ssl before other packages to allow fetching of https content through urllib [#79](https://github.com/jupyterlite/pyodide-kernel/pull/79) ([@jobovy](https://github.com/jobovy))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-10-27&to=2024-01-17&type=c))
+
+[@jobovy](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajobovy+updated%3A2023-10-27..2024-01-17&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.0
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.1.1...93c654a48b31cf830bfaf77709b29e83d2808b43))
@@ -27,8 +43,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-08-22&to=2023-10-27&type=c))
 
 [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2023-08-22..2023-10-27&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2023-08-22..2023-10-27&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2023-08-22..2023-10-27&type=Issues) | [@lumberbot-app](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Alumberbot-app+updated%3A2023-08-22..2023-10-27&type=Issues) | [@meeseeksmachine](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ameeseeksmachine+updated%3A2023-08-22..2023-10-27&type=Issues) | [@michaelweinold](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Amichaelweinold+updated%3A2023-08-22..2023-10-27&type=Issues) | [@pierre-haessig](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Apierre-haessig+updated%3A2023-08-22..2023-10-27&type=Issues) | [@savakarrohan](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Asavakarrohan+updated%3A2023-08-22..2023-10-27&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.0a2
 
