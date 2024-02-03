@@ -1,4 +1,5 @@
 """test configuration for jupyterlite-pyodide-kernel"""
+
 from pathlib import Path
 import sys
 import pytest

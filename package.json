@@ -59,7 +59,10 @@
   "prettier": {
     "singleQuote": true,
     "printWidth": 88,
-    "proseWrap": "always"
+    "proseWrap": "always",
+    "overrides": [
+      {"files": "**/*tsconfig*.json", "options": {"trailingComma": "none"}}
+    ]
   },
   "eslintConfig": {
     "ignorePatterns": [

@@ -1,4 +1,5 @@
 """tests of various mechanisms of using pyodide"""
+
 import os
 import shutil
 from pathlib import Path
