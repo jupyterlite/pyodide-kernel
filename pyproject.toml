@@ -158,8 +158,8 @@ cache-dir = "build/.cache/ruff"
 extend-include = ["*.ipynb"]
 include = [
     "setup.py",
-    "scripts/",
-    "jupyterlite_pyodide_kernel/",
-    "packages/pyodide-kernel/py/",
+    "scripts/**/*.py",
+    "jupyterlite_pyodide_kernel/**/*.py",
+    "packages/pyodide-kernel/py/**/*.py",
     "examples/**/*.ipynb"
 ]
