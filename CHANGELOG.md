@@ -2,6 +2,24 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.2.2
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.2.1...adab8acaa7a4c4eee2097da00ea9d49d847bf0d6))
+
+### Maintenance and upkeep improvements
+
+- pin to jupyterlab \<4.1.0 for now in build-system and dev [#84](https://github.com/jupyterlite/pyodide-kernel/pull/84) ([@bollwyvl](https://github.com/bollwyvl))
+- Update to pyodide 0.25.0 [#82](https://github.com/jupyterlite/pyodide-kernel/pull/82) ([@bollwyvl](https://github.com/bollwyvl))
+- Enable PyPI trusted publisher [#80](https://github.com/jupyterlite/pyodide-kernel/pull/80) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2024-01-17&to=2024-02-05&type=c))
+
+[@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2024-01-17..2024-02-05&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2024-01-17..2024-02-05&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2024-01-17..2024-02-05&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.2.1
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.2.0...5f0ba870fb92baa96c1c847e6ae1fdae608409df))
@@ -15,8 +33,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2023-10-27&to=2024-01-17&type=c))
 
 [@jobovy](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajobovy+updated%3A2023-10-27..2024-01-17&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.2.0
 
