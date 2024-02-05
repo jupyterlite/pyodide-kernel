@@ -21,6 +21,9 @@ jobs:
       id-token: write
     steps:
       - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+        with:
+          node_version: '20.x'
+          python_version: '3.11'
 
       - name: Populate Release
         id: populate-release

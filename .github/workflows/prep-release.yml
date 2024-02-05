@@ -24,6 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+        with:
+          node_version: '20.x'
+          python_version: '3.11'
 
       - name: Prep Release
         id: prep-release
