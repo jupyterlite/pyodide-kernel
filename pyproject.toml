@@ -62,8 +62,7 @@ dev = [
 ]
 
 lint = [
-    "black",
-    "ruff",
+    "ruff >=0.2.0",
 ]
 
 test = [
@@ -156,3 +155,11 @@ ignore = ["W002"]
 
 [tool.ruff]
 cache-dir = "build/.cache/ruff"
+extend-include = ["*.ipynb"]
+include = [
+    "setup.py",
+    "scripts/**/*.py",
+    "jupyterlite_pyodide_kernel/**/*.py",
+    "packages/pyodide-kernel/py/**/*.py",
+    "examples/**/*.ipynb"
+]

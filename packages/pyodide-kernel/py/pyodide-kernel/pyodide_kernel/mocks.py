@@ -1,4 +1,5 @@
 """Mocks installed directly into sys.modules"""
+
 import sys
 import types
 

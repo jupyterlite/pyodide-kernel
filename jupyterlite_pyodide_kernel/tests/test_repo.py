@@ -1,4 +1,5 @@
 """Validate the integrity of the repo (or source checkout)"""
+
 import json
 from pathlib import Path
 

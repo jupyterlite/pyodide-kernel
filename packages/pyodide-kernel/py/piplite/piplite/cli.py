@@ -18,6 +18,7 @@ As of the upstream:
 As this is _not_ really a CLI, it doesn't bother with accurate return codes, and should
 failures should not block execution.
 """
+
 import re
 import sys
 import typing

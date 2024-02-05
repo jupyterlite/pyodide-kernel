@@ -1,4 +1,5 @@
 """CLI entrypoint for managing piplite wheels"""
+
 from pathlib import Path
 
 from jupyter_core.application import JupyterApp

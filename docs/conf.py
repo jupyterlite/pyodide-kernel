@@ -32,16 +32,14 @@ source_suffix = ".md"
 
 # theme
 html_theme = "pydata_sphinx_theme"
-html_logo =  "../packages/pyodide-kernel-extension/style/img/pyodide.svg"
+html_logo = "../packages/pyodide-kernel-extension/style/img/pyodide.svg"
 html_favicon = html_logo
 html_theme_options = {
     "github_url": P["urls"]["Source"],
     "icon_links": [
-       {"name": "PyPI", "url": P["urls"]["PyPI"], "icon": "fa-solid fa-box"}
+        {"name": "PyPI", "url": P["urls"]["PyPI"], "icon": "fa-solid fa-box"}
     ],
-    "logo": {
-        "text": P["name"]
-    },
+    "logo": {"text": P["name"]},
     "navigation_with_keys": False,
     "pygment_light_style": "github-light",
     "pygment_dark_style": "github-dark",

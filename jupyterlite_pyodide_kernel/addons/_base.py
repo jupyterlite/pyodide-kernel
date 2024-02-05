@@ -5,6 +5,7 @@ when these features are added upstream:
 
     https://github.com/jupyterlite/jupyterlite/issues/996
 """
+
 import json
 from pathlib import Path
 from typing import Generator, Dict, Any

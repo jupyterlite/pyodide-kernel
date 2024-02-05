@@ -6,6 +6,7 @@
     `pyodide-kernel` also includes a browser shim for the IPython `%pip` magic
 
 """
+
 from typing import Any
 import asyncio
 import json

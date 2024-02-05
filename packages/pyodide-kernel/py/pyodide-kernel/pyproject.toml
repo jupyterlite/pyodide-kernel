@@ -20,5 +20,13 @@ classifiers = [
 [project.urls]
 Source = "https://github.com/jupyterlite/pyodide-kernel"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff]
+include = [
+    "setup.py",
+    "scripts/",
+    "jupyterlite_pyodide_kernel/",
+    "packages/pyodide-kernel/py/",
+]
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]

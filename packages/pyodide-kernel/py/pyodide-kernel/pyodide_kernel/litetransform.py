@@ -4,6 +4,7 @@ Derived from:
 
    https://github.com/ipython/ipython/blob/8.5.0/IPython/core/inputtransformer2.py
 """
+
 import re
 import shlex
 
