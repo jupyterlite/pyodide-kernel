@@ -4,7 +4,7 @@
     "output_dir": "../build/docs-app",
     "ignore_sys_prefix": ["federated_extensions"],
     "federated_extensions": [
-      "https://files.pythonhosted.org/packages/46/98/e7ce879b7b5d4871b80e291be967d22e5e66fa43474c476a95fe6231f50d/jupyterlab_widgets-3.0.7-py3-none-any.whl",
+      "https://files.pythonhosted.org/packages/24/da/db1cb0387a7e4086780aff137987ee924e953d7f91b2a870f994b9b1eeb8/jupyterlab_widgets-3.0.10-py3-none-any.whl",
       "../jupyterlite_pyodide_kernel/labextension"
     ],
     "cache_dir": "../build/.lite-cache"
