@@ -9,8 +9,7 @@
 [lite-badge]: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
 [lite]: https://jupyterlite-pyodide-kernel.rtfd.io/en/latest/_static
 [ci]: https://github.com/jupyterlite/pyodide-kernel/actions?query=branch%3Amain
-[docs-badge]:
-  https://readthedocs.org/projects/jupyterlite-pyodide-kernel/badge/?version=latest
+[docs-badge]: https://readthedocs.org/projects/jupyterlite-pyodide-kernel/badge/?version=latest
 [docs]: https://jupyterlite-pyodide-kernel.readthedocs.io/en/latest/?badge=latest
 
 ## Requirements
@@ -18,6 +17,8 @@
 - `python >=3.8`
 
 ### Compatibility
+
+#### With Jupyter
 
 | status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` |  `notebook`  |  `retrolab`  |
 | :----: | :--------------------------: | :----------------: | :----------: | :----------: | :----------: |
@@ -27,6 +28,16 @@
 Installing the matching version of JupyterLab with your package manager can help ensure
 matching labextension assets and kernel dependencies, even though this kernel does not
 yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Notebook.
+
+#### With Pyodide
+
+| `jupyterlite-pyodide-kernel` | `pyodide` | `python` | `emscripten` |
+| :--------------------------: | :-------: | :------: | :----------: |
+|      `>=0.1.0,<=0.1.1`       | `0.23.*`  | `3.10.*` |   `3.1.29`   |
+|      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |
+|      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
+
+Note that the Emscripten version is strict down to the bugfix version.
 
 ## Install
 
@@ -80,8 +91,7 @@ documentation site:
 - [configuring]
 - [command line interface][cli]
 
-[configuring]:
-  https://jupyterlite.readthedocs.io/en/latest/howto/index.html#configuring-the-python-environment
+[configuring]: https://jupyterlite.readthedocs.io/en/latest/howto/index.html#configuring-the-python-environment
 [cli]: https://jupyterlite.readthedocs.io/en/latest/reference/cli.html
 
 ## Uninstall
