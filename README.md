@@ -9,7 +9,8 @@
 [lite-badge]: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
 [lite]: https://jupyterlite-pyodide-kernel.rtfd.io/en/latest/_static
 [ci]: https://github.com/jupyterlite/pyodide-kernel/actions?query=branch%3Amain
-[docs-badge]: https://readthedocs.org/projects/jupyterlite-pyodide-kernel/badge/?version=latest
+[docs-badge]:
+  https://readthedocs.org/projects/jupyterlite-pyodide-kernel/badge/?version=latest
 [docs]: https://jupyterlite-pyodide-kernel.readthedocs.io/en/latest/?badge=latest
 
 ## Requirements
@@ -91,7 +92,8 @@ documentation site:
 - [configuring]
 - [command line interface][cli]
 
-[configuring]: https://jupyterlite.readthedocs.io/en/latest/howto/index.html#configuring-the-python-environment
+[configuring]:
+  https://jupyterlite.readthedocs.io/en/latest/howto/index.html#configuring-the-python-environment
 [cli]: https://jupyterlite.readthedocs.io/en/latest/reference/cli.html
 
 ## Uninstall
