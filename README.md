@@ -21,10 +21,11 @@
 
 #### With Jupyter
 
-| status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` |  `notebook`  |  `retrolab`  |
-| :----: | :--------------------------: | :----------------: | :----------: | :----------: | :----------: |
-| stable |           `0.2.*`            |    `>=0.2,<0.3`    | `>=4.0.7,<5` | `>=7.0.5,<8` |      -       |
-| stable |           `0.1.*`            |    `>=0.1,<0.2`    | `>=3.5,<3.6` |      -       | `>=0.3,<0.4` |
+| status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` |  `jupyterlab`  |   `notebook`   |  `retrolab`  |
+| :----: | :--------------------------: | :----------------: | :------------: | :------------: | :----------: |
+|  pre   |           `0.3.*`            |    `>=0.3,<0.4`    | `>=4.1.1,<4.2` | `>=7.1.0,<7.2` |      -       |
+| stable |           `0.2.*`            |    `>=0.2,<0.3`    | `>=4.0.7,<4.1` |  `>=7.0.5,<8`  |      -       |
+| stable |           `0.1.*`            |    `>=0.1,<0.2`    |  `>=3.5,<3.6`  |       -        | `>=0.3,<0.4` |
 
 Installing the matching version of JupyterLab with your package manager can help ensure
 matching labextension assets and kernel dependencies, even though this kernel does not
@@ -37,6 +38,7 @@ yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Noteboo
 |      `>=0.1.0,<=0.1.1`       | `0.23.*`  | `3.10.*` |   `3.1.29`   |
 |      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |
 |      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
+|      `>=0.3.*,<=0.4.0`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
 
 Note that the Emscripten version is strict down to the bugfix version.
 
