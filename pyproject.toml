@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "hatchling >=1.4.0",
-    "jupyterlab >=4.0.7,<4.1.0a0",
+    "jupyterlab >=4.1.1,<4.2.0",
 ]
 build-backend = "hatchling.build"
 
@@ -137,11 +137,11 @@ version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
 before-bump-version = [
-    "python -m pip install 'jupyterlab~=4.0.7'",
+    "python -m pip install 'jupyterlab~=4.1.1'",
     "jlpm"
 ]
 before-build-npm = [
-    "python -m pip install 'jupyterlab~=4.0.7' hatch",
+    "python -m pip install 'jupyterlab~=4.1.1' hatch",
     "python -m pip install -e .[dev]",
     "jlpm",
     "jlpm build:prod",
