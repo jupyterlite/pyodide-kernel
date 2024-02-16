@@ -19,6 +19,8 @@
 
 ### Compatibility
 
+#### With Jupyter
+
 | status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` | `jupyterlab` |  `notebook`  |  `retrolab`  |
 | :----: | :--------------------------: | :----------------: | :----------: | :----------: | :----------: |
 | stable |           `0.2.*`            |    `>=0.2,<0.3`    | `>=4.0.7,<5` | `>=7.0.5,<8` |      -       |
@@ -27,6 +29,16 @@
 Installing the matching version of JupyterLab with your package manager can help ensure
 matching labextension assets and kernel dependencies, even though this kernel does not
 yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Notebook.
+
+#### With Pyodide
+
+| `jupyterlite-pyodide-kernel` | `pyodide` | `python` | `emscripten` |
+| :--------------------------: | :-------: | :------: | :----------: |
+|      `>=0.1.0,<=0.1.1`       | `0.23.*`  | `3.10.*` |   `3.1.29`   |
+|      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |
+|      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
+
+Note that the Emscripten version is strict down to the bugfix version.
 
 ## Install
 
