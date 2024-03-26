@@ -50,7 +50,10 @@ export class PyodideRemoteKernel {
       importScripts(pyodideUrl);
       loadPyodide = (self as any).loadPyodide;
     }
-    this._pyodide = await loadPyodide({ indexURL: indexUrl });
+    this._pyodide = await loadPyodide({
+      indexURL: indexUrl,
+      ...options.loadPyodideOptions,
+    });
   }
 
   protected async initPackageManager(
@@ -60,14 +63,24 @@ export class PyodideRemoteKernel {
       throw new Error('Uninitialized');
     }
 
-    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls } = this._options;
+    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, loadPyodideOptions } =
+      this._options;
 
-    await this._pyodide.loadPackage(['micropip']);
+    const preloaded = (loadPyodideOptions || {}).packages || [];
 
-    // get piplite early enough to impact pyodide dependencies
-    await this._pyodide.runPythonAsync(`
+    if (!preloaded.includes('micropip')) {
+      await this._pyodide.loadPackage(['micropip']);
+    }
+
+    if (!preloaded.includes('piplite')) {
+      await this._pyodide.runPythonAsync(`
       import micropip
       await micropip.install('${pipliteWheelUrl}', keep_going=True)
+    `);
+    }
+
+    // get piplite early enough to impact pyodide-kernel dependencies
+    await this._pyodide.runPythonAsync(`
       import piplite.piplite
       piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}
       piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}
@@ -75,23 +88,29 @@ export class PyodideRemoteKernel {
   }
 
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
-    // from this point forward, only use piplite (but not %pip)
-    await this._pyodide.runPythonAsync(`
-      await piplite.install(['ssl'], keep_going=True);
-      await piplite.install(['sqlite3'], keep_going=True);
-      await piplite.install(['ipykernel'], keep_going=True);
-      await piplite.install(['comm'], keep_going=True);
-      await piplite.install(['pyodide_kernel'], keep_going=True);
-      await piplite.install(['ipython'], keep_going=True);
-      import pyodide_kernel
-    `);
+    const preloaded = (options.loadPyodideOptions || {}).packages || [];
+
+    const toLoad = ['ssl', 'sqlite3', 'ipykernel', 'comm', 'pyodide_kernel', 'ipython'];
+
+    const scriptLines: string[] = [];
+
+    // use piplite for packages that weren't pre-loaded
+    for (const pkgName of toLoad) {
+      if (!preloaded.includes(pkgName)) {
+        scriptLines.push(`await piplite.install('${pkgName}', keep_going=True)`);
+      }
+    }
+
+    // import the kernel
+    scriptLines.push('import pyodide_kernel');
+
     // cd to the kernel location
     if (options.mountDrive && this._localPath) {
-      await this._pyodide.runPythonAsync(`
-        import os;
-        os.chdir("${this._localPath}");
-      `);
+      scriptLines.push('import os', `os.chdir("${this._localPath}")`);
     }
+
+    // from this point forward, only use piplite (but not %pip)
+    await this._pyodide.runPythonAsync(scriptLines.join('\n'));
   }
 
   protected async initGlobals(options: IPyodideWorkerKernel.IOptions): Promise<void> {

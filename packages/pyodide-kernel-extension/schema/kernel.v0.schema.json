@@ -24,6 +24,19 @@
       },
       "default": [],
       "format": "uri"
+    },
+    "loadPyodideOptions": {
+      "type": "object",
+      "description": "additional options to provide to `loadPyodide`, see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide",
+      "default": {},
+      "properties": {
+        "packages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

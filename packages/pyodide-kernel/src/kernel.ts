@@ -54,6 +54,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     const { pyodideUrl } = options;
     const indexUrl = pyodideUrl.slice(0, pyodideUrl.lastIndexOf('/') + 1);
     const baseUrl = PageConfig.getBaseUrl();
+
     const pipliteUrls = [...(options.pipliteUrls || []), allJSONUrl.default];
 
     const disablePyPIFallback = !!options.disablePyPIFallback;
@@ -67,6 +68,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       disablePyPIFallback,
       location: this.location,
       mountDrive: options.mountDrive,
+      loadPyodideOptions: options.loadPyodideOptions || {},
     };
   }
 
@@ -323,5 +325,14 @@ export namespace PyodideKernel {
      * Whether or not to mount the Emscripten drive
      */
     mountDrive: boolean;
+
+    /**
+     * additional options to provide to `loadPyodide`
+     * @see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide
+     */
+    loadPyodideOptions: Record<string, any> & {
+      pyodideLockURL: string;
+      packages: string[];
+    };
   }
 }
