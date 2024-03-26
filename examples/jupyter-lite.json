@@ -5,13 +5,7 @@
     "litePluginSettings": {
       "@jupyterlite/pyodide-kernel-extension:kernel": {
         "loadPyodideOptions": {
-          "packages": [
-            "matplotlib",
-            "micropip",
-            "numpy",
-            "sqlite3",
-            "ssl"
-          ]
+          "packages": ["matplotlib", "micropip", "numpy", "sqlite3", "ssl"]
         }
       }
     }
