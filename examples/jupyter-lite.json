@@ -1,12 +1,18 @@
 {
   "jupyter-lite-schema-version": 0,
   "jupyter-config-data": {
-    "appName": "JupyterLite Pyodide Kernel"
-  },
-  "litePluginSettings": {
-    "@jupyterlite/pyodide-kernel-extension:kernel": {
-      "loadPyodideOptions": {
-        "packages": ["micropip", "ssl", "sqlite3"]
+    "appName": "JupyterLite Pyodide Kernel",
+    "litePluginSettings": {
+      "@jupyterlite/pyodide-kernel-extension:kernel": {
+        "loadPyodideOptions": {
+          "packages": [
+            "matplotlib",
+            "micropip",
+            "numpy",
+            "sqlite3",
+            "ssl"
+          ]
+        }
       }
     }
   }
