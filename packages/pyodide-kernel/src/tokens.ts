@@ -71,5 +71,14 @@ export namespace IPyodideWorkerKernel {
      * Whether or not to mount the Emscripten drive
      */
     mountDrive: boolean;
+
+    /**
+     * additional options to provide to `loadPyodide`
+     * @see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide
+     */
+    loadPyodideOptions: Record<string, any> & {
+      pyodideLockURL: string;
+      packages: string[];
+    };
   }
 }

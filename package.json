@@ -33,7 +33,7 @@
     "lint:py": "jlpm lint:py:ruff:fix",
     "lint:py:check": "jlpm lint:py:pip && jlpm lint:py:ruff:check",
     "lint:py:pip": "python -m pip check",
-    "lint:py:ruff:fix": "ruff format && ruff --fix-only",
+    "lint:py:ruff:fix": "ruff format && ruff check --fix-only",
     "lint:py:ruff:check": "ruff format --check",
     "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md,.yml,.yaml}\"",
     "prettier:check": "jlpm prettier:base --check",
