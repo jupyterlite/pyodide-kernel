@@ -1,9 +1,9 @@
 """A ``micropip`` wrapper aware of jupyterlite conventions.
 
-    import piplite
-    await piplite.install("a-package")
+import piplite
+await piplite.install("a-package")
 
-    `pyodide-kernel` also includes a browser shim for the IPython `%pip` magic
+`pyodide-kernel` also includes a browser shim for the IPython `%pip` magic
 
 """
 
