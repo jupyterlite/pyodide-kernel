@@ -56,7 +56,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
 
     for (const [key, value] of Object.entries(loadPyodideOptions)) {
       if (key.endsWith('URL') && typeof value === 'string') {
-        loadPyodideOptions[key] = URLExt.parse(key).href;
+        loadPyodideOptions[key] = URLExt.parse(value).href;
       }
     }
 

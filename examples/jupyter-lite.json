@@ -5,7 +5,8 @@
     "litePluginSettings": {
       "@jupyterlite/pyodide-kernel-extension:kernel": {
         "loadPyodideOptions": {
-          "packages": ["matplotlib", "micropip", "numpy", "sqlite3", "ssl"]
+          "packages": ["matplotlib", "micropip", "numpy", "sqlite3", "ssl"],
+          "pyodideLockURL": "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide-lock.json"
         }
       }
     }
