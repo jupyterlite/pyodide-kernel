@@ -43,6 +43,9 @@ const kernel: JupyterLiteServerPlugin<void> = {
   ) => {
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
+
+    const baseUrl = PageConfig.getBaseUrl();
+
     const url = config.pyodideUrl || PYODIDE_CDN_URL;
 
     const pyodideUrl = URLExt.parse(url).href;
@@ -56,7 +59,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
 
     for (const [key, value] of Object.entries(loadPyodideOptions)) {
       if (key.endsWith('URL') && typeof value === 'string') {
-        loadPyodideOptions[key] = URLExt.parse(value).href;
+        loadPyodideOptions[key] = new URL(value, baseUrl).href;
       }
     }
 
