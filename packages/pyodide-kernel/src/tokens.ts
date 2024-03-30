@@ -77,7 +77,7 @@ export namespace IPyodideWorkerKernel {
      * @see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide
      */
     loadPyodideOptions: Record<string, any> & {
-      pyodideLockURL: string;
+      lockFileURL: string;
       packages: string[];
     };
   }
