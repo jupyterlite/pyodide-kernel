@@ -53,8 +53,8 @@
   },
   "dependencies": {
     "@jupyterlab/coreutils": "^6.1.1",
-    "@jupyterlite/contents": "^0.3.0",
-    "@jupyterlite/kernel": "^0.3.0",
+    "@jupyterlite/contents": "^0.4.0-alpha.0",
+    "@jupyterlite/kernel": "^0.4.0-alpha.0",
     "comlink": "^4.4.1"
   },
   "devDependencies": {
