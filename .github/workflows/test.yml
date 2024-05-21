@@ -91,7 +91,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix-python-version }}
+          python-version: ${{ matrix.python-version }}
 
       - uses: actions/download-artifact@v3
         with:
