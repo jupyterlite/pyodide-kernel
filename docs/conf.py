@@ -41,8 +41,8 @@ html_theme_options = {
     ],
     "logo": {"text": P["name"]},
     "navigation_with_keys": False,
-    "pygment_light_style": "github-light",
-    "pygment_dark_style": "github-dark",
+    "pygments_light_style": "github-light",
+    "pygments_dark_style": "github-dark",
     "use_edit_page_button": True,
 }
 
