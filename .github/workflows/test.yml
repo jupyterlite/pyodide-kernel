@@ -89,10 +89,9 @@ jobs:
 
     steps:
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
-          architecture: 'x64'
+          python-version: ${{ matrix.python-version }}
 
       - uses: actions/download-artifact@v3
         with:
