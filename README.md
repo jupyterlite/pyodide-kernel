@@ -40,7 +40,7 @@ yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Noteboo
 |      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |
 |      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
 |      `>=0.3.*,<=0.4.0`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
-|      `>=0.4.*,<=0.5.0`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
+|      `>=0.4.*,<=0.5.0`       | `0.26.*`  | `3.12.*` |   `3.1.58`   |
 
 Note that the Emscripten version is strict down to the bugfix version.
 

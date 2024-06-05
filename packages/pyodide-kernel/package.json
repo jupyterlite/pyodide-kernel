@@ -53,8 +53,8 @@
   },
   "dependencies": {
     "@jupyterlab/coreutils": "^6.1.1",
-    "@jupyterlite/contents": "^0.4.0-alpha.0",
-    "@jupyterlite/kernel": "^0.4.0-alpha.0",
+    "@jupyterlite/contents": "^0.4.0-alpha.3",
+    "@jupyterlite/kernel": "^0.4.0-alpha.3",
     "comlink": "^4.4.1"
   },
   "devDependencies": {
@@ -63,7 +63,7 @@
     "@types/jest": "^29.5.4",
     "esbuild": "^0.19.2",
     "jest": "^29.7.0",
-    "pyodide": "0.25.0",
+    "pyodide": "0.26.0",
     "rimraf": "^5.0.1",
     "ts-jest": "^26.3.0",
     "typescript": "~5.2.2"
