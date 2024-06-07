@@ -5,6 +5,7 @@
  * Definitions for the Pyodide kernel.
  */
 
+import { TDriveMethod, TDriveRequest, TDriveResponse } from '@jupyterlite/contents';
 import { IWorkerKernel } from '@jupyterlite/kernel';
 
 /**
@@ -20,6 +21,14 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
    * Handle any lazy initialization activities.
    */
   initialize(options: IPyodideWorkerKernel.IOptions): Promise<void>;
+
+  /**
+   * Process drive request
+   * @param data
+   */
+  processDriveRequest<T extends TDriveMethod>(
+    data: TDriveRequest<T>,
+  ): TDriveResponse<T>;
 }
 
 /**

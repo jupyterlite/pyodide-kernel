@@ -3,11 +3,45 @@
 
 import type Pyodide from 'pyodide';
 
-import type { DriveFS } from '@jupyterlite/contents';
+import { ContentsAPI, DriveFS, ServiceWorkerContentsAPI, TDriveMethod, TDriveRequest, TDriveResponse } from '@jupyterlite/contents';
 
 import { KernelMessage } from '@jupyterlab/services';
 
 import type { IPyodideWorkerKernel } from './tokens';
+
+
+/**
+ * An Emscripten-compatible synchronous Contents API using shared array buffers.
+ */
+export class SharedBufferContentsAPI extends ContentsAPI {
+  request<T extends TDriveMethod>(data: TDriveRequest<T>): TDriveResponse<T> {
+    return workerAPI.processDriveRequest(data);
+  }
+}
+
+/**
+ * A custom drive implementation which uses shared array buffers if available, service worker otherwise
+ */
+class PyodideDriveFS extends DriveFS {
+  createAPI(options: DriveFS.IOptions): ContentsAPI {
+    if (crossOriginIsolated) {
+      return new SharedBufferContentsAPI(
+        options.driveName,
+        options.mountpoint,
+        options.FS,
+        options.ERRNO_CODES,
+      );
+    } else {
+      return new ServiceWorkerContentsAPI(
+        options.baseUrl,
+        options.driveName,
+        options.mountpoint,
+        options.FS,
+        options.ERRNO_CODES,
+      );
+    }
+  }
+}
 
 export class PyodideRemoteKernel {
   constructor() {
@@ -134,9 +168,8 @@ export class PyodideRemoteKernel {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
       const { baseUrl } = options;
-      const { DriveFS } = await import('@jupyterlite/contents');
 
-      const driveFS = new DriveFS({
+      const driveFS = new PyodideDriveFS({
         FS,
         PATH,
         ERRNO_CODES,
@@ -510,5 +543,5 @@ export class PyodideRemoteKernel {
   protected _stdout_stream: any;
   protected _stderr_stream: any;
   protected _resolveInputReply: any;
-  protected _driveFS: DriveFS | null = null;
+  protected _driveFS: PyodideDriveFS | null = null;
 }
