@@ -2983,7 +2983,7 @@ __metadata:
     "@jupyterlite/contents": ^0.4.0-alpha.3
     "@jupyterlite/kernel": ^0.4.0-alpha.3
     "@types/jest": ^29.5.4
-    comlink: ^4.4.1
+    coincident: ^1.2.3
     esbuild: ^0.19.2
     jest: ^29.7.0
     pyodide: 0.26.0
@@ -4463,6 +4463,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ungap/with-resolvers@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@ungap/with-resolvers@npm:0.1.0"
+  checksum: ac0c6234414b87ec26e9603c5e57f6ae48477ccc901841e725e820bc026367987cc82dbdb8c702e058179dadbd16578c0fcc607d2122e72d9fe91373bade126c
+  languageName: node
+  linkType: hard
+
 "@webassemblyjs/ast@npm:1.11.6, @webassemblyjs/ast@npm:^1.11.5":
   version: 1.11.6
   resolution: "@webassemblyjs/ast@npm:1.11.6"
@@ -5705,6 +5712,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"coincident@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "coincident@npm:1.2.3"
+  dependencies:
+    "@ungap/structured-clone": ^1.2.0
+    "@ungap/with-resolvers": ^0.1.0
+    gc-hook: ^0.3.1
+    proxy-target: ^3.0.2
+    ws: ^8.16.0
+  dependenciesMeta:
+    ws:
+      optional: true
+  checksum: 21c44d9d74be393b12d6f91c885c8b6c640dce570b01b5d5156327488390c858de8e40c0af08763e3cd7041bcf32bee70c058a1b24aa25b145376a92b1c520a3
+  languageName: node
+  linkType: hard
+
 "collect-v8-coverage@npm:^1.0.0":
   version: 1.0.2
   resolution: "collect-v8-coverage@npm:1.0.2"
@@ -5779,7 +5802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"comlink@npm:^4.3.1, comlink@npm:^4.4.1":
+"comlink@npm:^4.3.1":
   version: 4.4.1
   resolution: "comlink@npm:4.4.1"
   checksum: 16d58a8f590087fc45432e31d6c138308dfd4b75b89aec0b7f7bb97ad33d810381bd2b1e608a1fb2cf05979af9cbfcdcaf1715996d5fcf77aeb013b6da3260af
@@ -7197,6 +7220,13 @@ __metadata:
     strip-ansi: ^6.0.1
     wide-align: ^1.1.5
   checksum: 788b6bfe52f1dd8e263cda800c26ac0ca2ff6de0b6eee2fe0d9e3abf15e149b651bd27bf5226be10e6e3edb5c4e5d5985a5a1a98137e7a892f75eff76467ad2d
+  languageName: node
+  linkType: hard
+
+"gc-hook@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "gc-hook@npm:0.3.1"
+  checksum: bda26ab6493faf8593eb8e1ff636c91ba4b38f3d87867ede757b24c4677e4f55ec696977a2b884503e3e56243d5e38abf8cec52257b1fd0685622ec5a3d9c84b
   languageName: node
   linkType: hard
 
@@ -10826,6 +10856,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proxy-target@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "proxy-target@npm:3.0.2"
+  checksum: 9d8aa207ce8d3d50273e6926a61bb0205848f2a9de7b6781feeb115072242d9803255351d4da2f2980c573fd2164609257d8c8feaa39b80147867805f2c5d101
+  languageName: node
+  linkType: hard
+
 "psl@npm:^1.1.33":
   version: 1.9.0
   resolution: "psl@npm:1.9.0"
@@ -12998,6 +13035,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: feb3eecd2bae82fa8a8beef800290ce437d8b8063bdc69712725f21aef77c49cb2ff45c6e5e7fce622248f9c7abaee506bae0a9064067ffd6935460c7357321b
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.16.0":
+  version: 8.17.0
+  resolution: "ws@npm:8.17.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 147ef9eab0251364e1d2c55338ad0efb15e6913923ccbfdf20f7a8a6cb8f88432bcd7f4d8f66977135bfad35575644f9983201c1a361019594a4e53977bf6d4e
   languageName: node
   linkType: hard
 

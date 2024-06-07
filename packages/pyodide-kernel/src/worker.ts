@@ -349,7 +349,7 @@ export class PyodideRemoteKernel {
    *
    * @param content The incoming message with the comm target name.
    */
-  async commInfo(content: any, parent: any) {
+  async commInfo(content: any, parent: any): Promise<{ comms: any; status: 'ok' }> {
     await this.setup(parent);
 
     const res = this._kernel.comm_info(content.target_name);
