@@ -44,7 +44,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
     const remote = coincident(this._worker) as IPyodideWorkerKernel;
     const remoteOptions = this.initRemoteOptions(options);
-    remote.initialize(remoteOptions).then(this._ready.resolve.bind(this));
+    remote.initialize(remoteOptions).then(this._ready.resolve.bind(this._ready));
     return remote;
   }
 
