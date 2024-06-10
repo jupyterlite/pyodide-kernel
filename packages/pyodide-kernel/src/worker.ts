@@ -5,6 +5,8 @@ import type Pyodide from 'pyodide';
 
 import type { DriveFS } from '@jupyterlite/contents';
 
+import { KernelMessage } from '@jupyterlab/services';
+
 import type { IPyodideWorkerKernel } from './tokens';
 
 export class PyodideRemoteKernel {
@@ -349,7 +351,10 @@ export class PyodideRemoteKernel {
    *
    * @param content The incoming message with the comm target name.
    */
-  async commInfo(content: any, parent: any): Promise<{ comms: any; status: 'ok' }> {
+  async commInfo(
+    content: any,
+    parent: any,
+  ): Promise<KernelMessage.ICommInfoReplyMsg['content']> {
     await this.setup(parent);
 
     const res = this._kernel.comm_info(content.target_name);
