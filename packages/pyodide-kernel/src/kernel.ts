@@ -24,7 +24,6 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     super(options);
     this._worker = this.initWorker(options);
     this._worker.onmessage = (e) => this._processWorkerMessage(e.data);
-    this._remoteKernel = coincident(this._worker) as IPyodideWorkerKernel;
     this.initRemote(options);
   }
 
@@ -43,6 +42,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   }
 
   protected async initRemote(options: PyodideKernel.IOptions): Promise<void> {
+    this._remoteKernel = coincident(this._worker) as IPyodideWorkerKernel;
     const remoteOptions = this.initRemoteOptions(options);
     await this._remoteKernel.initialize(remoteOptions);
     this._ready.resolve();
