@@ -24,7 +24,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     super(options);
     this._worker = this.initWorker(options);
     this._worker.onmessage = (e) => this._processWorkerMessage(e.data);
-    this.initRemote(options);
+    this._remoteKernel = this.initRemote(options);
   }
 
   /**
@@ -41,11 +41,11 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     });
   }
 
-  protected async initRemote(options: PyodideKernel.IOptions): Promise<void> {
-    this._remoteKernel = coincident(this._worker) as IPyodideWorkerKernel;
+  protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
+    const remote = coincident(this._worker) as IPyodideWorkerKernel;
     const remoteOptions = this.initRemoteOptions(options);
-    await this._remoteKernel.initialize(remoteOptions);
-    this._ready.resolve();
+    remote.initialize(remoteOptions).then(this._ready.resolve.bind(this));
+    return remote;
   }
 
   protected initRemoteOptions(
