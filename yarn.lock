@@ -2986,7 +2986,7 @@ __metadata:
     comlink: ^4.4.1
     esbuild: ^0.19.2
     jest: ^29.7.0
-    pyodide: 0.26.0
+    pyodide: 0.26.1
     rimraf: ^5.0.1
     ts-jest: ^26.3.0
     typescript: ~5.2.2
@@ -10857,12 +10857,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pyodide@npm:0.26.0":
-  version: 0.26.0
-  resolution: "pyodide@npm:0.26.0"
+"pyodide@npm:0.26.1":
+  version: 0.26.1
+  resolution: "pyodide@npm:0.26.1"
   dependencies:
     ws: ^8.5.0
-  checksum: 165a0210e1edb8f1221d222c513d07cc1d3cb3f54d3741ea2e71bcc088dd92310ac87476a0ac9f3d004934b4856e8f47c149264f1de0e731957b1dcfe9de4ca5
+  checksum: c94e81cce97f5894d7a5f5ab58019f8d445e3e8432a233463f2f8d381d78d8d96c168dc40aada3287399052859198d48a96095c9028e8c6791bae202ac0a0e0b
   languageName: node
   linkType: hard
 
