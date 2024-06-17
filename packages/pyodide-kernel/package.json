@@ -55,7 +55,7 @@
     "@jupyterlab/coreutils": "^6.1.1",
     "@jupyterlite/contents": "^0.4.0-alpha.3",
     "@jupyterlite/kernel": "^0.4.0-alpha.3",
-    "comlink": "^4.4.1"
+    "coincident": "^1.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.22.17",

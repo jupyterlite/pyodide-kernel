@@ -1,11 +1,11 @@
+import coincident from 'coincident';
+
 import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
 import { KernelMessage } from '@jupyterlab/services';
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
-
-import { wrap } from 'comlink';
 
 import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
 
@@ -24,8 +24,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     super(options);
     this._worker = this.initWorker(options);
     this._worker.onmessage = (e) => this._processWorkerMessage(e.data);
-    this._remoteKernel = wrap(this._worker);
-    this.initRemote(options);
+    this._remoteKernel = this.initRemote(options);
   }
 
   /**
@@ -37,15 +36,16 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * webpack to find it.
    */
   protected initWorker(options: PyodideKernel.IOptions): Worker {
-    return new Worker(new URL('./comlink.worker.js', import.meta.url), {
+    return new Worker(new URL('./coincident.worker.js', import.meta.url), {
       type: 'module',
     });
   }
 
-  protected async initRemote(options: PyodideKernel.IOptions): Promise<void> {
+  protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
+    const remote = coincident(this._worker) as IPyodideWorkerKernel;
     const remoteOptions = this.initRemoteOptions(options);
-    await this._remoteKernel.initialize(remoteOptions);
-    this._ready.resolve();
+    remote.initialize(remoteOptions).then(this._ready.resolve.bind(this._ready));
+    return remote;
   }
 
   protected initRemoteOptions(

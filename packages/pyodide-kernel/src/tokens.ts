@@ -5,8 +5,6 @@
  * Definitions for the Pyodide kernel.
  */
 
-import type { Remote } from 'comlink';
-
 import { IWorkerKernel } from '@jupyterlite/kernel';
 
 /**
@@ -25,9 +23,9 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
 }
 
 /**
- * An convenience interface for Pyodide workers wrapped by a comlink Remote.
+ * Deprecated.
  */
-export type IRemotePyodideWorkerKernel = Remote<IPyodideWorkerKernel>;
+export type IRemotePyodideWorkerKernel = IPyodideWorkerKernel;
 
 /**
  * An namespace for Pyodide workers.
