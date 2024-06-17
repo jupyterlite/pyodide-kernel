@@ -3,7 +3,7 @@
 
 import type Pyodide from 'pyodide';
 
-import { DriveFS } from '@jupyterlite/contents';
+import type { DriveFS } from '@jupyterlite/contents';
 
 import { KernelMessage } from '@jupyterlab/services';
 
@@ -134,6 +134,7 @@ export class PyodideRemoteKernel {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
       const { baseUrl } = options;
+      const { DriveFS } = await import('@jupyterlite/contents');
 
       const driveFS = new DriveFS({
         FS,
