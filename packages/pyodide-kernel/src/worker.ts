@@ -3,12 +3,18 @@
 
 import type Pyodide from 'pyodide';
 
-import { ContentsAPI, DriveFS, ServiceWorkerContentsAPI, TDriveMethod, TDriveRequest, TDriveResponse } from '@jupyterlite/contents';
+import {
+  ContentsAPI,
+  DriveFS,
+  ServiceWorkerContentsAPI,
+  TDriveMethod,
+  TDriveRequest,
+  TDriveResponse,
+} from '@jupyterlite/contents';
 
 import { KernelMessage } from '@jupyterlab/services';
 
 import type { IPyodideWorkerKernel } from './tokens';
-
 
 /**
  * An Emscripten-compatible synchronous Contents API using shared array buffers.

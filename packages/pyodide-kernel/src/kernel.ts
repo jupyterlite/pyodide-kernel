@@ -10,7 +10,11 @@ import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
 
 import { allJSONUrl, pipliteWheelUrl } from './_pypi';
-import { DriveContentsProcessor, TDriveMethod, TDriveRequest } from '@jupyterlite/contents';
+import {
+  DriveContentsProcessor,
+  TDriveMethod,
+  TDriveRequest,
+} from '@jupyterlite/contents';
 
 /**
  * A kernel that executes Python code with Pyodide.
