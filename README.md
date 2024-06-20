@@ -15,7 +15,7 @@
 
 ## Requirements
 
-- `python >=3.8`
+- `python >=3.10`
 
 ### Compatibility
 
@@ -144,8 +144,8 @@ Below is an short overview of getting up and running quickly. Please see the
 Ensure the local development environment has:
 
 - `git`
-- `nodejs 20`
-- `python >=3.8`
+- `nodejs >=20`
+- `python >=3.10`
 
 ### Development Quick Start
 

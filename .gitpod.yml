@@ -13,6 +13,10 @@ tasks:
       python -m venv ..
       source ../bin/activate
       python -m pip install -e ".[dev,docs,lint,test]"
+      npm update npm
+      yarn set version stable
+      yarn set version berry
+      corepack enable
     command: |
       source ../bin/activate
       jlpm

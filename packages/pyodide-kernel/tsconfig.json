@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfigbase",
   "compilerOptions": {
-    "lib": ["ES2019", "WebWorker", "ScriptHost", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022", "WebWorker", "ScriptHost", "DOM", "DOM.Iterable"],
     "outDir": "lib",
-    "resolveJsonModule": false,
+    "resolveJsonModule": true,
     "rootDir": "src"
   },
   "include": ["src/**/*"]

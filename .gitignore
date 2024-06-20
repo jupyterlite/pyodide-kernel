@@ -119,3 +119,11 @@ _pypi.ts
 .jupyterlite.doit.db
 _output
 jupyterlite_pyodide_kernel/tests/fixtures/.pyodide*/
+.nx/
+
+#yarn
+.yarn/
+.yarnrc.yml
+yarn.lock
+.pnp.cjs
+.pnp.loader.mjs

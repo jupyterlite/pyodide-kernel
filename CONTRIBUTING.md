@@ -17,8 +17,8 @@ and watch what it does to files on disk and in the terminal log.
 ### Prerequisites
 
 - `git`
-- `python >=3.8`
-- `nodejs >=20,<21`
+- `python >=3.10`
+- `nodejs >=20`
 
 ### Setup
 
