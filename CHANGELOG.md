@@ -2,6 +2,24 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.4.0b0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.4.0-alpha.2...ae20dc725fccc990c87253e659ed6aa1eba5969b))
+
+### Enhancements made
+
+- Update to pyodide 0.26.1 [#116](https://github.com/jupyterlite/pyodide-kernel/pull/116) ([@bollwyvl](https://github.com/bollwyvl))
+- Switch from using comlink to coincident [#115](https://github.com/jupyterlite/pyodide-kernel/pull/115) ([@martinRenou](https://github.com/martinRenou))
+- FileSystem calls over Atomics.wait instead of service worker when available [#114](https://github.com/jupyterlite/pyodide-kernel/pull/114) ([@martinRenou](https://github.com/martinRenou))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2024-06-05&to=2024-06-21&type=c))
+
+[@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2024-06-05..2024-06-21&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2024-06-05..2024-06-21&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2024-06-05..2024-06-21&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3AmartinRenou+updated%3A2024-06-05..2024-06-21&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.4.0a2
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.4.0-alpha.1...6696a9e63706b37f5f0c4162ccb420ac6fc22b01))
@@ -15,8 +33,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2024-06-04&to=2024-06-05&type=c))
 
 [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2024-06-04..2024-06-05&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2024-06-04..2024-06-05&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.4.0a1
 
