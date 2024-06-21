@@ -37,7 +37,7 @@
     "build:lib": "tsc -b",
     "build:prod": "jlpm build",
     "build:py": "python scripts/generate-wheels-js.py",
-    "build:worker": "esbuild --bundle --minify --sourcemap --target=es2019 --format=esm --outfile=lib/worker.js src/worker.ts",
+    "build:worker": "esbuild --bundle --minify --sourcemap --target=es2019 --format=esm --outfile=lib/coincident.worker.js src/coincident.worker.ts",
     "dist": "cd ../../dist && npm pack ../packages/pyodide-kernel",
     "clean": "jlpm clean:lib && jlpm clean:py",
     "clean:all": "jlpm clean",

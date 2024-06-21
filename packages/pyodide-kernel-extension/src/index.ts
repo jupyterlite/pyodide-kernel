@@ -41,6 +41,8 @@ const kernel: JupyterLiteServerPlugin<void> = {
     serviceWorker?: IServiceWorkerManager,
     broadcastChannel?: IBroadcastChannelWrapper,
   ) => {
+    const contentsManager = app.serviceManager.contents;
+
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
 
@@ -93,6 +95,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
           disablePyPIFallback,
           mountDrive,
           loadPyodideOptions,
+          contentsManager,
         });
       },
     });

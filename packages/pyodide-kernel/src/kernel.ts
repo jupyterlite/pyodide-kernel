@@ -3,13 +3,18 @@ import coincident from 'coincident';
 import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
-import { KernelMessage } from '@jupyterlab/services';
+import { Contents, KernelMessage } from '@jupyterlab/services';
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 
 import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
 
 import { allJSONUrl, pipliteWheelUrl } from './_pypi';
+import {
+  DriveContentsProcessor,
+  TDriveMethod,
+  TDriveRequest,
+} from '@jupyterlite/contents';
 
 /**
  * A kernel that executes Python code with Pyodide.
@@ -25,6 +30,28 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     this._worker = this.initWorker(options);
     this._worker.onmessage = (e) => this._processWorkerMessage(e.data);
     this._remoteKernel = this.initRemote(options);
+    this._contentsManager = options.contentsManager;
+    this.setupFilesystemAPIs();
+  }
+
+  private setupFilesystemAPIs() {
+    (this._remoteKernel.processDriveRequest as any) = async <T extends TDriveMethod>(
+      data: TDriveRequest<T>,
+    ) => {
+      if (!DriveContentsProcessor) {
+        throw new Error(
+          'File system calls over Atomics.wait is only supported with jupyterlite>=0.4.0a3',
+        );
+      }
+
+      if (this._contentsProcessor === undefined) {
+        this._contentsProcessor = new DriveContentsProcessor({
+          contentsManager: this._contentsManager,
+        });
+      }
+
+      return await this._contentsProcessor.processDriveRequest(data);
+    };
   }
 
   /**
@@ -288,6 +315,8 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     return await this._remoteKernel.inputReply(content, this.parent);
   }
 
+  private _contentsManager: Contents.IManager;
+  private _contentsProcessor: DriveContentsProcessor | undefined;
   private _worker: Worker;
   private _remoteKernel: IRemotePyodideWorkerKernel;
   private _ready = new PromiseDelegate<void>();
@@ -334,5 +363,10 @@ export namespace PyodideKernel {
       lockFileURL: string;
       packages: string[];
     };
+
+    /**
+     * The Jupyterlite content manager
+     */
+    contentsManager: Contents.IManager;
   }
 }

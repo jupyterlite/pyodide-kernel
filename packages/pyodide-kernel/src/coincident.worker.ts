@@ -6,12 +6,82 @@
  */
 import coincident from 'coincident';
 
+import {
+  ContentsAPI,
+  DriveFS,
+  ServiceWorkerContentsAPI,
+  TDriveMethod,
+  TDriveRequest,
+  TDriveResponse,
+} from '@jupyterlite/contents';
+
 import { PyodideRemoteKernel } from './worker';
 import { IPyodideWorkerKernel } from './tokens';
 
-const worker = new PyodideRemoteKernel();
-
 const workerAPI: IPyodideWorkerKernel = coincident(self) as IPyodideWorkerKernel;
+
+/**
+ * An Emscripten-compatible synchronous Contents API using shared array buffers.
+ */
+export class SharedBufferContentsAPI extends ContentsAPI {
+  request<T extends TDriveMethod>(data: TDriveRequest<T>): TDriveResponse<T> {
+    return workerAPI.processDriveRequest(data);
+  }
+}
+
+/**
+ * A custom drive implementation which uses shared array buffers if available, service worker otherwise
+ */
+class PyodideDriveFS extends DriveFS {
+  createAPI(options: DriveFS.IOptions): ContentsAPI {
+    if (crossOriginIsolated) {
+      return new SharedBufferContentsAPI(
+        options.driveName,
+        options.mountpoint,
+        options.FS,
+        options.ERRNO_CODES,
+      );
+    } else {
+      return new ServiceWorkerContentsAPI(
+        options.baseUrl,
+        options.driveName,
+        options.mountpoint,
+        options.FS,
+        options.ERRNO_CODES,
+      );
+    }
+  }
+}
+
+export class PyodideCoincidentKernel extends PyodideRemoteKernel {
+  /**
+   * Setup custom Emscripten FileSystem
+   */
+  protected async initFilesystem(
+    options: IPyodideWorkerKernel.IOptions,
+  ): Promise<void> {
+    if (options.mountDrive) {
+      const mountpoint = '/drive';
+      const { FS, PATH, ERRNO_CODES } = this._pyodide;
+      const { baseUrl } = options;
+
+      const driveFS = new PyodideDriveFS({
+        FS,
+        PATH,
+        ERRNO_CODES,
+        baseUrl,
+        driveName: this._driveName,
+        mountpoint,
+      });
+      FS.mkdir(mountpoint);
+      FS.mount(driveFS, {}, mountpoint);
+      FS.chdir(mountpoint);
+      this._driveFS = driveFS;
+    }
+  }
+}
+
+const worker = new PyodideCoincidentKernel();
 
 workerAPI.initialize = worker.initialize.bind(worker);
 workerAPI.execute = worker.execute.bind(worker);
