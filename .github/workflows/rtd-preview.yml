@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   binder:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-lts-latest
     steps:
       - name: Comment on the PR with the ReadTheDocs preview
         uses: actions/github-script@v6

@@ -1,12 +1,3 @@
-github:
-  prebuilds:
-    master: true
-    pullRequests: true
-    pullRequestsFromForks: true
-    addCheck: false
-    addComment: false
-    addBadge: false
-    addLabel: false
 tasks:
   - name: setup
     init: |
