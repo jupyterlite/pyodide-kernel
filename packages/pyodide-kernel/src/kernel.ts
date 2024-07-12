@@ -28,10 +28,12 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   constructor(options: PyodideKernel.IOptions) {
     super(options);
     this._worker = this.initWorker(options);
-    this._worker.onmessage = (e) => this._processWorkerMessage(e.data);
     this._remoteKernel = this.initRemote(options);
     this._contentsManager = options.contentsManager;
     this.setupFilesystemAPIs();
+    this._remoteKernel.processWorkerMessage = (msg: any) => {
+      this._processWorkerMessage(msg);
+    };
   }
 
   private setupFilesystemAPIs() {

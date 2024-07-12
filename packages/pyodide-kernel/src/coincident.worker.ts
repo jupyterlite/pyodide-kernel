@@ -81,7 +81,7 @@ export class PyodideCoincidentKernel extends PyodideRemoteKernel {
   }
 }
 
-const worker = new PyodideCoincidentKernel();
+const worker = new PyodideCoincidentKernel(workerAPI);
 
 workerAPI.initialize = worker.initialize.bind(worker);
 workerAPI.execute = worker.execute.bind(worker);

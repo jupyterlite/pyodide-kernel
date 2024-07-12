@@ -29,6 +29,12 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
   processDriveRequest<T extends TDriveMethod>(
     data: TDriveRequest<T>,
   ): TDriveResponse<T>;
+
+  /**
+   * Process worker message
+   * @param msg
+   */
+  processWorkerMessage(msg: any): void;
 }
 
 /**
