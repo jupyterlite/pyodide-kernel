@@ -35,6 +35,11 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
    * @param msg
    */
   processWorkerMessage(msg: any): void;
+
+  /**
+   * Register a callback for handling messages from the worker.
+   */
+  registerCallback(callback: (msg: any) => void): void;
 }
 
 /**

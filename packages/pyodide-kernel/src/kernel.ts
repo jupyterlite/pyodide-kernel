@@ -1,5 +1,7 @@
 import coincident from 'coincident';
 
+import { Remote, proxy, wrap } from 'comlink';
+
 import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
@@ -31,9 +33,6 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     this._remoteKernel = this.initRemote(options);
     this._contentsManager = options.contentsManager;
     this.setupFilesystemAPIs();
-    this._remoteKernel.processWorkerMessage = (msg: any) => {
-      this._processWorkerMessage(msg);
-    };
   }
 
   private setupFilesystemAPIs() {
@@ -65,13 +64,28 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * webpack to find it.
    */
   protected initWorker(options: PyodideKernel.IOptions): Worker {
-    return new Worker(new URL('./coincident.worker.js', import.meta.url), {
-      type: 'module',
-    });
+    if (crossOriginIsolated) {
+      return new Worker(new URL('./coincident.worker.js', import.meta.url), {
+        type: 'module',
+      });
+    } else {
+      return new Worker(new URL('./comlink.worker.js', import.meta.url), {
+        type: 'module',
+      });
+    }
   }
 
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
-    const remote = coincident(this._worker) as IPyodideWorkerKernel;
+    let remote: IPyodideWorkerKernel;
+    if (crossOriginIsolated) {
+      remote = coincident(this._worker) as IPyodideWorkerKernel;
+      remote.processWorkerMessage = (msg: any) => {
+        this._processWorkerMessage(msg);
+      };
+    } else {
+      remote = wrap(this._worker) as IPyodideWorkerKernel;
+      remote.registerCallback(proxy(this._processWorkerMessage.bind(this)));
+    }
     const remoteOptions = this.initRemoteOptions(options);
     remote.initialize(remoteOptions).then(this._ready.resolve.bind(this._ready));
     return remote;
@@ -320,7 +334,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   private _contentsManager: Contents.IManager;
   private _contentsProcessor: DriveContentsProcessor | undefined;
   private _worker: Worker;
-  private _remoteKernel: IRemotePyodideWorkerKernel;
+  private _remoteKernel:
+    | IRemotePyodideWorkerKernel
+    | Remote<IRemotePyodideWorkerKernel>;
   private _ready = new PromiseDelegate<void>();
 }
 

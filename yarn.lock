@@ -2984,6 +2984,7 @@ __metadata:
     "@jupyterlite/kernel": ^0.4.0-alpha.3
     "@types/jest": ^29.5.4
     coincident: ^1.2.3
+    comlink: ^4.4.1
     esbuild: ^0.19.2
     jest: ^29.7.0
     pyodide: 0.26.1
@@ -5802,7 +5803,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"comlink@npm:^4.3.1":
+"comlink@npm:^4.3.1, comlink@npm:^4.4.1":
   version: 4.4.1
   resolution: "comlink@npm:4.4.1"
   checksum: 16d58a8f590087fc45432e31d6c138308dfd4b75b89aec0b7f7bb97ad33d810381bd2b1e608a1fb2cf05979af9cbfcdcaf1715996d5fcf77aeb013b6da3260af

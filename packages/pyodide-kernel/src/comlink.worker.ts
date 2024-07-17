@@ -1,0 +1,60 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
+
+/**
+ * A WebWorker entrypoint that uses comlink to handle postMessage details
+ */
+
+import { expose } from 'comlink';
+
+import { ContentsAPI, DriveFS, ServiceWorkerContentsAPI } from '@jupyterlite/contents';
+
+import { PyodideRemoteKernel } from './worker';
+import { IPyodideWorkerKernel } from './tokens';
+
+/**
+ * A custom drive implementation which uses shared array buffers if available, service worker otherwise
+ */
+class PyodideDriveFS extends DriveFS {
+  createAPI(options: DriveFS.IOptions): ContentsAPI {
+    return new ServiceWorkerContentsAPI(
+      options.baseUrl,
+      options.driveName,
+      options.mountpoint,
+      options.FS,
+      options.ERRNO_CODES,
+    );
+  }
+}
+
+export class PyodideComlinkKernel extends PyodideRemoteKernel {
+  /**
+   * Setup custom Emscripten FileSystem
+   */
+  protected async initFilesystem(
+    options: IPyodideWorkerKernel.IOptions,
+  ): Promise<void> {
+    if (options.mountDrive) {
+      const mountpoint = '/drive';
+      const { FS, PATH, ERRNO_CODES } = this._pyodide;
+      const { baseUrl } = options;
+
+      const driveFS = new PyodideDriveFS({
+        FS,
+        PATH,
+        ERRNO_CODES,
+        baseUrl,
+        driveName: this._driveName,
+        mountpoint,
+      });
+      FS.mkdir(mountpoint);
+      FS.mount(driveFS, {}, mountpoint);
+      FS.chdir(mountpoint);
+      this._driveFS = driveFS;
+    }
+  }
+}
+
+const worker = new PyodideComlinkKernel();
+
+expose(worker);

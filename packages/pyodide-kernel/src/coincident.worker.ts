@@ -18,7 +18,7 @@ import {
 import { PyodideRemoteKernel } from './worker';
 import { IPyodideWorkerKernel } from './tokens';
 
-const workerAPI: IPyodideWorkerKernel = coincident(self) as IPyodideWorkerKernel;
+const workerAPI = coincident(self) as IPyodideWorkerKernel;
 
 /**
  * An Emscripten-compatible synchronous Contents API using shared array buffers.
@@ -81,7 +81,8 @@ export class PyodideCoincidentKernel extends PyodideRemoteKernel {
   }
 }
 
-const worker = new PyodideCoincidentKernel(workerAPI);
+const sendWorkerMessage = workerAPI.processWorkerMessage.bind(workerAPI);
+const worker = new PyodideCoincidentKernel(sendWorkerMessage);
 
 workerAPI.initialize = worker.initialize.bind(worker);
 workerAPI.execute = worker.execute.bind(worker);

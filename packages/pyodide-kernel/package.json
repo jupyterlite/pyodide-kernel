@@ -33,11 +33,13 @@
     "schema/*.json"
   ],
   "scripts": {
-    "build": "jlpm build:lib && jlpm build:worker",
+    "build": "jlpm build:lib && jlpm build:workers",
     "build:lib": "tsc -b",
     "build:prod": "jlpm build",
     "build:py": "python scripts/generate-wheels-js.py",
-    "build:worker": "esbuild --bundle --minify --sourcemap --target=es2019 --format=esm --outfile=lib/coincident.worker.js src/coincident.worker.ts",
+    "build:coincident:worker": "esbuild --bundle --minify --sourcemap --target=es2019 --format=esm --outfile=lib/coincident.worker.js src/coincident.worker.ts",
+    "build:comlink:worker": "esbuild --bundle --minify --sourcemap --target=es2019 --format=esm --outfile=lib/comlink.worker.js src/comlink.worker.ts",
+    "build:workers": "jlpm build:coincident:worker && jlpm build:comlink:worker",
     "dist": "cd ../../dist && npm pack ../packages/pyodide-kernel",
     "clean": "jlpm clean:lib && jlpm clean:py",
     "clean:all": "jlpm clean",
@@ -55,7 +57,8 @@
     "@jupyterlab/coreutils": "^6.1.1",
     "@jupyterlite/contents": "^0.4.0-alpha.3",
     "@jupyterlite/kernel": "^0.4.0-alpha.3",
-    "coincident": "^1.2.3"
+    "coincident": "^1.2.3",
+    "comlink": "^4.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.22.17",

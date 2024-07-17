@@ -10,11 +10,11 @@ import { KernelMessage } from '@jupyterlab/services';
 import type { IPyodideWorkerKernel } from './tokens';
 
 export class PyodideRemoteKernel {
-  constructor(workerAPI: IPyodideWorkerKernel) {
+  constructor(sendWorkerMessage?: (msg: any) => void) {
     this._initialized = new Promise((resolve, reject) => {
       this._initializer = { resolve, reject };
     });
-    this._workerAPI = workerAPI;
+    this._sendWorkerMessage = sendWorkerMessage || (() => {});
   }
 
   /**
@@ -182,6 +182,10 @@ export class PyodideRemoteKernel {
     return results;
   }
 
+  registerCallback(callback: (msg: any) => void): void {
+    this._sendWorkerMessage = callback;
+  }
+
   /**
    * Makes sure pyodide is ready before continuing, and cache the parent message.
    */
@@ -209,7 +213,7 @@ export class PyodideRemoteKernel {
         metadata: this.formatResult(metadata),
       };
 
-      this._workerAPI.processWorkerMessage({
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'execute_result',
@@ -223,7 +227,7 @@ export class PyodideRemoteKernel {
         traceback: traceback,
       };
 
-      this._workerAPI.processWorkerMessage({
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'execute_error',
@@ -235,7 +239,7 @@ export class PyodideRemoteKernel {
         wait: this.formatResult(wait),
       };
 
-      this._workerAPI.processWorkerMessage({
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'clear_output',
@@ -249,7 +253,7 @@ export class PyodideRemoteKernel {
         transient: this.formatResult(transient),
       };
 
-      this._workerAPI.processWorkerMessage({
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'display_data',
@@ -267,7 +271,7 @@ export class PyodideRemoteKernel {
         transient: this.formatResult(transient),
       };
 
-      this._workerAPI.processWorkerMessage({
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'update_display_data',
@@ -280,7 +284,7 @@ export class PyodideRemoteKernel {
         text: this.formatResult(text),
       };
 
-      this._workerAPI.processWorkerMessage({
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'stream',
@@ -450,7 +454,7 @@ export class PyodideRemoteKernel {
       password,
     };
 
-    this._workerAPI.processWorkerMessage({
+    this._sendWorkerMessage({
       type: 'input_request',
       parentHeader: this.formatResult(this._kernel._parent_header)['header'],
       content,
@@ -487,7 +491,7 @@ export class PyodideRemoteKernel {
    * @param buffers The binary buffers.
    */
   async sendComm(type: string, content: any, metadata: any, ident: any, buffers: any) {
-    this._workerAPI.processWorkerMessage({
+    this._sendWorkerMessage({
       type: type,
       content: this.formatResult(content),
       metadata: this.formatResult(metadata),
@@ -519,5 +523,5 @@ export class PyodideRemoteKernel {
   protected _stderr_stream: any;
   protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
-  protected _workerAPI: IPyodideWorkerKernel;
+  protected _sendWorkerMessage: (msg: any) => void;
 }
