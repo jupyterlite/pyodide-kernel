@@ -32,27 +32,6 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     this._worker = this.initWorker(options);
     this._remoteKernel = this.initRemote(options);
     this._contentsManager = options.contentsManager;
-    this.setupFilesystemAPIs();
-  }
-
-  private setupFilesystemAPIs() {
-    (this._remoteKernel.processDriveRequest as any) = async <T extends TDriveMethod>(
-      data: TDriveRequest<T>,
-    ) => {
-      if (!DriveContentsProcessor) {
-        throw new Error(
-          'File system calls over Atomics.wait is only supported with jupyterlite>=0.4.0a3',
-        );
-      }
-
-      if (this._contentsProcessor === undefined) {
-        this._contentsProcessor = new DriveContentsProcessor({
-          contentsManager: this._contentsManager,
-        });
-      }
-
-      return await this._contentsProcessor.processDriveRequest(data);
-    };
   }
 
   /**
@@ -82,6 +61,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       remote.processWorkerMessage = (msg: any) => {
         this._processWorkerMessage(msg);
       };
+      this._setupFilesystemAPIs();
     } else {
       remote = wrap(this._worker) as IPyodideWorkerKernel;
       remote.registerCallback(proxy(this._processWorkerMessage.bind(this)));
@@ -197,6 +177,29 @@ export class PyodideKernel extends BaseKernel implements IKernel {
         break;
       }
     }
+  }
+
+  /**
+   * Setup the filesystem APIs
+   */
+  private _setupFilesystemAPIs() {
+    (this._remoteKernel.processDriveRequest as any) = async <T extends TDriveMethod>(
+      data: TDriveRequest<T>,
+    ) => {
+      if (!DriveContentsProcessor) {
+        throw new Error(
+          'File system calls over Atomics.wait is only supported with jupyterlite>=0.4.0a3',
+        );
+      }
+
+      if (this._contentsProcessor === undefined) {
+        this._contentsProcessor = new DriveContentsProcessor({
+          contentsManager: this._contentsManager,
+        });
+      }
+
+      return await this._contentsProcessor.processDriveRequest(data);
+    };
   }
 
   /**
