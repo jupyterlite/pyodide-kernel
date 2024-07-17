@@ -9,11 +9,12 @@ import { expose } from 'comlink';
 
 import { ContentsAPI, DriveFS, ServiceWorkerContentsAPI } from '@jupyterlite/contents';
 
-import { PyodideRemoteKernel } from './worker';
 import { IPyodideWorkerKernel } from './tokens';
 
+import { PyodideRemoteKernel } from './worker';
+
 /**
- * A custom drive implementation which uses shared array buffers if available, service worker otherwise
+ * A custom drive implementation which uses the service worker
  */
 class PyodideDriveFS extends DriveFS {
   createAPI(options: DriveFS.IOptions): ContentsAPI {

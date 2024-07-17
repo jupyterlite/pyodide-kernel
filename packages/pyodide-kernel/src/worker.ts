@@ -10,11 +10,10 @@ import { KernelMessage } from '@jupyterlab/services';
 import type { IPyodideWorkerKernel } from './tokens';
 
 export class PyodideRemoteKernel {
-  constructor(sendWorkerMessage?: (msg: any) => void) {
+  constructor() {
     this._initialized = new Promise((resolve, reject) => {
       this._initializer = { resolve, reject };
     });
-    this._sendWorkerMessage = sendWorkerMessage || (() => {});
   }
 
   /**
@@ -182,6 +181,10 @@ export class PyodideRemoteKernel {
     return results;
   }
 
+  /**
+   * Register the callback function to send messages back to the main thread.
+   * @param callback the callback to register
+   */
   registerCallback(callback: (msg: any) => void): void {
     this._sendWorkerMessage = callback;
   }
@@ -523,5 +526,5 @@ export class PyodideRemoteKernel {
   protected _stderr_stream: any;
   protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
-  protected _sendWorkerMessage: (msg: any) => void;
+  protected _sendWorkerMessage: (msg: any) => void = () => {};
 }
