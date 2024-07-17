@@ -56,12 +56,31 @@ export class PyodideKernel extends BaseKernel implements IKernel {
 
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
     let remote: IPyodideWorkerKernel;
+    // Use coincident if crossOriginIsolated, comlink otherwise
     if (crossOriginIsolated) {
       remote = coincident(this._worker) as IPyodideWorkerKernel;
       remote.processWorkerMessage = (msg: any) => {
         this._processWorkerMessage(msg);
       };
-      this._setupFilesystemAPIs();
+
+      // The coincident worker uses its own filesystem API:
+      (remote.processDriveRequest as any) = async <T extends TDriveMethod>(
+        data: TDriveRequest<T>,
+      ) => {
+        if (!DriveContentsProcessor) {
+          throw new Error(
+            'File system calls over Atomics.wait is only supported with jupyterlite>=0.4.0a3',
+          );
+        }
+
+        if (this._contentsProcessor === undefined) {
+          this._contentsProcessor = new DriveContentsProcessor({
+            contentsManager: this._contentsManager,
+          });
+        }
+
+        return await this._contentsProcessor.processDriveRequest(data);
+      };
     } else {
       remote = wrap(this._worker) as IPyodideWorkerKernel;
       remote.registerCallback(proxy(this._processWorkerMessage.bind(this)));
@@ -177,29 +196,6 @@ export class PyodideKernel extends BaseKernel implements IKernel {
         break;
       }
     }
-  }
-
-  /**
-   * Setup the filesystem APIs
-   */
-  private _setupFilesystemAPIs() {
-    (this._remoteKernel.processDriveRequest as any) = async <T extends TDriveMethod>(
-      data: TDriveRequest<T>,
-    ) => {
-      if (!DriveContentsProcessor) {
-        throw new Error(
-          'File system calls over Atomics.wait is only supported with jupyterlite>=0.4.0a3',
-        );
-      }
-
-      if (this._contentsProcessor === undefined) {
-        this._contentsProcessor = new DriveContentsProcessor({
-          contentsManager: this._contentsManager,
-        });
-      }
-
-      return await this._contentsProcessor.processDriveRequest(data);
-    };
   }
 
   /**
