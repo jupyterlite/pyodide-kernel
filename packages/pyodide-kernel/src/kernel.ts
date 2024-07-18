@@ -54,15 +54,18 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     }
   }
 
+  /**
+   * Initialize the remote kernel.
+   * Use coincident if crossOriginIsolated, comlink otherwise
+   * See the two following issues for more context:
+   *  - https://github.com/jupyterlite/jupyterlite/issues/1424
+   *  - https://github.com/jupyterlite/pyodide-kernel/pull/126
+   */
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
     let remote: IPyodideWorkerKernel;
-    // Use coincident if crossOriginIsolated, comlink otherwise
     if (crossOriginIsolated) {
       remote = coincident(this._worker) as IPyodideWorkerKernel;
-      remote.processWorkerMessage = (msg: any) => {
-        this._processWorkerMessage(msg);
-      };
-
+      remote.processWorkerMessage = this._processWorkerMessage.bind(this);
       // The coincident worker uses its own filesystem API:
       (remote.processDriveRequest as any) = async <T extends TDriveMethod>(
         data: TDriveRequest<T>,

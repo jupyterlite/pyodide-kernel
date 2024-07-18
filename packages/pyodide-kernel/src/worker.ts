@@ -182,7 +182,7 @@ export class PyodideRemoteKernel {
   }
 
   /**
-   * Register the callback function to send messages back to the main thread.
+   * Register the callback function to send messages from the worker back to the main thread.
    * @param callback the callback to register
    */
   registerCallback(callback: (msg: any) => void): void {

@@ -30,7 +30,7 @@ export class SharedBufferContentsAPI extends ContentsAPI {
 }
 
 /**
- * A custom drive implementation which uses shared array buffers if available
+ * A custom drive implementation which uses shared array buffers (via coincident) if available
  */
 class PyodideDriveFS extends DriveFS {
   createAPI(options: DriveFS.IOptions): ContentsAPI {
