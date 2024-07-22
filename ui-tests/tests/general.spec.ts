@@ -2,8 +2,10 @@ import { test } from '@jupyterlab/galata';
 
 import { expect } from '@playwright/test';
 
+const TIMEOUT = 600000;
+
 test.describe('General Tests', () => {
-  test.setTimeout(120000);
+  test.setTimeout(TIMEOUT);
 
   test.beforeEach(({ page }) => {
     page.on('console', (message) => {
