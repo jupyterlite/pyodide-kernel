@@ -3,9 +3,9 @@ import { test } from '@jupyterlab/galata';
 import { expect } from '@playwright/test';
 
 test.describe('General Tests', () => {
-  test.beforeEach(({ page }) => {
-    page.setDefaultTimeout(600000);
+  test.setTimeout(120000);
 
+  test.beforeEach(({ page }) => {
     page.on('console', (message) => {
       console.log('CONSOLE MSG ---', message.text());
     });
@@ -20,13 +20,13 @@ test.describe('General Tests', () => {
     // Wait for kernel to be idle
     await page.locator('#jp-main-statusbar').getByText('Idle').waitFor();
 
-    await page.notebook.addCell('code', 'print("ok")');
-    await page.notebook.runCell(1);
+    await page.notebook.setCell(0, 'code', 'print("ok")');
+    await page.notebook.runCell(0);
 
     // Wait for kernel to be idle
     await page.locator('#jp-main-statusbar').getByText('Idle').waitFor();
 
-    const cell = await page.notebook.getCellOutput(1);
+    const cell = await page.notebook.getCellOutput(0);
 
     expect(await cell?.screenshot()).toMatchSnapshot('execute.png');
   });
