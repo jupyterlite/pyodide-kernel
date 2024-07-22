@@ -79,7 +79,10 @@ const kernel: JupyterLiteServerPlugin<void> = {
       create: async (options: IKernel.IOptions): Promise<IKernel> => {
         const { PyodideKernel } = await import('@jupyterlite/pyodide-kernel');
 
-        const mountDrive = !!(serviceWorker?.enabled && broadcastChannel?.enabled);
+        const mountDrive = !!(
+          (serviceWorker?.enabled && broadcastChannel?.enabled) ||
+          crossOriginIsolated
+        );
 
         if (mountDrive) {
           console.info('Pyodide contents will be synced with Jupyter Contents');
