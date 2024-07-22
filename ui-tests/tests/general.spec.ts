@@ -20,7 +20,7 @@ test.describe('General Tests', () => {
     // Wait for kernel to be idle
     await page.locator('#jp-main-statusbar').getByText('Idle').waitFor();
 
-    await page.notebook.addCell('code', 'import bqplot; print("ok")');
+    await page.notebook.addCell('code', 'print("ok")');
     await page.notebook.runCell(1);
 
     // Wait for kernel to be idle
