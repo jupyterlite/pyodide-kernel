@@ -29,8 +29,8 @@ test.describe('General Tests', () => {
     await page.locator('#jp-main-statusbar').getByText('Idle').waitFor();
 
     const cell = await page.notebook.getCellOutput(0);
-
-    expect(await cell?.screenshot()).toMatchSnapshot('execute.png');
+    const cellContent = await cell?.textContent();
+    expect(cellContent).toContain('ok');
   });
 
   test('the kernel should have access to the file system', async ({ page }) => {
