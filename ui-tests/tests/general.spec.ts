@@ -6,7 +6,7 @@ test.describe('General Tests', () => {
   test.beforeEach(({ page }) => {
     page.setDefaultTimeout(600000);
 
-    page.on('console', message => {
+    page.on('console', (message) => {
       console.log('CONSOLE MSG ---', message.text());
     });
   });
@@ -28,9 +28,7 @@ test.describe('General Tests', () => {
 
     const cell = await page.notebook.getCellOutput(1);
 
-    expect(await cell?.screenshot()).toMatchSnapshot(
-      'execute.png'
-    );
+    expect(await cell?.screenshot()).toMatchSnapshot('execute.png');
   });
 
   test('the kernel should have access to the file system', async ({ page }) => {
