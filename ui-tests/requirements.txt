@@ -1,0 +1,2 @@
+bqplot
+pandas
