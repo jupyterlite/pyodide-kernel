@@ -3,6 +3,7 @@
 
 export * from './_pypi';
 export * from './coincident.worker';
+export * from './comlink.worker';
 export * from './kernel';
 export * from './tokens';
 export * from './worker';

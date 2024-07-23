@@ -182,6 +182,14 @@ export class PyodideRemoteKernel {
   }
 
   /**
+   * Register the callback function to send messages from the worker back to the main thread.
+   * @param callback the callback to register
+   */
+  registerCallback(callback: (msg: any) => void): void {
+    this._sendWorkerMessage = callback;
+  }
+
+  /**
    * Makes sure pyodide is ready before continuing, and cache the parent message.
    */
   async setup(parent: any): Promise<void> {
@@ -207,7 +215,8 @@ export class PyodideRemoteKernel {
         data: this.formatResult(data),
         metadata: this.formatResult(metadata),
       };
-      postMessage({
+
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'execute_result',
@@ -220,7 +229,8 @@ export class PyodideRemoteKernel {
         evalue: evalue,
         traceback: traceback,
       };
-      postMessage({
+
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'execute_error',
@@ -231,7 +241,8 @@ export class PyodideRemoteKernel {
       const bundle = {
         wait: this.formatResult(wait),
       };
-      postMessage({
+
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'clear_output',
@@ -244,7 +255,8 @@ export class PyodideRemoteKernel {
         metadata: this.formatResult(metadata),
         transient: this.formatResult(transient),
       };
-      postMessage({
+
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'display_data',
@@ -261,7 +273,8 @@ export class PyodideRemoteKernel {
         metadata: this.formatResult(metadata),
         transient: this.formatResult(transient),
       };
-      postMessage({
+
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'update_display_data',
@@ -273,7 +286,8 @@ export class PyodideRemoteKernel {
         name: this.formatResult(name),
         text: this.formatResult(text),
       };
-      postMessage({
+
+      this._sendWorkerMessage({
         parentHeader: this.formatResult(this._kernel._parent_header)['header'],
         bundle,
         type: 'stream',
@@ -442,7 +456,8 @@ export class PyodideRemoteKernel {
       prompt,
       password,
     };
-    postMessage({
+
+    this._sendWorkerMessage({
       type: 'input_request',
       parentHeader: this.formatResult(this._kernel._parent_header)['header'],
       content,
@@ -479,7 +494,7 @@ export class PyodideRemoteKernel {
    * @param buffers The binary buffers.
    */
   async sendComm(type: string, content: any, metadata: any, ident: any, buffers: any) {
-    postMessage({
+    this._sendWorkerMessage({
       type: type,
       content: this.formatResult(content),
       metadata: this.formatResult(metadata),
@@ -511,4 +526,5 @@ export class PyodideRemoteKernel {
   protected _stderr_stream: any;
   protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
+  protected _sendWorkerMessage: (msg: any) => void = () => {};
 }

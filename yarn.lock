@@ -2984,6 +2984,7 @@ __metadata:
     "@jupyterlite/kernel": ^0.4.0-alpha.3
     "@types/jest": ^29.5.4
     coincident: ^1.2.3
+    comlink: ^4.4.1
     esbuild: ^0.19.2
     jest: ^29.7.0
     pyodide: 0.26.1
@@ -5802,7 +5803,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"comlink@npm:^4.3.1":
+"comlink@npm:^4.3.1, comlink@npm:^4.4.1":
   version: 4.4.1
   resolution: "comlink@npm:4.4.1"
   checksum: 16d58a8f590087fc45432e31d6c138308dfd4b75b89aec0b7f7bb97ad33d810381bd2b1e608a1fb2cf05979af9cbfcdcaf1715996d5fcf77aeb013b6da3260af
@@ -13023,22 +13024,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.11.0, ws@npm:^8.5.0":
-  version: 8.16.0
-  resolution: "ws@npm:8.16.0"
-  peerDependencies:
-    bufferutil: ^4.0.1
-    utf-8-validate: ">=5.0.2"
-  peerDependenciesMeta:
-    bufferutil:
-      optional: true
-    utf-8-validate:
-      optional: true
-  checksum: feb3eecd2bae82fa8a8beef800290ce437d8b8063bdc69712725f21aef77c49cb2ff45c6e5e7fce622248f9c7abaee506bae0a9064067ffd6935460c7357321b
-  languageName: node
-  linkType: hard
-
-"ws@npm:^8.16.0":
+"ws@npm:^8.11.0, ws@npm:^8.16.0, ws@npm:^8.5.0":
   version: 8.17.0
   resolution: "ws@npm:8.17.0"
   peerDependencies:

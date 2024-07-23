@@ -1,5 +1,7 @@
 import coincident from 'coincident';
 
+import { Remote, proxy, wrap } from 'comlink';
+
 import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
@@ -28,30 +30,8 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   constructor(options: PyodideKernel.IOptions) {
     super(options);
     this._worker = this.initWorker(options);
-    this._worker.onmessage = (e) => this._processWorkerMessage(e.data);
     this._remoteKernel = this.initRemote(options);
     this._contentsManager = options.contentsManager;
-    this.setupFilesystemAPIs();
-  }
-
-  private setupFilesystemAPIs() {
-    (this._remoteKernel.processDriveRequest as any) = async <T extends TDriveMethod>(
-      data: TDriveRequest<T>,
-    ) => {
-      if (!DriveContentsProcessor) {
-        throw new Error(
-          'File system calls over Atomics.wait is only supported with jupyterlite>=0.4.0a3',
-        );
-      }
-
-      if (this._contentsProcessor === undefined) {
-        this._contentsProcessor = new DriveContentsProcessor({
-          contentsManager: this._contentsManager,
-        });
-      }
-
-      return await this._contentsProcessor.processDriveRequest(data);
-    };
   }
 
   /**
@@ -63,13 +43,51 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * webpack to find it.
    */
   protected initWorker(options: PyodideKernel.IOptions): Worker {
-    return new Worker(new URL('./coincident.worker.js', import.meta.url), {
-      type: 'module',
-    });
+    if (crossOriginIsolated) {
+      return new Worker(new URL('./coincident.worker.js', import.meta.url), {
+        type: 'module',
+      });
+    } else {
+      return new Worker(new URL('./comlink.worker.js', import.meta.url), {
+        type: 'module',
+      });
+    }
   }
 
+  /**
+   * Initialize the remote kernel.
+   * Use coincident if crossOriginIsolated, comlink otherwise
+   * See the two following issues for more context:
+   *  - https://github.com/jupyterlite/jupyterlite/issues/1424
+   *  - https://github.com/jupyterlite/pyodide-kernel/pull/126
+   */
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
-    const remote = coincident(this._worker) as IPyodideWorkerKernel;
+    let remote: IPyodideWorkerKernel;
+    if (crossOriginIsolated) {
+      remote = coincident(this._worker) as IPyodideWorkerKernel;
+      remote.processWorkerMessage = this._processWorkerMessage.bind(this);
+      // The coincident worker uses its own filesystem API:
+      (remote.processDriveRequest as any) = async <T extends TDriveMethod>(
+        data: TDriveRequest<T>,
+      ) => {
+        if (!DriveContentsProcessor) {
+          throw new Error(
+            'File system calls over Atomics.wait is only supported with jupyterlite>=0.4.0a3',
+          );
+        }
+
+        if (this._contentsProcessor === undefined) {
+          this._contentsProcessor = new DriveContentsProcessor({
+            contentsManager: this._contentsManager,
+          });
+        }
+
+        return await this._contentsProcessor.processDriveRequest(data);
+      };
+    } else {
+      remote = wrap(this._worker) as IPyodideWorkerKernel;
+      remote.registerCallback(proxy(this._processWorkerMessage.bind(this)));
+    }
     const remoteOptions = this.initRemoteOptions(options);
     remote.initialize(remoteOptions).then(this._ready.resolve.bind(this._ready));
     return remote;
@@ -318,7 +336,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   private _contentsManager: Contents.IManager;
   private _contentsProcessor: DriveContentsProcessor | undefined;
   private _worker: Worker;
-  private _remoteKernel: IRemotePyodideWorkerKernel;
+  private _remoteKernel:
+    | IRemotePyodideWorkerKernel
+    | Remote<IRemotePyodideWorkerKernel>;
   private _ready = new PromiseDelegate<void>();
 }
 
