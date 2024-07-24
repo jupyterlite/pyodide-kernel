@@ -9,16 +9,16 @@ import coincident from 'coincident';
 import {
   ContentsAPI,
   DriveFS,
-  ServiceWorkerContentsAPI,
   TDriveMethod,
   TDriveRequest,
   TDriveResponse,
 } from '@jupyterlite/contents';
 
-import { PyodideRemoteKernel } from './worker';
 import { IPyodideWorkerKernel } from './tokens';
 
-const workerAPI: IPyodideWorkerKernel = coincident(self) as IPyodideWorkerKernel;
+import { PyodideRemoteKernel } from './worker';
+
+const workerAPI = coincident(self) as IPyodideWorkerKernel;
 
 /**
  * An Emscripten-compatible synchronous Contents API using shared array buffers.
@@ -30,26 +30,16 @@ export class SharedBufferContentsAPI extends ContentsAPI {
 }
 
 /**
- * A custom drive implementation which uses shared array buffers if available, service worker otherwise
+ * A custom drive implementation which uses shared array buffers (via coincident) if available
  */
 class PyodideDriveFS extends DriveFS {
   createAPI(options: DriveFS.IOptions): ContentsAPI {
-    if (crossOriginIsolated) {
-      return new SharedBufferContentsAPI(
-        options.driveName,
-        options.mountpoint,
-        options.FS,
-        options.ERRNO_CODES,
-      );
-    } else {
-      return new ServiceWorkerContentsAPI(
-        options.baseUrl,
-        options.driveName,
-        options.mountpoint,
-        options.FS,
-        options.ERRNO_CODES,
-      );
-    }
+    return new SharedBufferContentsAPI(
+      options.driveName,
+      options.mountpoint,
+      options.FS,
+      options.ERRNO_CODES,
+    );
   }
 }
 
@@ -82,6 +72,9 @@ export class PyodideCoincidentKernel extends PyodideRemoteKernel {
 }
 
 const worker = new PyodideCoincidentKernel();
+
+const sendWorkerMessage = workerAPI.processWorkerMessage.bind(workerAPI);
+worker.registerCallback(sendWorkerMessage);
 
 workerAPI.initialize = worker.initialize.bind(worker);
 workerAPI.execute = worker.execute.bind(worker);
