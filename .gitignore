@@ -119,3 +119,10 @@ _pypi.ts
 .jupyterlite.doit.db
 _output
 jupyterlite_pyodide_kernel/tests/fixtures/.pyodide*/
+
+# Integration tests
+ui-tests/test-results/
+ui-tests/playwright-report/
+
+# Yarn cache
+.yarn/

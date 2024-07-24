@@ -1,0 +1,24 @@
+{
+  "name": "@jupyterlite/pyodide-kernel-ui-tests",
+  "version": "1.0.0",
+  "description": "JupyterLite Pyodide kernel integration tests",
+  "private": true,
+  "scripts": {
+    "build": "yarn run clean && python build.py",
+    "clean": "rimraf dist",
+    "start": "python -m http.server -b 127.0.0.1 8000 --directory dist",
+    "start:crossoriginisolated": "npx static-handler --cors --coop --coep --corp ./dist",
+    "start:detached": "yarn run start&",
+    "test": "playwright test",
+    "test:debug": "PWDEBUG=1 playwright test",
+    "test:report": "http-server ./playwright-report -a localhost -o",
+    "test:update": "playwright test --update-snapshots"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.37.0",
+    "rimraf": "^5.0.5"
+  },
+  "dependencies": {
+    "@jupyterlab/galata": "~5.0.5"
+  }
+}
