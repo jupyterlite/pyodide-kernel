@@ -1,6 +1,6 @@
 """An ipykernel mock"""
 
-__version__ = "6.9.2"
+__version__ = "6.29.5"
 __all__ = ["Comm", "CommManager", "__version__"]
 
 import re
