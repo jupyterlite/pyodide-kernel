@@ -2482,7 +2482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/coreutils@npm:^6.1.1, @jupyterlab/coreutils@npm:^6.2.1, @jupyterlab/coreutils@npm:^6.2.4, @jupyterlab/coreutils@npm:~6.2.4":
+"@jupyterlab/coreutils@npm:^6.1.1, @jupyterlab/coreutils@npm:^6.2.4, @jupyterlab/coreutils@npm:~6.2.4":
   version: 6.2.4
   resolution: "@jupyterlab/coreutils@npm:6.2.4"
   dependencies:
@@ -2615,7 +2615,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/nbformat@npm:^3.0.0 || ^4.0.0-alpha.21 || ^4.0.0, @jupyterlab/nbformat@npm:^4.1.1, @jupyterlab/nbformat@npm:^4.2.1, @jupyterlab/nbformat@npm:^4.2.4, @jupyterlab/nbformat@npm:~4.2.4":
+"@jupyterlab/nbformat@npm:^3.0.0 || ^4.0.0-alpha.21 || ^4.0.0, @jupyterlab/nbformat@npm:^4.1.1, @jupyterlab/nbformat@npm:^4.2.4, @jupyterlab/nbformat@npm:~4.2.4":
   version: 4.2.4
   resolution: "@jupyterlab/nbformat@npm:4.2.4"
   dependencies:
@@ -2745,7 +2745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/settingregistry@npm:^4.1.1, @jupyterlab/settingregistry@npm:^4.2.1, @jupyterlab/settingregistry@npm:^4.2.4, @jupyterlab/settingregistry@npm:~4.2.4":
+"@jupyterlab/settingregistry@npm:^4.1.1, @jupyterlab/settingregistry@npm:^4.2.4, @jupyterlab/settingregistry@npm:~4.2.4":
   version: 4.2.4
   resolution: "@jupyterlab/settingregistry@npm:4.2.4"
   dependencies:
@@ -2764,7 +2764,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/statedb@npm:^4.1.1, @jupyterlab/statedb@npm:^4.2.1, @jupyterlab/statedb@npm:^4.2.4, @jupyterlab/statedb@npm:~4.2.4":
+"@jupyterlab/statedb@npm:^4.1.1, @jupyterlab/statedb@npm:^4.2.4, @jupyterlab/statedb@npm:~4.2.4":
   version: 4.2.4
   resolution: "@jupyterlab/statedb@npm:4.2.4"
   dependencies:
