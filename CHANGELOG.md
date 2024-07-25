@@ -2,6 +2,38 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.4.0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.3.1...0803e075ea5960ef40486728a8f32ce83bb93280))
+
+### Enhancements made
+
+- Update to pyodide 0.26.1 [#116](https://github.com/jupyterlite/pyodide-kernel/pull/116) ([@bollwyvl](https://github.com/bollwyvl))
+- Switch from using comlink to coincident [#115](https://github.com/jupyterlite/pyodide-kernel/pull/115) ([@martinRenou](https://github.com/martinRenou))
+- FileSystem calls over Atomics.wait instead of service worker when available [#114](https://github.com/jupyterlite/pyodide-kernel/pull/114) ([@martinRenou](https://github.com/martinRenou))
+- update to pyodide 0.26.0 [#113](https://github.com/jupyterlite/pyodide-kernel/pull/113) ([@bollwyvl](https://github.com/bollwyvl))
+- Update to JupyterLite 0.4.0 [#106](https://github.com/jupyterlite/pyodide-kernel/pull/106) ([@jtpio](https://github.com/jtpio))
+
+### Bugs fixed
+
+- Fix `mountDrive` check [#129](https://github.com/jupyterlite/pyodide-kernel/pull/129) ([@jtpio](https://github.com/jtpio))
+- Use `coincident` if `crossOriginIsolated`, `comlink` otherwise [#126](https://github.com/jupyterlite/pyodide-kernel/pull/126) ([@jtpio](https://github.com/jtpio))
+
+### Maintenance and upkeep improvements
+
+- Update to JupyterLite 0.4.0 final [#131](https://github.com/jupyterlite/pyodide-kernel/pull/131) ([@jtpio](https://github.com/jtpio))
+- Add UI tests [#130](https://github.com/jupyterlite/pyodide-kernel/pull/130) ([@jtpio](https://github.com/jtpio))
+- Bump `widgetsnbextension` to 4.0.11 [#110](https://github.com/jupyterlite/pyodide-kernel/pull/110) ([@jtpio](https://github.com/jtpio))
+- Update `actions/setup-python` [#107](https://github.com/jupyterlite/pyodide-kernel/pull/107) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2024-03-30&to=2024-07-25&type=c))
+
+[@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2024-03-30..2024-07-25&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2024-03-30..2024-07-25&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2024-03-30..2024-07-25&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3AmartinRenou+updated%3A2024-03-30..2024-07-25&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.4.0rc0
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.4.0-beta.0...79cf7632dc31d97ea461104cef3ed8eaebfb2743))
@@ -16,8 +48,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2024-06-21&to=2024-07-23&type=c))
 
 [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2024-06-21..2024-07-23&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2024-06-21..2024-07-23&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2024-06-21..2024-07-23&type=Issues) | [@martinRenou](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3AmartinRenou+updated%3A2024-06-21..2024-07-23&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.4.0b0
 
