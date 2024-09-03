@@ -79,8 +79,8 @@
       "py/pyodide-kernel": "0.4.1",
       "py/piplite": "0.4.1",
       "py/ipykernel": "6.9.2",
-      "py/widgetsnbextension3/widgetsnbextension": "3.6.6",
-      "py/widgetsnbextension4/widgetsnbextension": "4.0.11"
+      "py/widgetsnbextension3/widgetsnbextension": "3.6.999",
+      "py/widgetsnbextension4/widgetsnbextension": "4.0.999"
     }
   },
   "styleModule": "style/index.js"
