@@ -1,6 +1,6 @@
 """A Python kernel backed by Pyodide"""
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 import sys
 
