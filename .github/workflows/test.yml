@@ -220,7 +220,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: jupyterlite-pyodide-kernel-playwright-tests
+          name: jupyterlite-pyodide-kernel-playwright-tests-${{ github.run_number }}-${{ matrix.project }}
           path: |
             ui-tests/test-results
             ui-tests/playwright-report
