@@ -65,14 +65,14 @@ jobs:
           cat *.txt
 
       - name: Upload extension packages
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
           path: dist
           if-no-files-found: error
 
       - name: Upload test config
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pyproject-toml
           path: pyproject.toml
@@ -93,7 +93,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: dist
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
@@ -147,7 +147,7 @@ jobs:
           cd tmp
           jupyter lite check || exit 1
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: pyproject-toml
 
@@ -165,7 +165,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: |-
             jupyterlite-pyodide-kernel-pytest-${{ github.run_number }}-${{ matrix.os }}-${{ matrix.python-version}}
@@ -183,12 +183,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: dist
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
@@ -218,9 +218,10 @@ jobs:
 
       - name: Upload Playwright Test report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: jupyterlite-pyodide-kernel-playwright-tests
+          name: |-
+            jupyterlite-pyodide-kernel-playwright-tests-${{ github.run_number }}-${{ matrix.project }}
           path: |
             ui-tests/test-results
             ui-tests/playwright-report
