@@ -311,6 +311,11 @@ export class PyodideRemoteKernel {
       publishExecutionError(results['ename'], results['evalue'], results['traceback']);
     }
 
+    this._sendWorkerMessage({
+      parentHeader: this.formatResult(this._kernel._parent_header)['header'],
+      type: 'execute_return',
+    });
+
     return results;
   }
 

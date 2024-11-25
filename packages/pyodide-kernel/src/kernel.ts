@@ -198,6 +198,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
         );
         break;
       }
+      case 'execute_return': {
+        this._executed.resolve();
+      }
     }
   }
 
@@ -244,6 +247,8 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     await this.ready;
     const result = await this._remoteKernel.execute(content, this.parent);
     result.execution_count = this.executionCount;
+    await this._executed.promise;
+    this._executed = new PromiseDelegate<void>();
     return result;
   }
 
@@ -340,6 +345,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     | IRemotePyodideWorkerKernel
     | Remote<IRemotePyodideWorkerKernel>;
   private _ready = new PromiseDelegate<void>();
+  private _executed = new PromiseDelegate<void>();
 }
 
 /**
