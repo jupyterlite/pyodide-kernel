@@ -312,7 +312,6 @@ export class PyodideRemoteKernel {
     }
 
     this._sendWorkerMessage({
-      parentHeader: this.formatResult(this._kernel._parent_header)['header'],
       type: 'execute_return',
     });
 
