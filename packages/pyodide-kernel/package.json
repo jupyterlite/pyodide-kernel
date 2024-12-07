@@ -55,8 +55,8 @@
   },
   "dependencies": {
     "@jupyterlab/coreutils": "^6.1.1",
-    "@jupyterlite/contents": "^0.4.4",
-    "@jupyterlite/kernel": "^0.4.4",
+    "@jupyterlite/contents": "^0.4.5",
+    "@jupyterlite/kernel": "^0.4.5",
     "coincident": "^1.2.3",
     "comlink": "^4.4.1"
   },
