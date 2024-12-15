@@ -29,6 +29,14 @@ class PyodideDriveFS extends DriveFS {
 }
 
 export class PyodideComlinkKernel extends PyodideRemoteKernel {
+  constructor() {
+    super();
+    this._sendWorkerMessage = (msg: any) => {
+      // use postMessage, but in a format, that comlink would not process.
+      postMessage({ jMsg: msg });
+    };
+  }
+
   /**
    * Setup custom Emscripten FileSystem
    */

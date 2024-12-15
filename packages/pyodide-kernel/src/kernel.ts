@@ -1,6 +1,6 @@
 import coincident from 'coincident';
 
-import { Remote, proxy, wrap } from 'comlink';
+import { Remote, wrap } from 'comlink';
 
 import { PromiseDelegate } from '@lumino/coreutils';
 
@@ -86,7 +86,13 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       };
     } else {
       remote = wrap(this._worker) as IPyodideWorkerKernel;
-      remote.registerCallback(proxy(this._processWorkerMessage.bind(this)));
+      // we use the normal postMessage mechanism
+      this._worker.addEventListener('message', (ev) => {
+        if (typeof ev?.data?.jMsg !== 'undefined') {
+          // only process non comlink messages
+          this._processWorkerMessage(ev.data.jMsg);
+        }
+      });
     }
     const remoteOptions = this.initRemoteOptions(options);
     remote.initialize(remoteOptions).then(this._ready.resolve.bind(this._ready));
