@@ -88,9 +88,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       remote = wrap(this._worker) as IPyodideWorkerKernel;
       // we use the normal postMessage mechanism
       this._worker.addEventListener('message', (ev) => {
-        if (typeof ev?.data?.jMsg !== 'undefined') {
+        if (typeof ev?.data?._kernelMessage !== 'undefined') {
           // only process non comlink messages
-          this._processWorkerMessage(ev.data.jMsg);
+          this._processWorkerMessage(ev.data._kernelMessage);
         }
       });
     }

@@ -33,7 +33,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
     super();
     this._sendWorkerMessage = (msg: any) => {
       // use postMessage, but in a format, that comlink would not process.
-      postMessage({ jMsg: msg });
+      postMessage({ _kernelMessage: msg });
     };
   }
 
