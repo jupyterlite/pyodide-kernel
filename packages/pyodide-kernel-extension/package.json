@@ -54,7 +54,7 @@
     "@jupyterlite/server": "^0.5.0-alpha.0"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "~4.2.1",
+    "@jupyterlab/builder": "~4.3.3",
     "rimraf": "^5.0.1",
     "typescript": "~5.2.2"
   },
