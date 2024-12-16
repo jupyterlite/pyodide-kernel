@@ -1041,7 +1041,7 @@ __metadata:
   resolution: "@jupyterlite/pyodide-kernel-ui-tests@workspace:."
   dependencies:
     "@jupyterlab/galata": ~5.3.3
-    "@playwright/test": ^1.37.0
+    "@playwright/test": ^1.48.0
     rimraf: ^5.0.5
   languageName: unknown
   linkType: soft
@@ -1448,17 +1448,6 @@ __metadata:
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
   checksum: 6ad6a00fc4f2f2cfc6bff76fb1d88b8ee20bc0601e18ebb01b6d4be583733a860239a521a7fbca73b612e66705078809483549d2b18f370eb346c5155c8e4a0f
-  languageName: node
-  linkType: hard
-
-"@playwright/test@npm:^1.37.0":
-  version: 1.45.2
-  resolution: "@playwright/test@npm:1.45.2"
-  dependencies:
-    playwright: 1.45.2
-  bin:
-    playwright: cli.js
-  checksum: 7f916fde237e6f5a5461571da026a959f8730dccfad6b4ee01ed6566089c750b8079c3a9930c45875faf67a7418195a8b11e0cdb6134405805065f6c7ee347de
   languageName: node
   linkType: hard
 
@@ -3189,36 +3178,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.45.2":
-  version: 1.45.2
-  resolution: "playwright-core@npm:1.45.2"
-  bin:
-    playwright-core: cli.js
-  checksum: 536423bfb320ad045b638498748df5681585dadda8bae1eff8995c70fcd6695761caf3c331c1e807e323e2af431bb15b0216142c5315d28f110b129f6e800b30
-  languageName: node
-  linkType: hard
-
 "playwright-core@npm:1.49.1":
   version: 1.49.1
   resolution: "playwright-core@npm:1.49.1"
   bin:
     playwright-core: cli.js
   checksum: a940f4b10ff1de033b4b8594b5104b02849a892d9adda0d42330a872cd3d8d287ffd2b01fc33f33ccd34f8904bb8ae8220b878b62e899f3d9bcd1b0945ab45c7
-  languageName: node
-  linkType: hard
-
-"playwright@npm:1.45.2":
-  version: 1.45.2
-  resolution: "playwright@npm:1.45.2"
-  dependencies:
-    fsevents: 2.3.2
-    playwright-core: 1.45.2
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    playwright: cli.js
-  checksum: ff37a27f85220363fcc6876389f58ea43f95946a1c26a8153b5f831e3a6693772e4ff45290e32dc193b4f64bc5053dbae3305432eaf5bd4a7dc6782e9b7b8e4a
   languageName: node
   linkType: hard
 
