@@ -2615,7 +2615,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/nbformat@npm:^3.0.0 || ^4.0.0-alpha.21 || ^4.0.0, @jupyterlab/nbformat@npm:^4.1.1, @jupyterlab/nbformat@npm:^4.2.5, @jupyterlab/nbformat@npm:^4.3.0, @jupyterlab/nbformat@npm:^4.2.6":
+"@jupyterlab/nbformat@npm:^3.0.0 || ^4.0.0-alpha.21 || ^4.0.0, @jupyterlab/nbformat@npm:^4.1.1, @jupyterlab/nbformat@npm:^4.2.5, @jupyterlab/nbformat@npm:^4.2.6":
   version: 4.3.2
   resolution: "@jupyterlab/nbformat@npm:4.3.2"
   dependencies:
@@ -2773,7 +2773,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/statedb@npm:^4.1.1, @jupyterlab/statedb@npm:^4.2.5, @jupyterlab/statedb@npm:^4.3.0, @jupyterlab/statedb@npm:^4.2.6":
+"@jupyterlab/statedb@npm:^4.1.1, @jupyterlab/statedb@npm:^4.2.5, @jupyterlab/statedb@npm:^4.2.6":
   version: 4.3.2
   resolution: "@jupyterlab/statedb@npm:4.3.2"
   dependencies:
@@ -3335,7 +3335,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/collections@npm:^2.0.1, @lumino/collections@npm:^2.0.2":
+"@lumino/collections@npm:^2.0.2":
   version: 2.0.2
   resolution: "@lumino/collections@npm:2.0.2"
   dependencies:
@@ -3394,7 +3394,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/keyboard@npm:^2.0.1, @lumino/keyboard@npm:^2.0.2":
+"@lumino/keyboard@npm:^2.0.2":
   version: 2.0.2
   resolution: "@lumino/keyboard@npm:2.0.2"
   checksum: 198e8c17825c9a831fa0770f58a71574b936acb0f0bbbe7f8feb73d89686dda7ff41fcb02d12b401f5d462b45fe0bba24f7f38befb7cefe0826576559f0bee6d
