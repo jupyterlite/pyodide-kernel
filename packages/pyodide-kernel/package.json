@@ -58,7 +58,7 @@
     "@jupyterlite/contents": "^0.4.5",
     "@jupyterlite/kernel": "^0.4.5",
     "coincident": "^1.2.3",
-    "comlink": "^4.4.1"
+    "comlink": "^4.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.22.17",
