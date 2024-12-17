@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.4.6
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.4.5...0164b5924ba964dfd79e89a95f1d3e610f127956))
+
+### Bugs fixed
+
+- Use postMessage instead of a comlink produced MessageChannel [#148](https://github.com/jupyterlite/pyodide-kernel/pull/148) ([@martenrichter](https://github.com/martenrichter))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2024-12-09&to=2024-12-17&type=c))
+
+[@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2024-12-09..2024-12-17&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2024-12-09..2024-12-17&type=Issues) | [@martenrichter](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Amartenrichter+updated%3A2024-12-09..2024-12-17&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.4.5
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.4.4...501bb6d5ee3a94c61a1f365c2cbf7263eabb9fc1))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2024-11-18&to=2024-12-09&type=c))
 
 [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2024-11-18..2024-12-09&type=Issues) | [@juntyr](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajuntyr+updated%3A2024-11-18..2024-12-09&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.4.4
 

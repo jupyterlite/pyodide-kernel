@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel-extension",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "JupyterLite - Pyodide Kernel Extension",
   "homepage": "https://github.com/jupyterlite/pyodide-kernel",
   "bugs": {
