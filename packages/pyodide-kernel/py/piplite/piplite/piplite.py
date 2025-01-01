@@ -79,8 +79,8 @@ async def _get_pypi_json_from_index(name, piplite_url, fetch_kwargs) -> ProjectI
 
 async def _query_package(
     name: str,
-    fetch_kwargs: dict[str, Any] | None = None,
     index_urls: list[str] | str | None = None,
+    fetch_kwargs: dict[str, Any] | None = None,
 ) -> ProjectInfo:
     """Fetch the warehouse API metadata for a specific ``pkgname``."""
     for piplite_url in _PIPLITE_URLS:
@@ -101,8 +101,8 @@ async def _query_package(
 
     return await _MP_QUERY_PACKAGE(
         name=name,
+        index_urls=index_urls,
         fetch_kwargs=fetch_kwargs,
-        index_urls=index_urls
     )
 
 
