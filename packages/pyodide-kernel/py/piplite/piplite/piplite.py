@@ -99,7 +99,7 @@ async def _query_package(
             f"{name} could not be installed: PyPI fallback is disabled"
         )
 
-    return await _MP_QUERY_PACKAGE(name, fetch_kwargs, index_urls)
+    return await _MP_QUERY_PACKAGE(name, index_urls, fetch_kwargs)
 
 
 async def _install(
@@ -174,14 +174,14 @@ def install(
 
     keep_going :
 
-        This parameter decides the behavior of the micropip when it encounters a
+        This parameter decides the behavior of micropip when it encounters a
         Python package without a pure Python wheel while doing dependency
         resolution:
 
         - If ``False``, an error will be raised on first package with a missing
           wheel.
 
-        - If ``True``, the micropip will keep going after the first error, and
+        - If ``True``, micropip will keep going after the first error, and
           report a list of errors at the end.
 
     deps :
