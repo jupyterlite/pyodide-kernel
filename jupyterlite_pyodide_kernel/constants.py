@@ -34,7 +34,11 @@ PYODIDE_VERSION = "0.27.0"
 #: the only kind of noarch wheel piplite understands
 NOARCH_WHL = "py3-none-any.whl"
 
-#: the only kind of binary wheel piplite understands
-WASM_WHL = "emscripten_*_wasm32.whl"
+#: the only kind of WASM wheels piplite understands
+#: the Pyodide ABI wheel is the same as the Emscripten
+#: ABI wheel, but with a different platform tag, i.e.,
+#  YYYY_buildnumber.
+EMSCRIPTEN_ABI_WHL = "emscripten_*_wasm32.whl"
+PYODIDE_ABI_WHL = "pyodide_*_wasm32.whl"
 
-ALL_WHL = [NOARCH_WHL, WASM_WHL]
+ALL_WHL = [NOARCH_WHL, EMSCRIPTEN_ABI_WHL, PYODIDE_ABI_WHL]
