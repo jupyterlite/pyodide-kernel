@@ -2340,8 +2340,8 @@ __metadata:
   linkType: hard
 
 "@jupyterlab/builder@npm:~4.2.1":
-  version: 4.2.1
-  resolution: "@jupyterlab/builder@npm:4.2.1"
+  version: 4.2.6
+  resolution: "@jupyterlab/builder@npm:4.2.6"
   dependencies:
     "@lumino/algorithm": ^2.0.1
     "@lumino/application": ^2.3.1
@@ -2376,7 +2376,7 @@ __metadata:
     worker-loader: ^3.0.2
   bin:
     build-labextension: lib/build-labextension.js
-  checksum: d8ea62deab2866be6fd0147470bd2ebd4970d1f628428e3354f86e8b8121a83ce3074eeead65427f09042eec8d88b4d1f1c2830972fc529ba5a084ada6be63b0
+  checksum: 114b922c8cd5d99f6589a0d6581b3489f4d6916a3fb8b04528d12dc607513405b6c42c1c8a767d647c9fd7fda8aeeeaeb6e0f370841f4077c9e0472dde3abb5c
   languageName: node
   linkType: hard
 
