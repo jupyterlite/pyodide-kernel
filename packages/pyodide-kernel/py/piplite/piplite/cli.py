@@ -2,7 +2,7 @@
 
 As of the upstream:
 
-    https://github.com/pyodide/micropip/blob/v0.2.0/micropip/_micropip.py#L468
+    https://github.com/pyodide/micropip/blob/4301606cd4d98d13b766630cc36cf19a4b5fb643/micropip/package_manager.py#L32
 
 .. code:
 
