@@ -2340,8 +2340,8 @@ __metadata:
   linkType: hard
 
 "@jupyterlab/builder@npm:~4.2.1":
-  version: 4.2.1
-  resolution: "@jupyterlab/builder@npm:4.2.1"
+  version: 4.2.6
+  resolution: "@jupyterlab/builder@npm:4.2.6"
   dependencies:
     "@lumino/algorithm": ^2.0.1
     "@lumino/application": ^2.3.1
@@ -2376,7 +2376,7 @@ __metadata:
     worker-loader: ^3.0.2
   bin:
     build-labextension: lib/build-labextension.js
-  checksum: d8ea62deab2866be6fd0147470bd2ebd4970d1f628428e3354f86e8b8121a83ce3074eeead65427f09042eec8d88b4d1f1c2830972fc529ba5a084ada6be63b0
+  checksum: 114b922c8cd5d99f6589a0d6581b3489f4d6916a3fb8b04528d12dc607513405b6c42c1c8a767d647c9fd7fda8aeeeaeb6e0f370841f4077c9e0472dde3abb5c
   languageName: node
   linkType: hard
 
@@ -3009,7 +3009,7 @@ __metadata:
     comlink: ^4.4.2
     esbuild: ^0.19.2
     jest: ^29.7.0
-    pyodide: 0.26.4
+    pyodide: 0.27.0
     rimraf: ^5.0.1
     ts-jest: ^26.3.0
     typescript: ~5.2.2
@@ -10919,12 +10919,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pyodide@npm:0.26.4":
-  version: 0.26.4
-  resolution: "pyodide@npm:0.26.4"
+"pyodide@npm:0.27.0":
+  version: 0.27.0
+  resolution: "pyodide@npm:0.27.0"
   dependencies:
     ws: ^8.5.0
-  checksum: 6e2d6205022232309076a7ce7cf10b68e5d7dbcac9679a9378c579fabb5c0ba3349b325f16c05b74a9fbbf188b1f16f5c5fb97a4c33e3bced5da0fb3d01d57f8
+  checksum: 8d5382b16f37659595488ce69c46beb855a7fc3950254324f98c1cf619a9cc9ac2e304331a343391b8135200732b0a1a13f629989c13ca02b70a2e9dd8cb9029
   languageName: node
   linkType: hard
 

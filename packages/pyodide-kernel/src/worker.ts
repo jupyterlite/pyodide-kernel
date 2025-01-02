@@ -137,14 +137,14 @@ export class PyodideRemoteKernel {
       const { DriveFS } = await import('@jupyterlite/contents');
 
       const driveFS = new DriveFS({
-        FS,
+        FS: FS as any,
         PATH,
         ERRNO_CODES,
         baseUrl,
         driveName: this._driveName,
         mountpoint,
       });
-      FS.mkdir(mountpoint);
+      FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
       FS.chdir(mountpoint);
       this._driveFS = driveFS;
