@@ -56,14 +56,14 @@ export class PyodideCoincidentKernel extends PyodideRemoteKernel {
       const { baseUrl } = options;
 
       const driveFS = new PyodideDriveFS({
-        FS,
+        FS: FS as any,
         PATH,
         ERRNO_CODES,
         baseUrl,
         driveName: this._driveName,
         mountpoint,
       });
-      FS.mkdir(mountpoint);
+      FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
       FS.chdir(mountpoint);
       this._driveFS = driveFS;
