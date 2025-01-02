@@ -7,15 +7,19 @@ As of the upstream:
 .. code:
 
     async def install(
-        requirements: str | list[str],
-        keep_going: bool = False,                   # --verbose
-        deps: bool = True,                          # --no-deps
-        credentials: str | None = None,
-        pre: bool = False,                          # --pre
-    ) -> None:
+        self,
+        requirements: str | list[str],                  # -r and [packages]
+        keep_going: bool = False,                       # --verbose
+        deps: bool = True,                              # --no-deps
+        credentials: str | None = None,                 # no CLI alias
+        pre: bool = False,                              # --pre
+        index_urls: list[str] | str | None = None,      # no CLI alias
+        *,
+        verbose: bool | int | None = None,
+    ):
 ```
 
-As this is _not_ really a CLI, it doesn't bother with accurate return codes, and should
+As this is _not_ really a CLI, it doesn't bother with accurate return codes, and
 failures should not block execution.
 """
 

@@ -79,8 +79,8 @@ async def _get_pypi_json_from_index(name, piplite_url, fetch_kwargs) -> ProjectI
 
 async def _query_package(
     name: str,
-    fetch_kwargs: dict[str, Any] | None = None,
     index_urls: list[str] | str | None = None,
+    fetch_kwargs: dict[str, Any] | None = None,
 ) -> ProjectInfo:
     """Fetch the warehouse API metadata for a specific ``pkgname``."""
     for piplite_url in _PIPLITE_URLS:
@@ -99,7 +99,11 @@ async def _query_package(
             f"{name} could not be installed: PyPI fallback is disabled"
         )
 
-    return await _MP_QUERY_PACKAGE(name, fetch_kwargs, index_urls)
+    return await _MP_QUERY_PACKAGE(
+        name=name,
+        index_urls=index_urls,
+        fetch_kwargs=fetch_kwargs,
+    )
 
 
 async def _install(
@@ -174,14 +178,14 @@ def install(
 
     keep_going :
 
-        This parameter decides the behavior of the micropip when it encounters a
+        This parameter decides the behavior of micropip when it encounters a
         Python package without a pure Python wheel while doing dependency
         resolution:
 
         - If ``False``, an error will be raised on first package with a missing
           wheel.
 
-        - If ``True``, the micropip will keep going after the first error, and
+        - If ``True``, micropip will keep going after the first error, and
           report a list of errors at the end.
 
     deps :
