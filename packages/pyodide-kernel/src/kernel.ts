@@ -120,6 +120,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       location: this.location,
       mountDrive: options.mountDrive,
       loadPyodideOptions: options.loadPyodideOptions || {},
+      extraPackagesAndIndexes: options.extraPackagesAndIndexes || [],
     };
   }
 
@@ -394,5 +395,6 @@ export namespace PyodideKernel {
      * The Jupyterlite content manager
      */
     contentsManager: Contents.IManager;
+    extraPackagesAndIndexes: Array<{ package: string; indexes: string[] | null }>;
   }
 }

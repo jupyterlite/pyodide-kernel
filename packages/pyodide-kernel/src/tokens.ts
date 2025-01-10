@@ -91,6 +91,11 @@ export namespace IPyodideWorkerKernel {
     mountDrive: boolean;
 
     /**
+     * List of extra url/wheel paths to load, and extra associated indexes urls (if not a wheel url)
+     */
+    extraPackagesAndIndexes: Array<{ package: string; indexes: string[] | null }>;
+
+    /**
      * additional options to provide to `loadPyodide`
      * @see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide
      */
