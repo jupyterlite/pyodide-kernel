@@ -6,7 +6,7 @@ import re
 import urllib.parse
 from hashlib import md5, sha256
 from pathlib import Path
-from typing import Tuple as _Tuple
+from typing import List as _List
 
 import doit.tools
 from jupyterlite_core.constants import (
@@ -16,8 +16,7 @@ from jupyterlite_core.constants import (
     LAB_EXTENSIONS,
     UTF8,
 )
-from jupyterlite_core.trait_types import TypedTuple
-from traitlets import Unicode
+from traitlets import List
 
 from ._base import _BaseAddon
 
@@ -37,8 +36,7 @@ class PipliteAddon(_BaseAddon):
     __all__ = ["post_init", "build", "post_build", "check"]
 
     # traits
-    piplite_urls: _Tuple[str] = TypedTuple(
-        Unicode(),
+    piplite_urls: _List[str] = List(
         help="Local paths or URLs of piplite-compatible wheels to copy and index",
     ).tag(config=True)
 
@@ -84,8 +82,18 @@ class PipliteAddon(_BaseAddon):
 
     def post_init(self, manager):
         """handle downloading of wheels"""
+        task_names = []
         for path_or_url in self.piplite_urls:
-            yield from self.resolve_one_wheel(path_or_url)
+            for task in self.resolve_one_wheel(path_or_url):
+                if task["name"] in task_names:
+                    self.log.warning(
+                        "[piplite] skipping-already scheduled wheel task %s: %s",
+                        task["name"],
+                        task["targets"],
+                    )
+                    continue
+                yield task
+                task_names += [task["name"]]
 
     def build(self, manager):
         """yield a doit task to copy each local wheel into the output_dir"""

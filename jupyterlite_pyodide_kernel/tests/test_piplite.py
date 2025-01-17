@@ -24,12 +24,17 @@ from jupyterlite_pyodide_kernel.constants import (
 from .conftest import WHEELS, PYODIDE_KERNEL_EXTENSION
 
 
-def has_wheel_after_build(an_empty_lite_dir, script_runner):
+def has_wheel_after_build(an_empty_lite_dir, script_runner, cli_args=None):
     """run a build, expecting the fixture wheel to be there"""
-    build = script_runner.run(["jupyter", "lite", "build"], cwd=str(an_empty_lite_dir))
+    cli_args = cli_args or []
+    build = script_runner.run(
+        ["jupyter", "lite", "build", *cli_args], cwd=str(an_empty_lite_dir)
+    )
     assert build.success
 
-    check = script_runner.run(["jupyter", "lite", "check"], cwd=str(an_empty_lite_dir))
+    check = script_runner.run(
+        ["jupyter", "lite", "check", *cli_args], cwd=str(an_empty_lite_dir)
+    )
     assert check.success
 
     output = an_empty_lite_dir / "_output"
@@ -47,12 +52,13 @@ def has_wheel_after_build(an_empty_lite_dir, script_runner):
     assert WHEELS[0].name in wheel_index_text, wheel_index_text
 
 
+@mark.parametrize("by_cli", [0, 1, 2])
 @mark.parametrize(
     "remote,folder",
     [[True, False], [False, False], [False, True]],
 )
 def test_piplite_urls(
-    an_empty_lite_dir, script_runner, remote, folder, a_fixture_server
+    by_cli, remote, folder, an_empty_lite_dir, script_runner, a_fixture_server
 ):
     """can we include a single wheel?"""
     ext = WHEELS[0]
@@ -75,15 +81,20 @@ def test_piplite_urls(
             "federated_extensions": [
                 str(PYODIDE_KERNEL_EXTENSION),
             ],
-        },
-        "PipliteAddon": {
-            "piplite_urls": piplite_urls,
-        },
+        }
     }
+
+    if by_cli == 0:
+        cli_args = []
+        config.update(PipliteAddon={"piplite_urls": piplite_urls})
+    elif by_cli == 1:
+        cli_args = ["--piplite-wheels", piplite_urls[0]]
+    elif by_cli == 2:
+        cli_args = ["--piplite-wheels", piplite_urls[0], "--piplite-wheels", "."]
 
     (an_empty_lite_dir / "jupyter_lite_config.json").write_text(json.dumps(config))
 
-    has_wheel_after_build(an_empty_lite_dir, script_runner)
+    has_wheel_after_build(an_empty_lite_dir, script_runner, cli_args)
 
 
 def test_lite_dir_wheel(an_empty_lite_dir, script_runner):
