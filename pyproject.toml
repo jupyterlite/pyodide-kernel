@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "hatchling >=1.4.0",
-    "jupyterlab >=4.3.3,<4.4.0a0",
+    "jupyterlab >=4.4.0a1,<4.5.0a0",
 ]
 build-backend = "hatchling.build"
 
@@ -37,7 +37,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "jupyterlite-core >=0.5.0,<0.6.0",
+    "jupyterlite-core >=0.6.0a0,<0.7.0",
     "pkginfo"
 ]
 
@@ -59,7 +59,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:
 dev = [
     "build",
     "hatch",
-    "jupyterlab >=4.3.3,<4.4.0a0",
+    "jupyterlab >=4.4.0a1,<4.5.0a0",
 ]
 
 lint = [
