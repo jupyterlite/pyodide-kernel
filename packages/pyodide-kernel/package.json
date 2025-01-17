@@ -47,28 +47,20 @@
     "clean:py": "rimraf pypi src/_pypi.ts",
     "docs": "typedoc src",
     "prepublishOnly": "npm run build",
-    "test": "jest",
-    "test:cov": "jest --collect-coverage",
-    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
-    "test:debug:watch": "node --inspect-brk node_modules/.bin/jest --runInBand --watch",
     "watch": "tsc -b --watch"
   },
   "dependencies": {
-    "@jupyterlab/coreutils": "^6.1.1",
-    "@jupyterlite/contents": "^0.5.0",
-    "@jupyterlite/kernel": "^0.5.0",
+    "@jupyterlab/coreutils": "^6.4.0-alpha.2",
+    "@jupyterlite/contents": "^0.6.0-alpha.0",
+    "@jupyterlite/kernel": "^0.6.0-alpha.0",
     "coincident": "^1.2.3",
     "comlink": "^4.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.22.17",
-    "@jupyterlab/testutils": "~4.1.1",
-    "@types/jest": "^29.5.4",
     "esbuild": "^0.19.2",
-    "jest": "^29.7.0",
     "pyodide": "0.27.1",
     "rimraf": "^5.0.1",
-    "ts-jest": "^26.3.0",
     "typescript": "~5.2.2"
   },
   "publishConfig": {
