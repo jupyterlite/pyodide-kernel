@@ -115,7 +115,7 @@ export class PyodideRemoteKernel {
         console.info('installing via cmd:', installCmd);
         try {
           await this._pyodide.runPythonAsync(installCmd);
-          console.info(`Package ${pkgs} Installed successfully`);
+          console.info(`Packages installed successfully`);
         } catch (e) {
           console.error('Error installing packages', e);
         }
