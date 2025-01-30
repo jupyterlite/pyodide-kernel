@@ -97,10 +97,10 @@ export class PyodideRemoteKernel {
     const scriptLines: string[] = [];
 
     // use piplite for packages that weren't pre-loaded
-    for (const pkgName of toLoad) {
-      if (!preloaded.includes(pkgName)) {
-        scriptLines.push(`await piplite.install('${pkgName}', keep_going=True)`);
-      }
+    const packagesToInstall = toLoad.filter((pkgName) => !preloaded.includes(pkgName));
+    if (packagesToInstall.length > 0) {
+      const pack_list = JSON.stringify(packagesToInstall);
+      scriptLines.push(`await piplite.install(${pack_list}, keep_going=True)`);
     }
 
     // import the kernel
