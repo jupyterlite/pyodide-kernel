@@ -105,14 +105,14 @@ export class PyodideRemoteKernel {
     const { extraPackagesAndIndexes } = this._options as IPyodideWorkerKernel.IOptions;
     if (extraPackagesAndIndexes.length > 0) {
       // note that here pkg can be a package name or a wheel url
-      for (let { packages: pkgs, indexes } of extraPackagesAndIndexes) {
+      for (const { packages: pkgs, indexes } of extraPackagesAndIndexes) {
         let installCmd: string;
         if (indexes === null) {
-          installCmd = `import micropip\nawait micropip.install(${JSON.stringify(pkgs)}, keep_going=True)`;
+          installCmd = `await piplite.install(${JSON.stringify(pkgs)}, keep_going=True)`;
         } else {
-          installCmd = `import micropip\nawait micropip.install(${JSON.stringify(pkgs)}, index_urls=${JSON.stringify(indexes)}, keep_going=True)`;
+          installCmd = `await piplite.install(${JSON.stringify(pkgs)}, index_urls=${JSON.stringify(indexes)}, keep_going=True)`;
         }
-        console.info('installCmd', installCmd);
+        console.info('installing via cmd:', installCmd);
         try {
           await this._pyodide.runPythonAsync(installCmd);
           console.info(`Package ${pkgs} Installed successfully`);

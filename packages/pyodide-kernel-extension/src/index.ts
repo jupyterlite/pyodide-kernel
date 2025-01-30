@@ -59,7 +59,6 @@ const kernel: JupyterLiteServerPlugin<void> = {
     const disablePyPIFallback = !!config.disablePyPIFallback;
     const loadPyodideOptions = config.loadPyodideOptions || {};
     const extraPackagesAndIndexes = config.extraPackagesAndIndexes || [];
-    console.log('extraPackagesAndIndexes', extraPackagesAndIndexes, config);
 
     for (const [key, value] of Object.entries(loadPyodideOptions)) {
       if (key.endsWith('URL') && typeof value === 'string') {
