@@ -93,7 +93,7 @@ export namespace IPyodideWorkerKernel {
     /**
      * List of extra url/wheel paths to load, and extra associated indexes urls (if not a wheel url)
      */
-    extraPackagesAndIndexes: Array<{ package: string; indexes: string[] | null }>;
+    extraPackagesAndIndexes: Array<{ packages: string[]; indexes: string[] | null }>;
 
     /**
      * additional options to provide to `loadPyodide`

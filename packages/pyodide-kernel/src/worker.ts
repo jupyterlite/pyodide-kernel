@@ -65,13 +65,8 @@ export class PyodideRemoteKernel {
       throw new Error('Uninitialized');
     }
 
-    const {
-      pipliteWheelUrl,
-      disablePyPIFallback,
-      pipliteUrls,
-      loadPyodideOptions,
-      extraPackagesAndIndexes,
-    } = this._options;
+    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, loadPyodideOptions } =
+      this._options;
 
     const preloaded = (loadPyodideOptions || {}).packages || [];
 
@@ -84,28 +79,6 @@ export class PyodideRemoteKernel {
       import micropip
       await micropip.install('${pipliteWheelUrl}', keep_going=True)
     `);
-    }
-    console.debug('extraPackagesAndIndexes', extraPackagesAndIndexes);
-
-    if (extraPackagesAndIndexes.length > 0) {
-      // note that here pkg can be a package name or a wheel url
-      for (let { package: pkg, indexes } of extraPackagesAndIndexes) {
-        let installCmd: string;
-        if (indexes === null) {
-          installCmd = `import micropip\nawait micropip.install('${pkg}', keep_going=True)`;
-        } else {
-          installCmd = `import micropip\nawait micropip.install('${pkg}', index_urls=${JSON.stringify(indexes)}, keep_going=True)`;
-        }
-        console.info('installCmd', installCmd);
-        try {
-          await this._pyodide.runPythonAsync(installCmd);
-          console.info(`Package ${pkg} Installed successfully`);
-        } catch (e) {
-          console.error('Error installing package', e);
-        }
-      }
-    } else {
-      console.info('no extra packages and indexes');
     }
 
     // get piplite early enough to impact pyodide-kernel dependencies
@@ -127,6 +100,25 @@ export class PyodideRemoteKernel {
     for (const pkgName of toLoad) {
       if (!preloaded.includes(pkgName)) {
         scriptLines.push(`await piplite.install('${pkgName}', keep_going=True)`);
+      }
+    }
+    const { extraPackagesAndIndexes } = this._options as IPyodideWorkerKernel.IOptions;
+    if (extraPackagesAndIndexes.length > 0) {
+      // note that here pkg can be a package name or a wheel url
+      for (let { packages: pkgs, indexes } of extraPackagesAndIndexes) {
+        let installCmd: string;
+        if (indexes === null) {
+          installCmd = `import micropip\nawait micropip.install(${JSON.stringify(pkgs)}, keep_going=True)`;
+        } else {
+          installCmd = `import micropip\nawait micropip.install(${JSON.stringify(pkgs)}, index_urls=${JSON.stringify(indexes)}, keep_going=True)`;
+        }
+        console.info('installCmd', installCmd);
+        try {
+          await this._pyodide.runPythonAsync(installCmd);
+          console.info(`Package ${pkgs} Installed successfully`);
+        } catch (e) {
+          console.error('Error installing packages', e);
+        }
       }
     }
 

@@ -395,6 +395,6 @@ export namespace PyodideKernel {
      * The Jupyterlite content manager
      */
     contentsManager: Contents.IManager;
-    extraPackagesAndIndexes: Array<{ package: string; indexes: string[] | null }>;
+    extraPackagesAndIndexes: Array<{ packages: string[]; indexes: string[] | null }>;
   }
 }
