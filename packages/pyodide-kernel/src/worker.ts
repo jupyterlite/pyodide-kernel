@@ -102,6 +102,25 @@ export class PyodideRemoteKernel {
         scriptLines.push(`await piplite.install('${pkgName}', keep_going=True)`);
       }
     }
+    const { extraPackagesAndIndexes } = this._options as IPyodideWorkerKernel.IOptions;
+    if (extraPackagesAndIndexes.length > 0) {
+      // note that here pkg can be a package name or a wheel url
+      for (const { packages: pkgs, indexes } of extraPackagesAndIndexes) {
+        let installCmd: string;
+        if (indexes === null) {
+          installCmd = `await piplite.install(${JSON.stringify(pkgs)}, keep_going=True)`;
+        } else {
+          installCmd = `await piplite.install(${JSON.stringify(pkgs)}, index_urls=${JSON.stringify(indexes)}, keep_going=True)`;
+        }
+        console.info('installing via cmd:', installCmd);
+        try {
+          await this._pyodide.runPythonAsync(installCmd);
+          console.info(`Packages installed successfully`);
+        } catch (e) {
+          console.error('Error installing packages', e);
+        }
+      }
+    }
 
     // import the kernel
     scriptLines.push('import pyodide_kernel');
