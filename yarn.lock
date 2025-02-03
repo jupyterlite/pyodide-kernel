@@ -818,7 +818,7 @@ __metadata:
     coincident: ^1.2.3
     comlink: ^4.4.2
     esbuild: ^0.19.2
-    pyodide: 0.27.1
+    pyodide: 0.27.2
     rimraf: ^5.0.1
     typescript: ~5.2.2
   languageName: unknown
@@ -7041,12 +7041,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pyodide@npm:0.27.1":
-  version: 0.27.1
-  resolution: "pyodide@npm:0.27.1"
+"pyodide@npm:0.27.2":
+  version: 0.27.2
+  resolution: "pyodide@npm:0.27.2"
   dependencies:
     ws: ^8.5.0
-  checksum: af2f25207ffdb75f46dccf97fc112b724683088706df299516efa0eee11a992668724ba451f5646c399049c08dd50b93e4f5aa848b67be9892a3e66a765090d0
+  checksum: 98595413ee74c5bb025044b9689f442dc6e9aeec9304061197f0537ab5015748db640e1d31328c9fb6ab99658e9ab63f2d05043a1822e386eaba454b9f011c55
   languageName: node
   linkType: hard
 
