@@ -52,10 +52,18 @@ export class PyodideRemoteKernel {
       importScripts(pyodideUrl);
       loadPyodide = (self as any).loadPyodide;
     }
-    this._pyodide = await loadPyodide({
+    const loadPyodideOptions = {
       indexURL: indexUrl,
       ...options.loadPyodideOptions,
-    });
+    };
+    // support loading the pyodide-lock.json file from a custom URL provided by
+    //  ?pyodide-kernel-lock-file-url=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const lockFileURL = urlParams.get('pyodide-kernel-lock-file-url');
+    if (lockFileURL) {
+      loadPyodideOptions.lockFileURL = lockFileURL;
+    }
+    this._pyodide = await loadPyodide(loadPyodideOptions);
   }
 
   protected async initPackageManager(
