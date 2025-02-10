@@ -13,6 +13,17 @@ if typing.TYPE_CHECKING:
 
 from .litetransform import LiteTransformerManager
 
+try:
+    from IPython.core.completer import provisionalcompleter as _provisionalcompleter
+    from IPython.core.completer import rectify_completions as _rectify_completions
+
+    _use_experimental_60_completion = True
+except ImportError:
+    _use_experimental_60_completion = False
+
+
+_EXPERIMENTAL_KEY_NAME = "_jupyter_types_experimental"
+
 
 class PyodideKernel(LoggingConfigurable):
     interpreter: "Interpreter" = Instance("pyodide_kernel.interpreter.Interpreter")
@@ -70,6 +81,9 @@ class PyodideKernel(LoggingConfigurable):
         return results
 
     def complete(self, code, cursor_pos):
+        if _use_experimental_60_completion:
+            return self._experimental_do_complete(code, cursor_pos)
+
         if cursor_pos is None:
             cursor_pos = len(code)
         line, offset = line_at_cursor(code, cursor_pos)
@@ -115,3 +129,43 @@ class PyodideKernel(LoggingConfigurable):
             results["traceback"] = last_traceback["traceback"]
 
         return results
+
+    def _experimental_do_complete(self, code, cursor_pos):
+        """
+        Experimental completions from IPython, using Jedi.
+        """
+        if cursor_pos is None:
+            cursor_pos = len(code)
+        with _provisionalcompleter():
+            assert self.interpreter is not None
+            raw_completions = self.interpreter.Completer.completions(code, cursor_pos)
+            completions = list(_rectify_completions(code, raw_completions))
+
+            comps = []
+            for comp in completions:
+                comps.append(
+                    dict(
+                        start=comp.start,
+                        end=comp.end,
+                        text=comp.text,
+                        type=comp.type,
+                        signature=comp.signature,
+                    )
+                )
+
+        if completions:
+            s = completions[0].start
+            e = completions[0].end
+            matches = [c.text for c in completions]
+        else:
+            s = cursor_pos
+            e = cursor_pos
+            matches = []
+
+        return {
+            "matches": matches,
+            "cursor_end": e,
+            "cursor_start": s,
+            "metadata": {_EXPERIMENTAL_KEY_NAME: comps},
+            "status": "ok",
+        }

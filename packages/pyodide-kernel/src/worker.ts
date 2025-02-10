@@ -92,7 +92,15 @@ export class PyodideRemoteKernel {
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const preloaded = (options.loadPyodideOptions || {}).packages || [];
 
-    const toLoad = ['ssl', 'sqlite3', 'ipykernel', 'comm', 'pyodide_kernel', 'ipython'];
+    const toLoad = [
+      'ssl',
+      'sqlite3',
+      'ipykernel',
+      'comm',
+      'pyodide_kernel',
+      'jedi',
+      'ipython',
+    ];
 
     const scriptLines: string[] = [];
 
