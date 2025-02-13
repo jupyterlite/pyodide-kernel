@@ -48,7 +48,7 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
 export type IRemotePyodideWorkerKernel = IPyodideWorkerKernel;
 
 /**
- * An namespace for Pyodide workers.
+ * A namespace for Pyodide workers.
  */
 export namespace IPyodideWorkerKernel {
   /**
