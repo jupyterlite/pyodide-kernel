@@ -44,6 +44,10 @@ class RequirementsContext:
         if self.requirements is None:
             self.requirements = []
 
+    def add_requirement(self, req: str):
+        """Add a requirement with the currently active index URL."""
+        self.requirements.append((req, self.index_url))
+
 
 REQ_FILE_PREFIX = r"^(-r|--requirements)\s*=?\s*(.*)\s*"
 INDEX_URL_PREFIX = r"^(--index-url|-i)\s*=?\s*(.*)\s*"
@@ -135,11 +139,14 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
         return None, {}
 
     kwargs = {}
-
     action = args.action
 
     if action == "install":
-        kwargs["requirements"] = args.packages
+        if args.index_url:
+            # If there's a CLI index URL, use it for command-line packages
+            kwargs["requirements"] = [(pkg, args.index_url) for pkg in args.packages]
+        else:
+            kwargs["requirements"] = [(pkg, None) for pkg in args.packages]
 
         if args.pre:
             kwargs["pre"] = True
@@ -150,20 +157,23 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
         if args.verbose:
             kwargs["keep_going"] = True
 
-        if args.index_url:
-            kwargs["index_urls"] = args.index_url
-
-        # Handle requirements files in case they contain index URLs
-        current_index_url = args.index_url
         for req_file in args.requirements or []:
-            reqs, index_url = await _packages_from_requirements_file(Path(req_file))
-            kwargs["requirements"].extend(reqs)
-            # Update index URL if one was found in requirements file
-            if index_url is not None:
-                current_index_url = index_url
+            reqs_with_indices = await _packages_from_requirements_file(Path(req_file))
+            kwargs["requirements"].extend(reqs_with_indices)
 
-        if current_index_url:
-            kwargs["index_urls"] = current_index_url
+        # Convert requirements to proper format for piplite.install
+        if kwargs.get("requirements"):
+            by_index = {}
+            for req, idx in kwargs["requirements"]:
+                by_index.setdefault(idx, []).append(req)
+
+            # Install each group with its index URL
+            all_requirements = []
+            for idx, reqs in by_index.items():
+                if idx:
+                    kwargs["index_urls"] = idx
+                all_requirements.extend(reqs)
+            kwargs["requirements"] = all_requirements
 
     return action, kwargs
 
@@ -208,10 +218,8 @@ async def _packages_from_requirements_line(
             sub_req = Path(sub_path)
         else:
             sub_req = req_path.parent / sub_path
-        sub_reqs, sub_index = await _packages_from_requirements_file(sub_req)
-        # Only update index URL if one was found
-        if sub_index is not None:
-            context.index_url = sub_index
+        sub_reqs, _ = await _packages_from_requirements_file(sub_req)
+        # Use current context's index_url for nested requirements
         context.requirements.extend(sub_reqs)
         return
 
@@ -225,4 +233,4 @@ async def _packages_from_requirements_line(
         warn(f"{req_path}:{line_no}: unrecognized requirement: {req}")
         return
 
-    context.requirements.append(req)
+    context.add_requirement(req)
