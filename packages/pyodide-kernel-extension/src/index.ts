@@ -105,8 +105,8 @@ const kernel: JupyterLiteServerPlugin<void> = {
           contentsManager,
           pipliteInstallDefaultOptions: {
             indexUrls,
-            ...pipliteInstallDefaultOptions
-          }
+            ...pipliteInstallDefaultOptions,
+          },
         });
       },
     });

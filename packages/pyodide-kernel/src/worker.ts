@@ -65,8 +65,13 @@ export class PyodideRemoteKernel {
       throw new Error('Uninitialized');
     }
 
-    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, loadPyodideOptions, pipliteInstallDefaultOptions } =
-      this._options;
+    const {
+      pipliteWheelUrl,
+      disablePyPIFallback,
+      pipliteUrls,
+      loadPyodideOptions,
+      pipliteInstallDefaultOptions,
+    } = this._options;
 
     const preloaded = (loadPyodideOptions || {}).packages || [];
 
@@ -84,12 +89,12 @@ export class PyodideRemoteKernel {
     const pythonConfig = [
       'import piplite.piplite',
       `piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}`,
-      `piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}`
+      `piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}`,
     ];
 
     if (pipliteInstallDefaultOptions?.indexUrls) {
       pythonConfig.push(
-        `piplite.piplite._PIPLITE_DEFAULT_INDEX_URLS = ${JSON.stringify(pipliteInstallDefaultOptions.indexUrls)}`
+        `piplite.piplite._PIPLITE_DEFAULT_INDEX_URLS = ${JSON.stringify(pipliteInstallDefaultOptions.indexUrls)}`,
       );
     }
 
