@@ -81,12 +81,20 @@ export class PyodideRemoteKernel {
     `);
     }
 
+    const pythonConfig = [
+      'import piplite.piplite',
+      `piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}`,
+      `piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}`
+    ];
+
+    if (pipliteInstallDefaultOptions?.indexUrls) {
+      pythonConfig.push(
+        `piplite.piplite._PIPLITE_DEFAULT_INDEX_URLS = ${JSON.stringify(pipliteInstallDefaultOptions.indexUrls)}`
+      );
+    }
+
     // get piplite early enough to impact pyodide-kernel dependencies
-    await this._pyodide.runPythonAsync(`
-      import piplite.piplite
-      piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}
-      piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}
-    `);
+    await this._pyodide.runPythonAsync(pythonConfig.join('\n'));
   }
 
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {

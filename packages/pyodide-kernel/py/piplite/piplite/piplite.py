@@ -33,6 +33,9 @@ _PIPLITE_DISABLE_PYPI = False
 #: a well-known file name respected by the rest of the build chain
 ALL_JSON = "/all.json"
 
+#: default index URLs to use when no specific index URLs are provided
+_PIPLITE_DEFAULT_INDEX_URLS = None
+
 
 class PiplitePyPIDisabled(ValueError):
     """An error for when PyPI is disabled at the site level, but a download was
@@ -117,16 +120,25 @@ async def _install(
     verbose: bool | int = False,
 ):
     """Invoke micropip.install with a patch to get data from local indexes"""
-    with patch("micropip.package_index.query_package", _query_package):
-        return await micropip.install(
-            requirements=requirements,
-            keep_going=keep_going,
-            deps=deps,
-            credentials=credentials,
-            pre=pre,
-            index_urls=index_urls,
-            verbose=verbose,
-        )
+
+    try:
+        # Use default index URLs if none provided and defaults exist
+        effective_index_urls = index_urls if index_urls is not None else _PIPLITE_DEFAULT_INDEX_URLS
+
+        with patch("micropip.package_index.query_package", _query_package):
+            return await micropip.install(
+                requirements=requirements,
+                keep_going=keep_going,
+                deps=deps,
+                credentials=credentials,
+                pre=pre,
+                index_urls=effective_index_urls,
+                verbose=verbose,
+            )
+    except Exception as e:
+        if effective_index_urls:
+            logger.error(f"Failed to install using index URLs {effective_index_urls}: {e}")
+        raise
 
 
 def install(
