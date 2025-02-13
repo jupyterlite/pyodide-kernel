@@ -77,6 +77,12 @@ def _get_parser() -> ArgumentParser:
         help="whether pre-release packages should be considered",
     )
     parser.add_argument(
+        "--index-url",
+        "-i",
+        type=str,
+        help="the index URL to use for package lookup",
+    )
+    parser.add_argument(
         "packages",
         nargs="*",
         type=str,
