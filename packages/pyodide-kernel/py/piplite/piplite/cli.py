@@ -26,8 +26,23 @@ failures should not block execution.
 import re
 import sys
 import typing
+from typing import Optional, List, Tuple
+from dataclasses import dataclass
+
 from argparse import ArgumentParser
 from pathlib import Path
+
+
+@dataclass
+class RequirementsContext:
+    """Track state while parsing requiremets files."""
+    index_url: Optional[str] = None
+    requirements: List[str] = None
+
+    def __post_init__(self):
+        if self.requirements is None:
+            self.requirements = []
+
 
 REQ_FILE_PREFIX = r"^(-r|--requirements)\s*=?\s*(.*)\s*"
 INDEX_URL_PREFIX = r"^(--index-url|-i)\s*=?\s*(.*)\s*"
@@ -136,51 +151,75 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
 
         if args.index_url:
             kwargs["index_urls"] = args.index_url
+
+        # Handle requirements files in case they contain index URLs
+        current_index_url = args.index_url
         for req_file in args.requirements or []:
-            kwargs["requirements"] += await _packages_from_requirements_file(
-                Path(req_file)
-            )
+            reqs, index_url = await _packages_from_requirements_file(Path(req_file))
+            kwargs["requirements"].extend(reqs)
+            # Update index URL if one was found in requirements file
+            if index_url is not None:
+                current_index_url = index_url
+
+        if current_index_url:
+            kwargs["index_urls"] = current_index_url
 
     return action, kwargs
 
 
-async def _packages_from_requirements_file(req_path: Path) -> list[str]:
-    """Extract (potentially nested) package requirements from a requirements file."""
+async def _packages_from_requirements_file(req_path: Path) -> Tuple[List[str], Optional[str]]:
+    """Extract (potentially nested) package requirements from a requirements file.
+
+    Returns:
+    Tuple of (list of package requirements, optional index URL)
+    """
     if not req_path.exists():
         warn(f"piplite could not find requirements file {req_path}")
         return []
 
-    requirements = []
+    context = RequirementsContext()
 
-    for line_no, line in enumerate(req_path.read_text(encoding="utf").splitlines()):
-        requirements += await _packages_from_requirements_line(
-            req_path, line_no + 1, line
-        )
+    for line_no, line in enumerate(req_path.read_text(encoding="utf-8").splitlines()):
+        await _packages_from_requirements_line(req_path, line_no + 1, line, context)
 
-    return requirements
+    return context.requirements, context.index_url
 
 
 async def _packages_from_requirements_line(
-    req_path: Path, line_no: int, line: str
-) -> list[str]:
+    req_path: Path, line_no: int, line: str, context: RequirementsContext
+) -> None:
     """Extract (potentially nested) package requirements from line of a
     requirements file.
 
     `micropip` has a sufficient pep508 implementation to handle most cases
     """
     req = line.strip().split("#")[0].strip()
-    # is it another requirement file?
+    if not req:
+        return
+    
+    # Check for nested requirements file
     req_file_match = re.match(REQ_FILE_PREFIX, req)
     if req_file_match:
-        if req_file_match[2].startswith("/"):
-            sub_req = Path(req)
+        sub_path = req_file_match[2]
+        if sub_path.startswith("/"):
+            sub_req = Path(sub_path)
         else:
-            sub_req = req_path.parent / req_file_match[2]
-        return await _packages_from_requirements_file(sub_req)
+            sub_req = req_path.parent / sub_path
+        sub_reqs, sub_index = await _packages_from_requirements_file(sub_req)
+        # Only update index URL if one was found
+        if sub_index is not None:
+            context.index_url = sub_index
+        context.requirements.extend(sub_reqs)
+        return
+
+    # Check for index URL specification
+    index_match = re.match(INDEX_URL_PREFIX, req)
+    if index_match:
+        context.index_url = index_match[2].strip()
+        return
 
     if req.startswith("-"):
         warn(f"{req_path}:{line_no}: unrecognized requirement: {req}")
-        req = None
-    if not req:
-        return []
-    return [req]
+        return
+
+    context.requirements.append(req)
