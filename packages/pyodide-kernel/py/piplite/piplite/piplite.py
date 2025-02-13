@@ -127,6 +127,9 @@ async def _install(
             index_urls if index_urls is not None else _PIPLITE_DEFAULT_INDEX_URLS
         )
 
+        if verbose:
+            logger.info(f"Installing with index URLs: {effective_index_urls}")
+
         with patch("micropip.package_index.query_package", _query_package):
             return await micropip.install(
                 requirements=requirements,
