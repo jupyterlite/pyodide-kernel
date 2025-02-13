@@ -30,6 +30,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 REQ_FILE_PREFIX = r"^(-r|--requirements)\s*=?\s*(.*)\s*"
+INDEX_URL_PREFIX = r"^(--index-url|-i)\s*=?\s*(.*)\s*"
+
 
 __all__ = ["get_transformed_code"]
 
@@ -132,6 +134,8 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
         if args.verbose:
             kwargs["keep_going"] = True
 
+        if args.index_url:
+            kwargs["index_urls"] = args.index_url
         for req_file in args.requirements or []:
             kwargs["requirements"] += await _packages_from_requirements_file(
                 Path(req_file)
