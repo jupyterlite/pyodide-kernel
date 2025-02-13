@@ -35,7 +35,7 @@ from pathlib import Path
 
 @dataclass
 class RequirementsContext:
-    """Track state while parsing requiremets files."""
+    """Track state while parsing requirements files."""
 
     index_url: Optional[str] = None
     requirements: List[str] = None
