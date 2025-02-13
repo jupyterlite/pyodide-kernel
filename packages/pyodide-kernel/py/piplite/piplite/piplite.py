@@ -123,7 +123,9 @@ async def _install(
 
     try:
         # Use default index URLs if none provided and defaults exist
-        effective_index_urls = index_urls if index_urls is not None else _PIPLITE_DEFAULT_INDEX_URLS
+        effective_index_urls = (
+            index_urls if index_urls is not None else _PIPLITE_DEFAULT_INDEX_URLS
+        )
 
         with patch("micropip.package_index.query_package", _query_package):
             return await micropip.install(
@@ -137,7 +139,9 @@ async def _install(
             )
     except Exception as e:
         if effective_index_urls:
-            logger.error(f"Failed to install using index URLs {effective_index_urls}: {e}")
+            logger.error(
+                f"Failed to install using index URLs {effective_index_urls}: {e}"
+            )
         raise
 
 

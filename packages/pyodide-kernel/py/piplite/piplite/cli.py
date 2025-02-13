@@ -36,6 +36,7 @@ from pathlib import Path
 @dataclass
 class RequirementsContext:
     """Track state while parsing requiremets files."""
+
     index_url: Optional[str] = None
     requirements: List[str] = None
 
@@ -167,7 +168,9 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
     return action, kwargs
 
 
-async def _packages_from_requirements_file(req_path: Path) -> Tuple[List[str], Optional[str]]:
+async def _packages_from_requirements_file(
+    req_path: Path,
+) -> Tuple[List[str], Optional[str]]:
     """Extract (potentially nested) package requirements from a requirements file.
 
     Returns:
@@ -196,7 +199,7 @@ async def _packages_from_requirements_line(
     req = line.strip().split("#")[0].strip()
     if not req:
         return
-    
+
     # Check for nested requirements file
     req_file_match = re.match(REQ_FILE_PREFIX, req)
     if req_file_match:

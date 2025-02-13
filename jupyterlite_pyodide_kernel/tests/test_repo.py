@@ -22,9 +22,9 @@ if not KERNEL_PKG_JSON.exists():  # pragma: no cover
 
 def test_pyodide_version():
     kernel_pkg_data = json.loads(KERNEL_PKG_JSON.read_text(**UTF8))
-    assert kernel_pkg_data["devDependencies"]["pyodide"] == PYODIDE_VERSION, (
-        f"{kernel_pkg_data} pyodide devDependency is not {PYODIDE_VERSION}"
-    )
+    assert (
+        kernel_pkg_data["devDependencies"]["pyodide"] == PYODIDE_VERSION
+    ), f"{kernel_pkg_data} pyodide devDependency is not {PYODIDE_VERSION}"
 
 
 @pytest.fixture
