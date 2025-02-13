@@ -65,7 +65,7 @@ export class PyodideRemoteKernel {
       throw new Error('Uninitialized');
     }
 
-    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, loadPyodideOptions } =
+    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, loadPyodideOptions, pipliteInstallDefaultOptions } =
       this._options;
 
     const preloaded = (loadPyodideOptions || {}).packages || [];
