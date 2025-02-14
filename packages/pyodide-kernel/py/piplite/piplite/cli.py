@@ -142,11 +142,42 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
     action = args.action
 
     if action == "install":
-        if args.index_url:
-            # If there's a CLI index URL, use it for command-line packages
-            kwargs["requirements"] = [(pkg, args.index_url) for pkg in args.packages]
-        else:
-            kwargs["requirements"] = [(pkg, None) for pkg in args.packages]
+        all_requirements = []
+
+        if args.packages:
+            all_requirements.extend((pkg, args.index_url) for pkg in args.packages)
+
+        # Process requirements files
+        for req_file in args.requirements or []:
+            context = RequirementsContext()
+            # If we have a CLI index URL, set it as the initial context
+            if args.index_url:
+                context.index_url = args.index_url
+
+            if not Path(req_file).exists():
+                warn(f"piplite could not find requirements file {req_file}")
+                continue
+
+            for line_no, line in enumerate(
+                Path(req_file).read_text(encoding="utf-8").splitlines()
+            ):
+                await _packages_from_requirements_line(
+                    Path(req_file), line_no + 1, line, context
+                )
+
+            all_requirements.extend(context.requirements)
+
+        if all_requirements:
+            # Group requirements by index URL
+            by_index = {}
+            for req, idx in all_requirements:
+                by_index.setdefault(idx, []).append(req)
+
+            kwargs["requirements"] = []
+            for idx, reqs in by_index.items():
+                if idx:
+                    kwargs["index_urls"] = idx
+                kwargs["requirements"].extend(reqs)
 
         if args.pre:
             kwargs["pre"] = True
@@ -156,24 +187,6 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
 
         if args.verbose:
             kwargs["keep_going"] = True
-
-        for req_file in args.requirements or []:
-            reqs_with_indices = await _packages_from_requirements_file(Path(req_file))
-            kwargs["requirements"].extend(reqs_with_indices)
-
-        # Convert requirements to proper format for piplite.install
-        if kwargs.get("requirements"):
-            by_index = {}
-            for req, idx in kwargs["requirements"]:
-                by_index.setdefault(idx, []).append(req)
-
-            # Install each group with its index URL
-            all_requirements = []
-            for idx, reqs in by_index.items():
-                if idx:
-                    kwargs["index_urls"] = idx
-                all_requirements.extend(reqs)
-            kwargs["requirements"] = all_requirements
 
     return action, kwargs
 
