@@ -58,7 +58,7 @@ export namespace IPyodideWorkerKernel {
     /**
      * Base URLs of extra indices to use
      */
-    indexUrls?: string[];
+    index_urls?: string[];
 
     /**
      * Any additional piplite install options

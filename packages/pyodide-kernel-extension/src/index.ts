@@ -61,7 +61,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
     const pipliteInstallDefaultOptions = config.pipliteInstallDefaultOptions || {};
 
     // Parse any configured index URLs
-    const indexUrls = pipliteInstallDefaultOptions.indexUrls || [];
+    const index_urls = pipliteInstallDefaultOptions.index_urls || [];
 
     for (const [key, value] of Object.entries(loadPyodideOptions)) {
       if (key.endsWith('URL') && typeof value === 'string') {
@@ -104,7 +104,7 @@ const kernel: JupyterLiteServerPlugin<void> = {
           loadPyodideOptions,
           contentsManager,
           pipliteInstallDefaultOptions: {
-            indexUrls,
+            index_urls,
             ...pipliteInstallDefaultOptions,
           },
         });

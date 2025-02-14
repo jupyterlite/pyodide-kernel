@@ -30,7 +30,7 @@
       "description": "Default options to pass to piplite.install",
       "default": {},
       "properties": {
-        "indexUrls": {
+        "index_urls": {
           "type": "array",
           "items": {
             "type": "string",
