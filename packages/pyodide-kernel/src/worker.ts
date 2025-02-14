@@ -88,12 +88,14 @@ export class PyodideRemoteKernel {
 
     const pythonConfig = [
       'import piplite.piplite',
-      `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS = ${JSON.stringify({
-        ...pipliteInstallDefaultOptions,
-      })}`,
-      `piplite.piplite._PIPLITE_INTERNAL_FLAGS = ${JSON.stringify({
-        disable_pypi: disablePyPIFallback,
-      })}`,
+      'piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS = {',
+      '    "keep_going": False,',
+      '    "deps": True,',
+      '    "credentials": None,',
+      '    "pre": False,',
+      '    "verbose": False,',
+      '}',
+      `piplite.piplite._PIPLITE_INTERNAL_FLAGS = {"disable_pypi": ${disablePyPIFallback ? 'True' : 'False'}}`,
       `piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}`,
     ];
 
