@@ -151,6 +151,11 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
         for req_file in args.requirements or []:
             context = RequirementsContext()
 
+            # If CLI index URL is provided, it should override within-file-level
+            # index URL for all requirements.
+            if args.index_url:
+                context.index_url = args.index_url
+
             if not Path(req_file).exists():
                 warn(f"piplite could not find requirements file {req_file}")
                 continue
@@ -165,18 +170,21 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
             all_requirements.extend(context.requirements)
 
         if all_requirements:
-            kwargs["requirements"] = []
-            used_index = None
+            by_index = {}
+            file_index_url = None
 
             for req, idx in all_requirements:
                 if idx:
-                    used_index = idx
-                kwargs["requirements"].append(req)
+                    file_index_url = idx
+                by_index.setdefault(file_index_url, []).append(req)
 
-            # Set the index URL if one was found (either passed to the CLI or
-            # passed within the requirements file)
-            if used_index:
-                kwargs["index_urls"] = used_index
+            # Build final kwargs. We set the index URL if one was found
+            # (either passed to the CLI or passed within the requirements file)
+            kwargs["requirements"] = []
+            for idx, reqs in by_index.items():
+                if idx:
+                    kwargs["index_urls"] = idx
+                kwargs["requirements"].extend(reqs)
 
         if args.pre:
             kwargs["pre"] = True
