@@ -129,8 +129,15 @@ async def _install(
     *,
     verbose: bool | int = False,
 ):
-    """Invoke micropip.install with a patch to get data from local indexes"""
+    """Invoke micropip.install with a patch to get data from local indexes.
 
+    This function handles the installation of Python packages, respecting index URLs
+    from various sources (CLI, requirements files, or defaults) while maintaining
+    precedence order provided for indices.
+
+    Arguments maintain the same semantics as micropip.install, but with additional
+    handling of index URLs and installation defaults.
+    """
     try:
         install_args = _PIPLITE_DEFAULT_INSTALL_ARGS.copy()
 
@@ -140,13 +147,18 @@ async def _install(
             "deps": deps,
             "credentials": credentials,
             "pre": pre,
-            "index_urls": index_urls,
             "verbose": verbose,
         }
+
+        if index_urls is not None:
+            provided_args["index_urls"] = index_urls
+
         install_args.update({k: v for k, v in provided_args.items() if v is not None})
 
         if verbose:
             logger.info(f"Installing with arguments: {install_args}")
+            if install_args.get("index_urls"):
+                logger.info(f"Using index URL: {install_args['index_urls']}")
 
         with patch("micropip.package_index.query_package", _query_package):
             return await micropip.install(**install_args)

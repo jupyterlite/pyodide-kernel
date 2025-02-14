@@ -130,7 +130,6 @@ async def get_transformed_code(argv: list[str]) -> typing.Optional[str]:
 
 async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict]:
     """Get the arguments to `piplite` subcommands from CLI-like tokens."""
-
     parser = _get_parser()
 
     try:
@@ -151,15 +150,11 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
         for req_file in args.requirements or []:
             context = RequirementsContext()
 
-            # If CLI index URL is provided, it should override within-file-level
-            # index URL for all requirements.
-            if args.index_url:
-                context.index_url = args.index_url
-
             if not Path(req_file).exists():
                 warn(f"piplite could not find requirements file {req_file}")
                 continue
 
+            # First let the file be processed normally to capture any index URL
             for line_no, line in enumerate(
                 Path(req_file).read_text(encoding="utf-8").splitlines()
             ):
@@ -167,24 +162,28 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
                     Path(req_file), line_no + 1, line, context
                 )
 
-            all_requirements.extend(context.requirements)
+            # If CLI provided an index URL, it should override the file's index URL
+            # We update all requirements to use the CLI index URL instead. Or, we use
+            # whatever index URL was found in the file (if any).
+            if args.index_url:
+                all_requirements.extend(
+                    (req, args.index_url) for req, _ in context.requirements
+                )
+            else:
+                all_requirements.extend(context.requirements)
 
         if all_requirements:
-            by_index = {}
-            file_index_url = None
+            kwargs["requirements"] = []
+            active_index_url = None
 
             for req, idx in all_requirements:
-                if idx:
-                    file_index_url = idx
-                by_index.setdefault(file_index_url, []).append(req)
+                if idx is not None:
+                    active_index_url = idx
+                kwargs["requirements"].append(req)
 
-            # Build final kwargs. We set the index URL if one was found
-            # (either passed to the CLI or passed within the requirements file)
-            kwargs["requirements"] = []
-            for idx, reqs in by_index.items():
-                if idx:
-                    kwargs["index_urls"] = idx
-                kwargs["requirements"].extend(reqs)
+            # Set the final index URL, if we found one
+            if active_index_url is not None:
+                kwargs["index_urls"] = active_index_url
 
         if args.pre:
             kwargs["pre"] = True
