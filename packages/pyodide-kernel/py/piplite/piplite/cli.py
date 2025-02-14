@@ -13,7 +13,7 @@ As of the upstream:
         deps: bool = True,                              # --no-deps
         credentials: str | None = None,                 # no CLI alias
         pre: bool = False,                              # --pre
-        index_urls: list[str] | str | None = None,      # no CLI alias
+        index_urls: list[str] | str | None = None,      # -i and --index-url
         *,
         verbose: bool | int | None = None,
     ):
