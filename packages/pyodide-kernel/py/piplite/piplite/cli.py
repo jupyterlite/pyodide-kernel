@@ -35,18 +35,30 @@ from pathlib import Path
 
 @dataclass
 class RequirementsContext:
-    """Track state while parsing requirements files."""
+    """Track state while parsing requirements files.
 
-    index_url: Optional[str] = None
+    This class maintains state about requirements and their associated index URLs.
+    Multiple index URLs can be tracked to support searching in multiple indices
+    in order of specification.
+    """
+
+    index_urls: List[str] = None
     requirements: List[str] = None
 
     def __post_init__(self):
         if self.requirements is None:
             self.requirements = []
+        if self.index_urls is None:
+            self.index_urls = []
+
+    def add_index_url(self, url: str) -> None:
+        """Add an index URL to the list of URLs to search from."""
+        if url not in self.index_urls:
+            self.index_urls.append(url)
 
     def add_requirement(self, req: str):
-        """Add a requirement with the currently active index URL."""
-        self.requirements.append((req, self.index_url))
+        """Add a requirement that will use the current index URLs."""
+        self.requirements.append((req, self.index_urls[:] if self.index_urls else None))
 
 
 REQ_FILE_PREFIX = r"^(-r|--requirements)\s*=?\s*(.*)\s*"
@@ -141,49 +153,45 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
     action = args.action
 
     if action == "install":
+        all_index_urls = []
+        if args.index_url:
+            all_index_urls.append(args.index_url)
+
         all_requirements = []
 
         if args.packages:
-            all_requirements.extend((pkg, args.index_url) for pkg in args.packages)
+            all_requirements.extend((pkg, all_index_urls[:]) for pkg in args.packages)
 
         # Process requirements files
         for req_file in args.requirements or []:
-            context = RequirementsContext()
+            try:
+                requirements, file_index_urls = await _packages_from_requirements_file(
+                    Path(req_file)
+                )
 
-            if not Path(req_file).exists():
-                warn(f"piplite could not find requirements file {req_file}")
+                # If CLI provided an index URL, it should override the file's index URL
+                # We update all requirements to use the CLI index URL instead. Or, we use
+                # whatever index URL was found in the file (if any).
+                if args.index_url:
+                    all_requirements.extend(
+                        (req, all_index_urls) for req, _ in requirements
+                    )
+                else:
+                    for url in file_index_urls:
+                        if url not in all_index_urls:
+                            all_index_urls.append(url)
+                    all_requirements.extend(requirements)
+            except Exception as e:
+                warn(f"Error processing requirements file {req_file}: {e}")
                 continue
-
-            # First let the file be processed normally to capture any index URL
-            for line_no, line in enumerate(
-                Path(req_file).read_text(encoding="utf-8").splitlines()
-            ):
-                await _packages_from_requirements_line(
-                    Path(req_file), line_no + 1, line, context
-                )
-
-            # If CLI provided an index URL, it should override the file's index URL
-            # We update all requirements to use the CLI index URL instead. Or, we use
-            # whatever index URL was found in the file (if any).
-            if args.index_url:
-                all_requirements.extend(
-                    (req, args.index_url) for req, _ in context.requirements
-                )
-            else:
-                all_requirements.extend(context.requirements)
 
         if all_requirements:
             kwargs["requirements"] = []
-            active_index_url = None
+            kwargs["requirements"].extend(req for req, _ in all_requirements)
 
-            for req, idx in all_requirements:
-                if idx is not None:
-                    active_index_url = idx
-                kwargs["requirements"].append(req)
-
-            # Set the final index URL, if we found one
-            if active_index_url is not None:
-                kwargs["index_urls"] = active_index_url
+            # Set the final index URLs, if we found any
+            if all_index_urls:
+                kwargs["index_urls"] = all_index_urls
 
         if args.pre:
             kwargs["pre"] = True
@@ -199,22 +207,29 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
 
 async def _packages_from_requirements_file(
     req_path: Path,
-) -> Tuple[List[str], Optional[str]]:
-    """Extract (potentially nested) package requirements from a requirements file.
+) -> Tuple[List[Tuple[str, Optional[List[str]]]], List[str]]:
+    """Extract package requirements and index URLs from a requirements file.
+
+    This function processes a requirements file to collect both package requirements
+    and any index URLs specified in it (with support for nested requirements).
 
     Returns:
-    Tuple of (list of package requirements, optional index URL)
+        A tuple of:
+        - List of (requirement, index_urls) pairs, where index_urls is a list of URLs
+          that should be used for this requirement
+        - List of index URLs found in the file
     """
+
     if not req_path.exists():
         warn(f"piplite could not find requirements file {req_path}")
-        return []
+        return [], []
 
     context = RequirementsContext()
 
     for line_no, line in enumerate(req_path.read_text(encoding="utf-8").splitlines()):
         await _packages_from_requirements_line(req_path, line_no + 1, line, context)
 
-    return context.requirements, context.index_url
+    return context.requirements, context.index_urls
 
 
 async def _packages_from_requirements_line(
@@ -237,15 +252,20 @@ async def _packages_from_requirements_line(
             sub_req = Path(sub_path)
         else:
             sub_req = req_path.parent / sub_path
-        sub_reqs, _ = await _packages_from_requirements_file(sub_req)
-        # Use current context's index_url for nested requirements
-        context.requirements.extend(sub_reqs)
+        # Create a new context for the nested file to maintain its own index URLs.
+        nested_context = RequirementsContext()
+        nested_context.index_urls = context.index_urls[
+            :
+        ]  # i  nherit parent's index URLs
+        await _packages_from_requirements_file(sub_req, nested_context)
+        # Extend our requirements with the nested ones
+        context.requirements.extend(nested_context.requirements)
         return
 
     # Check for index URL specification
     index_match = re.match(INDEX_URL_PREFIX, req)
     if index_match:
-        context.index_url = index_match[2].strip()
+        context.add_index_url(index_match[2].strip())
         return
 
     if req.startswith("-"):
