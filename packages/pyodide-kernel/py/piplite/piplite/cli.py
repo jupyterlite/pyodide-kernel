@@ -35,30 +35,18 @@ from pathlib import Path
 
 @dataclass
 class RequirementsContext:
-    """Track state while parsing requirements files.
+    """Track state while parsing requirements files."""
 
-    This class maintains state about requirements and their associated index URLs.
-    Multiple index URLs can be tracked to support searching in multiple indices
-    in order of specification.
-    """
-
-    index_urls: List[str] = None
+    index_url: Optional[str] = None
     requirements: List[str] = None
 
     def __post_init__(self):
         if self.requirements is None:
             self.requirements = []
-        if self.index_urls is None:
-            self.index_urls = []
-
-    def add_index_url(self, url: str) -> None:
-        """Add an index URL to the list of URLs to search from."""
-        if url not in self.index_urls:
-            self.index_urls.append(url)
 
     def add_requirement(self, req: str):
-        """Add a requirement that will use the current index URLs."""
-        self.requirements.append((req, self.index_urls[:] if self.index_urls else None))
+        """Add a requirement with the currently active index URL."""
+        self.requirements.append((req, self.index_url))
 
 
 REQ_FILE_PREFIX = r"^(-r|--requirements)\s*=?\s*(.*)\s*"
@@ -153,52 +141,60 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
     action = args.action
 
     if action == "install":
-        all_index_urls = []
-        if args.index_url:
-            all_index_urls.append(args.index_url)
-
+        # CLI index URL, if provided, is the only one we'll use
+        cli_index_url = args.index_url
         all_requirements = []
+        last_seen_file_index = None
 
         if args.packages:
-            all_requirements.extend((pkg, all_index_urls[:]) for pkg in args.packages)
+            all_requirements.extend((pkg, cli_index_url) for pkg in args.packages)
 
         # Process requirements files
         for req_file in args.requirements or []:
-            try:
-                requirements, file_index_urls = await _packages_from_requirements_file(
-                    Path(req_file)
+            context = RequirementsContext()
+
+            if not Path(req_file).exists():
+                warn(f"piplite could not find requirements file {req_file}")
+                continue
+
+            # Process the file and capture any index URL it contains
+            for line_no, line in enumerate(
+                Path(req_file).read_text(encoding="utf-8").splitlines()
+            ):
+                await _packages_from_requirements_line(
+                    Path(req_file), line_no + 1, line, context
                 )
 
-                # If CLI provided an index URL, it should override the file's index URL
-                # We update all requirements to use the CLI index URL instead. Or, we use
-                # whatever index URL was found in the file (if any).
-                if args.index_url:
-                    all_requirements.extend(
-                        (req, all_index_urls) for req, _ in requirements
-                    )
-                else:
-                    for url in file_index_urls:
-                        if url not in all_index_urls:
-                            all_index_urls.append(url)
-                    all_requirements.extend(requirements)
-            except Exception as e:
-                warn(f"Error processing requirements file {req_file}: {e}")
-                continue
+            # Keep track of the last index URL we saw in any requirements file
+            if context.index_url is not None:
+                last_seen_file_index = context.index_url
+
+            # Add requirements - if CLI provided an index URL, use that instead
+            if cli_index_url:
+                all_requirements.extend(
+                    (req, cli_index_url) for req, _ in context.requirements
+                )
+            else:
+                all_requirements.extend(context.requirements)
 
         if all_requirements:
             kwargs["requirements"] = []
+
+            # Add all requirements
             kwargs["requirements"].extend(req for req, _ in all_requirements)
 
-            # Set the final index URLs, if we found any
-            if all_index_urls:
-                kwargs["index_urls"] = all_index_urls
+            # Use index URL with proper precedence:
+            # 1. CLI index URL if provided
+            # 2. Otherwise, last seen index URL from any requirements file
+            effective_index = cli_index_url or last_seen_file_index
+            if effective_index:
+                kwargs["index_urls"] = effective_index
 
+        # Other CLI flags remain unchanged
         if args.pre:
             kwargs["pre"] = True
-
         if args.no_deps:
             kwargs["deps"] = False
-
         if args.verbose:
             kwargs["keep_going"] = True
 
@@ -244,7 +240,7 @@ async def _packages_from_requirements_line(
     if not req:
         return
 
-    # Check for nested requirements file
+    # Handle nested requirements file
     req_file_match = re.match(REQ_FILE_PREFIX, req)
     if req_file_match:
         sub_path = req_file_match[2]
@@ -252,20 +248,18 @@ async def _packages_from_requirements_line(
             sub_req = Path(sub_path)
         else:
             sub_req = req_path.parent / sub_path
-        # Create a new context for the nested file to maintain its own index URLs.
         nested_context = RequirementsContext()
-        nested_context.index_urls = context.index_urls[
-            :
-        ]  # i  nherit parent's index URLs
         await _packages_from_requirements_file(sub_req, nested_context)
-        # Extend our requirements with the nested ones
+        # Use the last index URL from nested file, if one was found
+        if nested_context.index_url:
+            context.index_url = nested_context.index_url
         context.requirements.extend(nested_context.requirements)
         return
 
-    # Check for index URL specification
+    # Check for index URL - this becomes the new active index URL.
     index_match = re.match(INDEX_URL_PREFIX, req)
     if index_match:
-        context.add_index_url(index_match[2].strip())
+        context.index_url = index_match[2].strip()
         return
 
     if req.startswith("-"):
