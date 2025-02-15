@@ -50,7 +50,11 @@ class RequirementsContext:
 
 
 REQ_FILE_PREFIX = r"^(-r|--requirements)\s*=?\s*(.*)\s*"
-INDEX_URL_PREFIX = r"^(--index-url|-i)\s*=?\s*(.*)\s*"
+
+# Matches a pip-style index URL, with support for quote enclosures
+INDEX_URL_PREFIX = (
+    r'^(--index-url|-i)\s*=?\s*(?:"([^"]*)"|\047([^\047]*)\047|([^\s]*))\s*$'
+)
 
 
 __all__ = ["get_transformed_code"]
@@ -259,7 +263,8 @@ async def _packages_from_requirements_line(
     # Check for index URL - this becomes the new active index URL.
     index_match = re.match(INDEX_URL_PREFIX, req)
     if index_match:
-        context.index_url = index_match[2].strip()
+        url = next(group for group in index_match.groups()[1:] if group is not None)
+        context.index_url = url.strip()
         return
 
     if req.startswith("-"):
