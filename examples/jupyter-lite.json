@@ -4,8 +4,11 @@
     "appName": "JupyterLite Pyodide Kernel",
     "litePluginSettings": {
       "@jupyterlite/pyodide-kernel-extension:kernel": {
+        "pipliteInstallDefaultOptions": {
+          "index_urls": "https://pypi.anaconda.org/scientific-python-nightly-wheels/simple"
+        },
         "loadPyodideOptions": {
-          "packages": ["matplotlib", "micropip", "numpy", "sqlite3", "ssl"],
+          "packages": ["micropip", "sqlite3", "ssl"],
           "lockFileURL": "https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide-lock.json?from-lite-config=1"
         }
       }
