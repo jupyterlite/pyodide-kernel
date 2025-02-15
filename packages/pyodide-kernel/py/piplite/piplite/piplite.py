@@ -27,11 +27,24 @@ _PIPLITE_URLS = []
 #: a cache of available packages
 _PIPLITE_INDICES = {}
 
-#: don't fall back to pypi.org if a package is not found in _PIPLITE_URLS
-_PIPLITE_DISABLE_PYPI = False
-
 #: a well-known file name respected by the rest of the build chain
 ALL_JSON = "/all.json"
+
+#: default arguments for piplite.install
+_PIPLITE_DEFAULT_INSTALL_ARGS = {
+    "requirements": None,
+    "keep_going": False,
+    "deps": True,
+    "credentials": None,
+    "pre": False,
+    "index_urls": None,
+    "verbose": False,
+}
+
+# Internal flags that affect package lookup behavior
+_PIPLITE_INTERNAL_FLAGS = {
+    "disable_pypi": False,  # don't fall back to pypi.org if package not found in _PIPLITE_URLS
+}
 
 
 class PiplitePyPIDisabled(ValueError):
@@ -94,7 +107,7 @@ async def _query_package(
         if pypi_json_from_index:
             return pypi_json_from_index
 
-    if _PIPLITE_DISABLE_PYPI:
+    if _PIPLITE_INTERNAL_FLAGS["disable_pypi"]:
         raise PiplitePyPIDisabled(
             f"{name} could not be installed: PyPI fallback is disabled"
         )
@@ -116,17 +129,46 @@ async def _install(
     *,
     verbose: bool | int = False,
 ):
-    """Invoke micropip.install with a patch to get data from local indexes"""
-    with patch("micropip.package_index.query_package", _query_package):
-        return await micropip.install(
-            requirements=requirements,
-            keep_going=keep_going,
-            deps=deps,
-            credentials=credentials,
-            pre=pre,
-            index_urls=index_urls,
-            verbose=verbose,
-        )
+    """Invoke micropip.install with a patch to get data from local indexes.
+
+    This function handles the installation of Python packages, respecting index URLs
+    from various sources (CLI, requirements files, or defaults) while maintaining
+    precedence order provided for indices.
+
+    Arguments maintain the same semantics as micropip.install, but with additional
+    handling of index URLs and installation defaults.
+    """
+    try:
+        install_args = _PIPLITE_DEFAULT_INSTALL_ARGS.copy()
+
+        provided_args = {
+            "requirements": requirements,
+            "keep_going": keep_going,
+            "deps": deps,
+            "credentials": credentials,
+            "pre": pre,
+            "verbose": verbose,
+        }
+
+        if index_urls is not None:
+            provided_args["index_urls"] = index_urls
+
+        install_args.update({k: v for k, v in provided_args.items() if v is not None})
+
+        if verbose:
+            logger.info(f"Installing with arguments: {install_args}")
+            if install_args.get("index_urls"):
+                logger.info(f"Using index URL: {install_args['index_urls']}")
+
+        with patch("micropip.package_index.query_package", _query_package):
+            return await micropip.install(**install_args)
+
+    except Exception as e:
+        if install_args.get("index_urls"):
+            logger.error(
+                f"Failed to install using index URLs {install_args['index_urls']}: {e}"
+            )
+        raise
 
 
 def install(

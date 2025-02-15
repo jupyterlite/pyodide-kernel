@@ -58,6 +58,10 @@ const kernel: JupyterLiteServerPlugin<void> = {
     const pipliteUrls = rawPipUrls.map((pipUrl: string) => URLExt.parse(pipUrl).href);
     const disablePyPIFallback = !!config.disablePyPIFallback;
     const loadPyodideOptions = config.loadPyodideOptions || {};
+    const pipliteInstallDefaultOptions = config.pipliteInstallDefaultOptions || {};
+
+    // Parse any configured index URLs
+    const index_urls = pipliteInstallDefaultOptions.index_urls || [];
 
     for (const [key, value] of Object.entries(loadPyodideOptions)) {
       if (key.endsWith('URL') && typeof value === 'string') {
@@ -99,6 +103,10 @@ const kernel: JupyterLiteServerPlugin<void> = {
           mountDrive,
           loadPyodideOptions,
           contentsManager,
+          pipliteInstallDefaultOptions: {
+            index_urls,
+            ...pipliteInstallDefaultOptions,
+          },
         });
       },
     });

@@ -25,6 +25,21 @@
       "default": [],
       "format": "uri"
     },
+    "pipliteInstallDefaultOptions": {
+      "type": "object",
+      "description": "Default options to pass to piplite.install",
+      "default": {},
+      "properties": {
+        "index_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "description": "Base URLs of extra indices to use"
+        }
+      }
+    },
     "loadPyodideOptions": {
       "type": "object",
       "description": "additional options to provide to `loadPyodide`, see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide",

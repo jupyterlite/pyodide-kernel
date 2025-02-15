@@ -48,9 +48,24 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
 export type IRemotePyodideWorkerKernel = IPyodideWorkerKernel;
 
 /**
- * An namespace for Pyodide workers.
+ * A namespace for Pyodide workers.
  */
 export namespace IPyodideWorkerKernel {
+  /**
+   * Options for piplite installation.
+   */
+  export interface IPipliteInstallOptions {
+    /**
+     * Base URLs of extra indices to use
+     */
+    index_urls?: string[];
+
+    /**
+     * Any additional piplite install options
+     */
+    [key: string]: any;
+  }
+
   /**
    * Initialization options for a worker.
    */
@@ -89,6 +104,11 @@ export namespace IPyodideWorkerKernel {
      * Whether or not to mount the Emscripten drive
      */
     mountDrive: boolean;
+
+    /**
+     * Default options to pass to piplite.install
+     */
+    pipliteInstallDefaultOptions?: IPyodideWorkerKernel.IPipliteInstallOptions;
 
     /**
      * additional options to provide to `loadPyodide`

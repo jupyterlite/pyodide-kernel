@@ -13,7 +13,7 @@ As of the upstream:
         deps: bool = True,                              # --no-deps
         credentials: str | None = None,                 # no CLI alias
         pre: bool = False,                              # --pre
-        index_urls: list[str] | str | None = None,      # no CLI alias
+        index_urls: list[str] | str | None = None,      # -i and --index-url
         *,
         verbose: bool | int | None = None,
     ):
@@ -26,10 +26,36 @@ failures should not block execution.
 import re
 import sys
 import typing
+from typing import Optional, List, Tuple
+from dataclasses import dataclass
+
 from argparse import ArgumentParser
 from pathlib import Path
 
+
+@dataclass
+class RequirementsContext:
+    """Track state while parsing requirements files."""
+
+    index_url: Optional[str] = None
+    requirements: List[str] = None
+
+    def __post_init__(self):
+        if self.requirements is None:
+            self.requirements = []
+
+    def add_requirement(self, req: str):
+        """Add a requirement with the currently active index URL."""
+        self.requirements.append((req, self.index_url))
+
+
 REQ_FILE_PREFIX = r"^(-r|--requirements)\s*=?\s*(.*)\s*"
+
+# Matches a pip-style index URL, with support for quote enclosures
+INDEX_URL_PREFIX = (
+    r'^(--index-url|-i)\s*=?\s*(?:"([^"]*)"|\047([^\047]*)\047|([^\s]*))\s*$'
+)
+
 
 __all__ = ["get_transformed_code"]
 
@@ -77,6 +103,12 @@ def _get_parser() -> ArgumentParser:
         help="whether pre-release packages should be considered",
     )
     parser.add_argument(
+        "--index-url",
+        "-i",
+        type=str,
+        help="the index URL to use for package lookup",
+    )
+    parser.add_argument(
         "packages",
         nargs="*",
         type=str,
@@ -102,7 +134,6 @@ async def get_transformed_code(argv: list[str]) -> typing.Optional[str]:
 
 async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict]:
     """Get the arguments to `piplite` subcommands from CLI-like tokens."""
-
     parser = _get_parser()
 
     try:
@@ -111,66 +142,133 @@ async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict
         return None, {}
 
     kwargs = {}
-
     action = args.action
 
     if action == "install":
-        kwargs["requirements"] = args.packages
+        # CLI index URL, if provided, is the only one we'll use
+        cli_index_url = args.index_url
+        all_requirements = []
+        last_seen_file_index = None
 
+        if args.packages:
+            all_requirements.extend((pkg, cli_index_url) for pkg in args.packages)
+
+        # Process requirements files
+        for req_file in args.requirements or []:
+            context = RequirementsContext()
+
+            if not Path(req_file).exists():
+                warn(f"piplite could not find requirements file {req_file}")
+                continue
+
+            # Process the file and capture any index URL it contains
+            for line_no, line in enumerate(
+                Path(req_file).read_text(encoding="utf-8").splitlines()
+            ):
+                await _packages_from_requirements_line(
+                    Path(req_file), line_no + 1, line, context
+                )
+
+            # Keep track of the last index URL we saw in any requirements file
+            if context.index_url is not None:
+                last_seen_file_index = context.index_url
+
+            # Add requirements - if CLI provided an index URL, use that instead
+            if cli_index_url:
+                all_requirements.extend(
+                    (req, cli_index_url) for req, _ in context.requirements
+                )
+            else:
+                all_requirements.extend(context.requirements)
+
+        if all_requirements:
+            kwargs["requirements"] = []
+
+            # Add all requirements
+            kwargs["requirements"].extend(req for req, _ in all_requirements)
+
+            # Use index URL with proper precedence:
+            # 1. CLI index URL if provided
+            # 2. Otherwise, last seen index URL from any requirements file
+            effective_index = cli_index_url or last_seen_file_index
+            if effective_index:
+                kwargs["index_urls"] = effective_index
+
+        # Other CLI flags remain unchanged
         if args.pre:
             kwargs["pre"] = True
-
         if args.no_deps:
             kwargs["deps"] = False
-
         if args.verbose:
             kwargs["keep_going"] = True
-
-        for req_file in args.requirements or []:
-            kwargs["requirements"] += await _packages_from_requirements_file(
-                Path(req_file)
-            )
 
     return action, kwargs
 
 
-async def _packages_from_requirements_file(req_path: Path) -> list[str]:
-    """Extract (potentially nested) package requirements from a requirements file."""
+async def _packages_from_requirements_file(
+    req_path: Path,
+) -> Tuple[List[Tuple[str, Optional[List[str]]]], List[str]]:
+    """Extract package requirements and index URLs from a requirements file.
+
+    This function processes a requirements file to collect both package requirements
+    and any index URLs specified in it (with support for nested requirements).
+
+    Returns:
+        A tuple of:
+        - List of (requirement, index_urls) pairs, where index_urls is a list of URLs
+          that should be used for this requirement
+        - List of index URLs found in the file
+    """
+
     if not req_path.exists():
         warn(f"piplite could not find requirements file {req_path}")
-        return []
+        return [], []
 
-    requirements = []
+    context = RequirementsContext()
 
-    for line_no, line in enumerate(req_path.read_text(encoding="utf").splitlines()):
-        requirements += await _packages_from_requirements_line(
-            req_path, line_no + 1, line
-        )
+    for line_no, line in enumerate(req_path.read_text(encoding="utf-8").splitlines()):
+        await _packages_from_requirements_line(req_path, line_no + 1, line, context)
 
-    return requirements
+    return context.requirements, context.index_urls
 
 
 async def _packages_from_requirements_line(
-    req_path: Path, line_no: int, line: str
-) -> list[str]:
+    req_path: Path, line_no: int, line: str, context: RequirementsContext
+) -> None:
     """Extract (potentially nested) package requirements from line of a
     requirements file.
 
     `micropip` has a sufficient pep508 implementation to handle most cases
     """
     req = line.strip().split("#")[0].strip()
-    # is it another requirement file?
+    if not req:
+        return
+
+    # Handle nested requirements file
     req_file_match = re.match(REQ_FILE_PREFIX, req)
     if req_file_match:
-        if req_file_match[2].startswith("/"):
-            sub_req = Path(req)
+        sub_path = req_file_match[2]
+        if sub_path.startswith("/"):
+            sub_req = Path(sub_path)
         else:
-            sub_req = req_path.parent / req_file_match[2]
-        return await _packages_from_requirements_file(sub_req)
+            sub_req = req_path.parent / sub_path
+        nested_context = RequirementsContext()
+        await _packages_from_requirements_file(sub_req, nested_context)
+        # Use the last index URL from nested file, if one was found
+        if nested_context.index_url:
+            context.index_url = nested_context.index_url
+        context.requirements.extend(nested_context.requirements)
+        return
+
+    # Check for index URL - this becomes the new active index URL.
+    index_match = re.match(INDEX_URL_PREFIX, req)
+    if index_match:
+        url = next(group for group in index_match.groups()[1:] if group is not None)
+        context.index_url = url.strip()
+        return
 
     if req.startswith("-"):
         warn(f"{req_path}:{line_no}: unrecognized requirement: {req}")
-        req = None
-    if not req:
-        return []
-    return [req]
+        return
+
+    context.add_requirement(req)

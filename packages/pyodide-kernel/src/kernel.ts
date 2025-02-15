@@ -382,6 +382,11 @@ export namespace PyodideKernel {
     mountDrive: boolean;
 
     /**
+     * Default options to pass to piplite.install
+     */
+    pipliteInstallDefaultOptions?: IPyodideWorkerKernel.IPipliteInstallOptions;
+
+    /**
      * additional options to provide to `loadPyodide`
      * @see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide
      */
