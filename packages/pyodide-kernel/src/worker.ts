@@ -119,6 +119,11 @@ export class PyodideRemoteKernel {
       scriptLines.push('import os', `os.chdir("${this._localPath}")`);
     }
 
+    // execute config-provided bootstrap Python code
+    if (options.bootstrapCode) {
+      scriptLines.push(options.bootstrapCode);
+    }
+
     // from this point forward, only use piplite (but not %pip)
     await this._pyodide.runPythonAsync(scriptLines.join('\n'));
   }

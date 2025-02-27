@@ -120,6 +120,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       location: this.location,
       mountDrive: options.mountDrive,
       loadPyodideOptions: options.loadPyodideOptions || {},
+      bootstrapCode: options.bootstrapCode || '',
     };
   }
 
@@ -389,6 +390,14 @@ export namespace PyodideKernel {
       lockFileURL: string;
       packages: string[];
     };
+
+    /**
+     * Python code that is executed by the Pyodide kernel during initialization.
+     *
+     * Beware that throwing an exception during bootstrap will stop the kernel
+     * from starting.
+     */
+    bootstrapCode: string;
 
     /**
      * The Jupyterlite content manager

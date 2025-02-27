@@ -98,5 +98,13 @@ export namespace IPyodideWorkerKernel {
       lockFileURL: string;
       packages: string[];
     };
+
+    /**
+     * Python code that is executed by the Pyodide kernel during initialization.
+     *
+     * Beware that throwing an exception during bootstrap will stop the kernel
+     * from starting.
+     */
+    bootstrapCode: string;
   }
 }
