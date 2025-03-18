@@ -635,21 +635,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/coreutils@npm:^6.4.0-alpha.2":
-  version: 6.4.0-alpha.2
-  resolution: "@jupyterlab/coreutils@npm:6.4.0-alpha.2"
-  dependencies:
-    "@lumino/coreutils": ^2.2.0
-    "@lumino/disposable": ^2.1.3
-    "@lumino/signaling": ^2.1.3
-    minimist: ~1.2.0
-    path-browserify: ^1.0.0
-    url-parse: ~1.5.4
-  checksum: 20e7460e18f8323520cdacb4bcccde8af004dcb7f4d2d9b18f264dfd7a7d82d70aaa383e8ad1fff6fc05c6ab3fabe2e67ebad9cddc7ad0e93d3e8919c6e23205
-  languageName: node
-  linkType: hard
-
-"@jupyterlab/coreutils@npm:^6.4.0-beta.1, @jupyterlab/coreutils@npm:~6.4.0-beta.0":
+"@jupyterlab/coreutils@npm:^6.4.0-alpha.2, @jupyterlab/coreutils@npm:^6.4.0-beta.1, @jupyterlab/coreutils@npm:~6.4.0-beta.0":
   version: 6.4.0-beta.1
   resolution: "@jupyterlab/coreutils@npm:6.4.0-beta.1"
   dependencies:
@@ -989,18 +975,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/application@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@lumino/application@npm:2.4.1"
-  dependencies:
-    "@lumino/commands": ^2.3.1
-    "@lumino/coreutils": ^2.2.0
-    "@lumino/widgets": ^2.5.0
-  checksum: b7166d1bf4f0e3cc945d984b4057a4cd106d38df6cb4c6f1259c75484e2b976018aca55f169fa4af7dd174ce7117be1920966bef0fb7cba756f503f0df1d211e
-  languageName: node
-  linkType: hard
-
-"@lumino/application@npm:^2.4.2":
+"@lumino/application@npm:^2.4.1, @lumino/application@npm:^2.4.2":
   version: 2.4.2
   resolution: "@lumino/application@npm:2.4.2"
   dependencies:
@@ -1124,26 +1099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lumino/widgets@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "@lumino/widgets@npm:2.5.0"
-  dependencies:
-    "@lumino/algorithm": ^2.0.2
-    "@lumino/commands": ^2.3.1
-    "@lumino/coreutils": ^2.2.0
-    "@lumino/disposable": ^2.1.3
-    "@lumino/domutils": ^2.0.2
-    "@lumino/dragdrop": ^2.1.5
-    "@lumino/keyboard": ^2.0.2
-    "@lumino/messaging": ^2.0.2
-    "@lumino/properties": ^2.0.2
-    "@lumino/signaling": ^2.1.3
-    "@lumino/virtualdom": ^2.0.2
-  checksum: c5055e42b0b7d5d9a0c29d14c7053478cbdef057525e262ccd59c987971364d5462ed1a59d5008b889cf5ecc6810e90c681364239500b9c8ee0ae4624d60df84
-  languageName: node
-  linkType: hard
-
-"@lumino/widgets@npm:^2.6.0":
+"@lumino/widgets@npm:^2.5.0, @lumino/widgets@npm:^2.6.0":
   version: 2.6.0
   resolution: "@lumino/widgets@npm:2.6.0"
   dependencies:
