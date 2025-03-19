@@ -1,19 +1,19 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
+import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
+
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
-import {
-  IServiceWorkerManager,
-  JupyterLiteServer,
-  JupyterLiteServerPlugin,
-} from '@jupyterlite/server';
+import { IServiceWorkerManager } from '@jupyterlite/server';
 
-import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
 import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
 
-export * as KERNEL_SETTINGS_SCHEMA from '../schema/kernel.v0.schema.json';
+import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
+
 import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
+
+export * as KERNEL_SETTINGS_SCHEMA from '../schema/kernel.v0.schema.json';
 
 const KERNEL_ICON_URL = `data:image/svg+xml;base64,${btoa(KERNEL_ICON_SVG_STR)}`;
 
@@ -30,13 +30,13 @@ const PLUGIN_ID = '@jupyterlite/pyodide-kernel-extension:kernel';
 /**
  * A plugin to register the Pyodide kernel.
  */
-const kernel: JupyterLiteServerPlugin<void> = {
+const kernel: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
   autoStart: true,
   requires: [IKernelSpecs],
   optional: [IServiceWorkerManager, IBroadcastChannelWrapper],
   activate: (
-    app: JupyterLiteServer,
+    app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
     serviceWorker?: IServiceWorkerManager,
     broadcastChannel?: IBroadcastChannelWrapper,
@@ -105,6 +105,6 @@ const kernel: JupyterLiteServerPlugin<void> = {
   },
 };
 
-const plugins: JupyterLiteServerPlugin<any>[] = [kernel];
+const plugins: JupyterFrontEndPlugin<any>[] = [kernel];
 
 export default plugins;
