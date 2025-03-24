@@ -56,6 +56,27 @@ export class PyodideRemoteKernel {
       indexURL: indexUrl,
       ...options.loadPyodideOptions,
     });
+
+    const log = (msg: string) => {
+      this._logMessage({ type: 'log', msg });
+    };
+
+    const err = (msg: string) => {
+      this._logMessage({ type: 'error', msg });
+    };
+
+    // Workaround for being able to get information about packages being loaded by Pyodide
+    // See discussion in https://github.com/pyodide/pyodide/discussions/5512
+    const origLoadPackage = this._pyodide.loadPackage;
+    this._pyodide.loadPackage = (pkgs, options) =>
+      origLoadPackage(pkgs, {
+        // Use custom callbacks to surface messages from Pyodide
+        messageCallback: (msg: string) => log(msg),
+        errorCallback: (msg: string) => {
+          err(msg);
+        },
+        ...options,
+      });
   }
 
   protected async initPackageManager(
@@ -537,4 +558,5 @@ export class PyodideRemoteKernel {
   protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
   protected _sendWorkerMessage: (msg: any) => void = () => {};
+  protected _logMessage: (msg: any) => void = () => {};
 }
