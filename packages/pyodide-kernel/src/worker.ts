@@ -9,6 +9,26 @@ import { KernelMessage } from '@jupyterlab/services';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
+export class PyodideWorkerLogger {
+  constructor(kernelId: string) {
+    this._channel = new BroadcastChannel(`/kernel-broadcast/${kernelId}`);
+  }
+
+  log(...msg: any[]): void {
+    this._channel.postMessage({ type: 'log', msg: msg.join(' ') });
+  }
+
+  warn(...msg: any[]): void {
+    this._channel.postMessage({ type: 'warn', msg: msg.join(' ') });
+  }
+
+  error(...msg: any[]): void {
+    this._channel.postMessage({ type: 'error', msg: msg.join(' ') });
+  }
+
+  private _channel: BroadcastChannel;
+}
+
 export class PyodideRemoteKernel {
   constructor() {
     this._initialized = new Promise((resolve, reject) => {
@@ -21,6 +41,11 @@ export class PyodideRemoteKernel {
    **/
   async initialize(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     this._options = options;
+
+    const kernelId = options.kernelId;
+    if (kernelId) {
+      this._logger = new PyodideWorkerLogger(kernelId);
+    }
 
     if (options.location.includes(':')) {
       const parts = options.location.split(':');
@@ -56,6 +81,27 @@ export class PyodideRemoteKernel {
       indexURL: indexUrl,
       ...options.loadPyodideOptions,
     });
+
+    const log = (msg: string) => {
+      this._logger?.log(msg);
+    };
+
+    const err = (msg: string) => {
+      this._logger?.error(msg);
+    };
+
+    // Workaround for being able to get information about packages being loaded by Pyodide
+    // See discussion in https://github.com/pyodide/pyodide/discussions/5512
+    const origLoadPackage = this._pyodide.loadPackage;
+    this._pyodide.loadPackage = (pkgs, options) =>
+      origLoadPackage(pkgs, {
+        // Use custom callbacks to surface messages from Pyodide
+        messageCallback: (msg: string) => log(msg),
+        errorCallback: (msg: string) => {
+          err(msg);
+        },
+        ...options,
+      });
   }
 
   protected async initPackageManager(
@@ -535,4 +581,5 @@ export class PyodideRemoteKernel {
   protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
   protected _sendWorkerMessage: (msg: any) => void = () => {};
+  protected _logger: PyodideWorkerLogger | null = null;
 }
