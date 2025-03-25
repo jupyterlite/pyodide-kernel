@@ -5,18 +5,22 @@ import { Remote, wrap } from 'comlink';
 import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
+
+import { ILogPayload } from '@jupyterlab/logconsole';
+
 import { Contents, KernelMessage } from '@jupyterlab/services';
+
+import {
+  DriveContentsProcessor,
+  TDriveMethod,
+  TDriveRequest,
+} from '@jupyterlite/contents';
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 
 import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
 
 import { allJSONUrl, pipliteWheelUrl } from './_pypi';
-import {
-  DriveContentsProcessor,
-  TDriveMethod,
-  TDriveRequest,
-} from '@jupyterlite/contents';
 
 /**
  * A kernel that executes Python code with Pyodide.
@@ -32,6 +36,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     this._worker = this.initWorker(options);
     this._remoteKernel = this.initRemote(options);
     this._contentsManager = options.contentsManager;
+    this._logger = options.logger || (() => {});
   }
 
   /**
@@ -65,6 +70,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     let remote: IPyodideWorkerKernel;
     if (crossOriginIsolated) {
       remote = coincident(this._worker) as IPyodideWorkerKernel;
+      remote.processLogMessage = this._processLogMessage.bind(this);
       remote.processWorkerMessage = this._processWorkerMessage.bind(this);
       // The coincident worker uses its own filesystem API:
       (remote.processDriveRequest as any) = async <T extends TDriveMethod>(
@@ -91,6 +97,8 @@ export class PyodideKernel extends BaseKernel implements IKernel {
         if (typeof ev?.data?._kernelMessage !== 'undefined') {
           // only process non comlink messages
           this._processWorkerMessage(ev.data._kernelMessage);
+        } else if (typeof ev?.data?._logMessage !== 'undefined') {
+          this._processLogMessage(ev.data._logMessage);
         }
       });
     }
@@ -141,6 +149,12 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    */
   get ready(): Promise<void> {
     return this._ready.promise;
+  }
+
+  private _processLogMessage(msg: any): void {
+    const data = msg.msg as string;
+    const payload: ILogPayload = { type: 'text', level: 'info', data };
+    this._logger({ payload, kernelId: this.id });
   }
 
   /**
@@ -341,6 +355,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   }
 
   private _contentsManager: Contents.IManager;
+  private _logger: (options: { payload: ILogPayload; kernelId: string }) => void;
   private _contentsProcessor: DriveContentsProcessor | undefined;
   private _worker: Worker;
   private _remoteKernel:
@@ -395,5 +410,10 @@ export namespace PyodideKernel {
      * The Jupyterlite content manager
      */
     contentsManager: Contents.IManager;
+
+    /**
+     * The logger
+     */
+    logger?: (options: { payload: ILogPayload; kernelId: string }) => void;
   }
 }

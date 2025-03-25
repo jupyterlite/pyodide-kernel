@@ -31,9 +31,12 @@ class PyodideDriveFS extends DriveFS {
 export class PyodideComlinkKernel extends PyodideRemoteKernel {
   constructor() {
     super();
+    // use postMessage, but in a format, that comlink would not process.
     this._sendWorkerMessage = (msg: any) => {
-      // use postMessage, but in a format, that comlink would not process.
       postMessage({ _kernelMessage: msg });
+    };
+    this._logMessage = (msg: any) => {
+      postMessage({ _logMessage: msg });
     };
   }
 
