@@ -7,8 +7,6 @@ import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
 import { IServiceWorkerManager } from '@jupyterlite/server';
 
-import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
-
 import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
 
 import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
@@ -34,7 +32,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
   autoStart: true,
   requires: [IKernelSpecs],
-  optional: [IServiceWorkerManager, IBroadcastChannelWrapper],
+  optional: [IServiceWorkerManager],
   activate: (
     app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
