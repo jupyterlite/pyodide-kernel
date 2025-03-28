@@ -39,7 +39,6 @@ const kernel: JupyterFrontEndPlugin<void> = {
     app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
     serviceWorker?: IServiceWorkerManager,
-    broadcastChannel?: IBroadcastChannelWrapper,
   ) => {
     const contentsManager = app.serviceManager.contents;
 
@@ -79,10 +78,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
       create: async (options: IKernel.IOptions): Promise<IKernel> => {
         const { PyodideKernel } = await import('@jupyterlite/pyodide-kernel');
 
-        const mountDrive = !!(
-          (serviceWorker?.enabled && broadcastChannel?.enabled) ||
-          crossOriginIsolated
-        );
+        const mountDrive = !!(serviceWorker?.enabled || crossOriginIsolated);
 
         if (mountDrive) {
           console.info('Pyodide contents will be synced with Jupyter Contents');
