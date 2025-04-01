@@ -18,16 +18,19 @@ import { PyodideRemoteKernel } from './worker';
  */
 class PyodideDriveFS extends DriveFS {
   createAPI(options: DriveFS.IOptions): ContentsAPI {
+    // @ts-ignore
     if (!options.tabId) {
       throw new Error('Cannot create service-worker API without current tabId');
     }
 
     return new ServiceWorkerContentsAPI(
       options.baseUrl,
+      // @ts-ignore
       options.tabId,
       options.driveName,
       options.mountpoint,
       options.FS,
+      // @ts-ignore
       options.ERRNO_CODES,
     );
   }
@@ -51,6 +54,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
     if (options.mountDrive) {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
+      // @ts-ignore
       const { baseUrl, tabId } = options;
 
       const driveFS = new PyodideDriveFS({
@@ -58,6 +62,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
         PATH,
         ERRNO_CODES,
         baseUrl,
+        // @ts-ignore
         tabId,
         driveName: this._driveName,
         mountpoint,
