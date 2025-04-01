@@ -141,7 +141,7 @@ export class PyodideRemoteKernel {
     if (options.mountDrive) {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
-      // @ts-ignore
+      // @ts-expect-error
       const { baseUrl, tabId } = options;
       const { DriveFS } = await import('@jupyterlite/contents');
 
@@ -150,7 +150,7 @@ export class PyodideRemoteKernel {
         PATH,
         ERRNO_CODES,
         baseUrl,
-        // @ts-ignore
+        // @ts-expect-error
         tabId,
         driveName: this._driveName,
         mountpoint,
