@@ -79,7 +79,6 @@ const kernel: JupyterFrontEndPlugin<void> = {
         const mountDrive = !!(serviceWorker?.enabled || crossOriginIsolated);
 
         if (serviceWorker?.enabled) {
-          // @ts-expect-error
           options.tabId = serviceWorker.tabId;
         }
 
