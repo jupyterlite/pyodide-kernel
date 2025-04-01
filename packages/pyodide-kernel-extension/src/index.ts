@@ -78,6 +78,10 @@ const kernel: JupyterFrontEndPlugin<void> = {
 
         const mountDrive = !!(serviceWorker?.enabled || crossOriginIsolated);
 
+        if (serviceWorker?.enabled) {
+          options[tabId] = serviceWorker.tabId;
+        }
+
         if (mountDrive) {
           console.info('Pyodide contents will be synced with Jupyter Contents');
         } else {
