@@ -983,7 +983,7 @@ __metadata:
 
 "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A.":
   version: 0.6.0-alpha.7
-  resolution: "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::version=0.6.0-alpha.7&hash=534c81&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
+  resolution: "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::version=0.6.0-alpha.7&hash=2ec1ef&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
   dependencies:
     "@jupyterlab/nbformat": ~4.4.0-rc.0
     "@jupyterlab/services": ~7.4.0-rc.0
@@ -992,7 +992,7 @@ __metadata:
     "@types/emscripten": ^1.39.6
     localforage: ^1.9.0
     mime: ^3.0.0
-  checksum: 874d6595ce45b174bc3cd71e1a8d0e897714eeea407d935293fdcd36382cea7806d9a5eb42ba523fb49a1fd34dcc807757dc795c742a1331e7d66e072ea336a3
+  checksum: 72080f7e9e41205c6b3923bfd32db3845b68a2b829ca78ccb4881ae5da24833959c6cb86294e8455e763b65f29d2979940268d435ab8b3ab925dcab2d6d5ff0b
   languageName: node
   linkType: hard
 
@@ -1015,7 +1015,7 @@ __metadata:
 
 "@jupyterlite/kernel@patch:@jupyterlite/kernel@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-kernel-npm-0.6.0-alpha.7-51d586bab6.patch::locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A.":
   version: 0.6.0-alpha.7
-  resolution: "@jupyterlite/kernel@patch:@jupyterlite/kernel@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-kernel-npm-0.6.0-alpha.7-51d586bab6.patch::version=0.6.0-alpha.7&hash=5a4774&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
+  resolution: "@jupyterlite/kernel@patch:@jupyterlite/kernel@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-kernel-npm-0.6.0-alpha.7-51d586bab6.patch::version=0.6.0-alpha.7&hash=45cfed&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
   dependencies:
     "@jupyterlab/coreutils": ~6.4.0-rc.0
     "@jupyterlab/observables": ~5.4.0-rc.0
@@ -1026,7 +1026,7 @@ __metadata:
     async-mutex: ^0.3.1
     comlink: ^4.3.1
     mock-socket: ^9.3.1
-  checksum: 62ed3eb3a5fe53d3117886e9d118d26797ebc6acf27b2d7121628e7b713544d6fd15ab6071d36f7b9e08377d197d6d7ca3efa336db4fc475afd72c226ecaf024
+  checksum: 9a7b4d333d127ca9ca651ba33d194ad07711889a71869f4718cc0763f9be1b70fea6d90d60ec9e4dd7af31c411d3f2c25e3a798145154fd83b24eb723c84e4be
   languageName: node
   linkType: hard
 
@@ -1117,7 +1117,7 @@ __metadata:
 
 "@jupyterlite/server@patch:@jupyterlite/server@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-server-npm-0.6.0-alpha.7-3bfa417819.patch::locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A.":
   version: 0.6.0-alpha.7
-  resolution: "@jupyterlite/server@patch:@jupyterlite/server@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-server-npm-0.6.0-alpha.7-3bfa417819.patch::version=0.6.0-alpha.7&hash=c9c053&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
+  resolution: "@jupyterlite/server@patch:@jupyterlite/server@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-server-npm-0.6.0-alpha.7-3bfa417819.patch::version=0.6.0-alpha.7&hash=355753&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
   dependencies:
     "@jupyterlab/coreutils": ~6.4.0-rc.0
     "@jupyterlab/nbformat": ~4.4.0-rc.0
@@ -1134,7 +1134,7 @@ __metadata:
     "@lumino/coreutils": ^2.2.0
     "@lumino/signaling": ^2.1.3
     mock-socket: ^9.3.1
-  checksum: f35916a2d0cd4cb5138cc478f6fe1987116bfc0fa2f33750b1f9ce5d2c6ef7c31763a95264fa4f55122c5dd5a3117875f3763164245070a64e8d03a06bf32880
+  checksum: c45ef602717370cf0691d68ade1c054944b13c62a07b4a989152abdaa4deea5e34f048d9702ba16da8881b2fea7cf03a7052bcd8cc56e5a89a6a52303b9b0975
   languageName: node
   linkType: hard
 
