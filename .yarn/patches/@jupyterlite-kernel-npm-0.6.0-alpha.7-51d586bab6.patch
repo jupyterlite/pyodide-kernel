@@ -1,0 +1,35 @@
+diff --git a/lib/tokens.d.ts b/lib/tokens.d.ts
+index 46d3100e1b824d7ab359773553c7c80227c85d2a..0510055562b4831b5a605f50d262fea7b2138f71 100644
+--- a/lib/tokens.d.ts
++++ b/lib/tokens.d.ts
+@@ -86,6 +86,10 @@ export declare namespace IKernel {
+          * The location in the virtual filesystem from which the kernel was started.
+          */
+         location: string;
++        /**
++         * The current tab ID.
++         */
++        tabId?: string;
+         /**
+          * The method to send messages back to the server.
+          */
+@@ -153,6 +157,10 @@ export declare namespace IWorkerKernel {
+          * The base URL of the kernel server.
+          */
+         baseUrl: string;
++        /**
++         * The current tab ID.
++         */
++        tabId?: string;
+     }
+ }
+ export interface IRemoteKernel extends Remote<IWorkerKernel> {
+diff --git a/lib/tokens.js.map b/lib/tokens.js.map
+index a588d36eb6031a1c3dc1eaa13796f6e0a1da0c9c..9d64b69d7bfccf282d6b4265f44bcc7c2d8fdaee 100644
+--- a/lib/tokens.js.map
++++ b/lib/tokens.js.map
+@@ -1 +1 @@
+-{"version":3,"file":"tokens.js","sourceRoot":"","sources":["../src/tokens.ts"],"names":[],"mappings":"AAAA,0CAA0C;AAC1C,2DAA2D;AAQ3D,OAAO,EAAE,KAAK,EAAE,MAAM,mBAAmB,CAAC;AAQ1C;;GAEG;AACH,MAAM,CAAC,MAAM,eAAe,GAAG,YAAY,CAAC;AAE5C;;GAEG;AACH,MAAM,CAAC,MAAM,aAAa,GAAG,IAAI,KAAK,CACpC,mCAAmC,CACpC,CAAC;AAiBF;;GAEG;AACH,MAAM,CAAC,MAAM,iBAAiB,GAAG,IAAI,KAAK,CACxC,uCAAuC,CACxC,CAAC;AA0EF;;GAEG;AACH,MAAM,CAAC,MAAM,YAAY,GAAG,IAAI,KAAK,CAAe,kCAAkC,CAAC,CAAC"}
+\ No newline at end of file
++{"version":3,"file":"tokens.js","sourceRoot":"","sources":["../src/tokens.ts"],"names":[],"mappings":"AAAA,0CAA0C;AAC1C,2DAA2D;AAQ3D,OAAO,EAAE,KAAK,EAAE,MAAM,mBAAmB,CAAC;AAQ1C;;GAEG;AACH,MAAM,CAAC,MAAM,eAAe,GAAG,YAAY,CAAC;AAE5C;;GAEG;AACH,MAAM,CAAC,MAAM,aAAa,GAAG,IAAI,KAAK,CACpC,mCAAmC,CACpC,CAAC;AAiBF;;GAEG;AACH,MAAM,CAAC,MAAM,iBAAiB,GAAG,IAAI,KAAK,CACxC,uCAAuC,CACxC,CAAC;AA+EF;;GAEG;AACH,MAAM,CAAC,MAAM,YAAY,GAAG,IAAI,KAAK,CAAe,kCAAkC,CAAC,CAAC"}
+\ No newline at end of file

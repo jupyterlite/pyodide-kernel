@@ -1,0 +1,308 @@
+diff --git a/lib/service-worker-manager.d.ts b/lib/service-worker-manager.d.ts
+index 2504c6764ace42939d07c635792fad75116ff7c8..1b6dafb9be847f5272bc4e382db67b903bd4d66f 100644
+--- a/lib/service-worker-manager.d.ts
++++ b/lib/service-worker-manager.d.ts
+@@ -13,6 +13,10 @@ export declare class ServiceWorkerManager implements IServiceWorkerManager {
+      * A signal emitted when the registration changes.
+      */
+     get registrationChanged(): ISignal<IServiceWorkerManager, ServiceWorkerRegistration | null>;
++    /**
++     * The current tab id
++     */
++    get tabId(): string;
+     /**
+      * Whether the ServiceWorker is enabled or not.
+      */
+@@ -41,6 +45,7 @@ export declare class ServiceWorkerManager implements IServiceWorkerManager {
+      * Set the Service Worker registration.
+      */
+     private _setRegistration;
++    private _tabId;
+     private _messageChannel;
+     private _registration;
+     private _registrationChanged;
+diff --git a/lib/service-worker-manager.js b/lib/service-worker-manager.js
+index 542279ab2ce97254d61b3b223d3fee7ca8caac47..b535f9baafe7333aa256090a24e3813c08887f2c 100644
+--- a/lib/service-worker-manager.js
++++ b/lib/service-worker-manager.js
+@@ -1,5 +1,5 @@
+ import { PageConfig, URLExt } from '@jupyterlab/coreutils';
+-import { PromiseDelegate } from '@lumino/coreutils';
++import { PromiseDelegate, UUID } from '@lumino/coreutils';
+ import { Signal } from '@lumino/signaling';
+ import { DriveContentsProcessor, } from '@jupyterlite/contents';
+ import { WORKER_NAME } from './tokens';
+@@ -36,9 +36,11 @@ export class ServiceWorkerManager {
+             // Check if we have an installed version. If we do, compare it to the current version
+             // and unregister all service workers if they are different.
+             const installedVersion = localStorage.getItem(versionKey);
+-            if ((installedVersion && installedVersion !== VERSION) || !installedVersion) {
++            if (!navigator.serviceWorker.controller ||
++                (installedVersion && installedVersion !== VERSION) ||
++                !installedVersion) {
+                 // eslint-disable-next-line no-console
+-                console.info('New version, unregistering existing service workers.');
++                console.info('Unregistering outdated service-workers.');
+                 const registrations = await navigator.serviceWorker.getRegistrations();
+                 await Promise.all(registrations.map((registration) => registration.unregister()));
+                 // eslint-disable-next-line no-console
+@@ -59,6 +61,7 @@ export class ServiceWorkerManager {
+         this._registration = null;
+         this._registrationChanged = new Signal(this);
+         this._ready = new PromiseDelegate();
++        this._tabId = UUID.uuid4();
+         this._messageChannel = new MessageChannel();
+         // listen to messages from the Service Worker
+         this._messageChannel.port1.onmessage = this._onMessage;
+@@ -78,6 +81,12 @@ export class ServiceWorkerManager {
+     get registrationChanged() {
+         return this._registrationChanged;
+     }
++    /**
++     * The current tab id
++     */
++    get tabId() {
++        return this._tabId;
++    }
+     /**
+      * Whether the ServiceWorker is enabled or not.
+      */
+@@ -94,7 +103,6 @@ export class ServiceWorkerManager {
+      * Initialize the Service Worker
+      */
+     async _initialize(workerUrl) {
+-        var _a;
+         const { serviceWorker } = navigator;
+         let registration = null;
+         if (!serviceWorker) {
+@@ -109,11 +117,16 @@ export class ServiceWorkerManager {
+             // eslint-disable-next-line no-console
+             console.info('JupyterLite ServiceWorker was already registered');
+         }
+-        if (!registration && serviceWorker) {
++        else {
++            await this._unregisterOldServiceWorkers();
++        }
++        if (!registration || (!registration.active && serviceWorker)) {
+             try {
+                 // eslint-disable-next-line no-console
+                 console.info('Registering new JupyterLite ServiceWorker', workerUrl);
+-                registration = await serviceWorker.register(workerUrl);
++                await serviceWorker.register(workerUrl);
++                await navigator.serviceWorker.ready;
++                registration = (await serviceWorker.getRegistration()) || null;
+                 // eslint-disable-next-line no-console
+                 console.info('JupyterLite ServiceWorker was sucessfully registered');
+             }
+@@ -122,11 +135,28 @@ export class ServiceWorkerManager {
+                 console.warn(`JupyterLite ServiceWorker registration unexpectedly failed: ${err}`);
+             }
+         }
+-        this._setRegistration(registration);
++        if (!serviceWorker.controller) {
++            await new Promise((resolve) => {
++                serviceWorker.addEventListener('controllerchange', () => {
++                    resolve();
++                });
++            });
++        }
++        const controller = serviceWorker.controller;
+         // transfer the port for communication with the Service Worker
+-        void ((_a = serviceWorker.controller) === null || _a === void 0 ? void 0 : _a.postMessage({
+-            type: 'INIT_PORT',
+-        }, [this._messageChannel.port2]));
++        if (controller) {
++            void controller.postMessage({
++                type: 'INIT_PORT',
++                tabId: this._tabId,
++            }, [this._messageChannel.port2]);
++            window.addEventListener('beforeunload', () => {
++                controller.postMessage({
++                    type: 'DISCONNECT_PORT',
++                    tabId: this._tabId,
++                });
++            });
++        }
++        this._setRegistration(registration);
+         if (!registration) {
+             this._ready.reject(void 0);
+         }
+diff --git a/lib/service-worker-manager.js.map b/lib/service-worker-manager.js.map
+index d6fcd6020a56abb3c27c1ef9cbf9fa70f9e8bce2..2dc884042fa6940c07367706febea0e2d6b7bec5 100644
+--- a/lib/service-worker-manager.js.map
++++ b/lib/service-worker-manager.js.map
+@@ -1 +1 @@
+-{"version":3,"file":"service-worker-manager.js","sourceRoot":"","sources":["../src/service-worker-manager.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,EAAE,MAAM,uBAAuB,CAAC;AAE3D,OAAO,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AAEpD,OAAO,EAAW,MAAM,EAAE,MAAM,mBAAmB,CAAC;AAEpD,OAAO,EACL,sBAAsB,GAIvB,MAAM,uBAAuB,CAAC;AAE/B,OAAO,EAAyB,WAAW,EAAE,MAAM,UAAU,CAAC;AAE9D;;GAEG;AACH,MAAM,OAAO,GAAG,UAAU,CAAC,SAAS,CAAC,YAAY,CAAC,CAAC;AAEnD;;GAEG;AACH,MAAM,gBAAgB,GAAG,+BAA+B,CAAC;AAEzD;;GAEG;AACH,MAAM,OAAO,oBAAoB;IAC/B;;OAEG;IACH,YAAY,OAAuC;;QA2CnD;;WAEG;QACO,eAAU,GAAG,KAAK,EAC1B,KAAqC,EACtB,EAAE;YACjB,MAAM,OAAO,GAAG,KAAK,CAAC,IAAI,CAAC;YAC3B,MAAM,QAAQ,GAAG,MAAM,IAAI,CAAC,uBAAuB,CAAC,mBAAmB,CAAC,OAAO,CAAC,CAAC;YAEjF,IAAI,CAAC,eAAe,CAAC,KAAK,CAAC,WAAW,CAAC,QAAQ,CAAC,CAAC;QACnD,CAAC,CAAC;QAwDF;;WAEG;QACK,iCAA4B,GAAG,KAAK,EAAE,SAAiB,EAAE,EAAE;YACjE,MAAM,UAAU,GAAG,GAAG,SAAS,UAAU,CAAC;YAC1C,qFAAqF;YACrF,4DAA4D;YAC5D,MAAM,gBAAgB,GAAG,YAAY,CAAC,OAAO,CAAC,UAAU,CAAC,CAAC;YAE1D,IAAI,CAAC,gBAAgB,IAAI,gBAAgB,KAAK,OAAO,CAAC,IAAI,CAAC,gBAAgB,EAAE;gBAC3E,sCAAsC;gBACtC,OAAO,CAAC,IAAI,CAAC,sDAAsD,CAAC,CAAC;gBACrE,MAAM,aAAa,GAAG,MAAM,SAAS,CAAC,aAAa,CAAC,gBAAgB,EAAE,CAAC;gBAEvE,MAAM,OAAO,CAAC,GAAG,CAAC,aAAa,CAAC,GAAG,CAAC,CAAC,YAAY,EAAE,EAAE,CAAC,YAAY,CAAC,UAAU,EAAE,CAAC,CAAC,CAAC;gBAElF,sCAAsC;gBACtC,OAAO,CAAC,IAAI,CAAC,sDAAsD,CAAC,CAAC;aACtE;YAED,YAAY,CAAC,OAAO,CAAC,UAAU,EAAE,OAAO,CAAC,CAAC;QAC5C,CAAC,CAAC;QAEF;;WAEG;QACK,uBAAkB,GAAG,KAAK,IAAmB,EAAE;YACrD,MAAM,QAAQ,GAAG,MAAM,KAAK,CAAC,gBAAgB,CAAC,CAAC;YAC/C,MAAM,IAAI,GAAG,MAAM,QAAQ,CAAC,IAAI,EAAE,CAAC;YACnC,IAAI,IAAI,KAAK,IAAI,EAAE;gBACjB,UAAU,CAAC,IAAI,CAAC,kBAAkB,EAAE,KAAK,CAAC,CAAC;aAC5C;QACH,CAAC,CAAC;QAWM,kBAAa,GAAqC,IAAI,CAAC;QACvD,yBAAoB,GAAG,IAAI,MAAM,CACvC,IAAI,CACL,CAAC;QACM,WAAM,GAAG,IAAI,eAAe,EAAQ,CAAC;QA3J3C,IAAI,CAAC,eAAe,GAAG,IAAI,cAAc,EAAE,CAAC;QAE5C,6CAA6C;QAC7C,IAAI,CAAC,eAAe,CAAC,KAAK,CAAC,SAAS,GAAG,IAAI,CAAC,UAAU,CAAC;QAEvD,MAAM,QAAQ,GAAG,OAAO,CAAC,QAAQ,CAAC;QAClC,IAAI,CAAC,uBAAuB,GAAG,IAAI,sBAAsB,CAAC;YACxD,eAAe,EAAE,QAAQ;SAC1B,CAAC,CAAC;QAEH,MAAM,SAAS,GACb,MAAA,OAAO,aAAP,OAAO,uBAAP,OAAO,CAAE,SAAS,mCAAI,MAAM,CAAC,IAAI,CAAC,UAAU,CAAC,UAAU,EAAE,EAAE,WAAW,CAAC,CAAC;QAC1E,MAAM,aAAa,GAAG,IAAI,GAAG,CAAC,SAAS,EAAE,MAAM,CAAC,QAAQ,CAAC,IAAI,CAAC,CAAC;QAC/D,MAAM,WAAW,GAAG,UAAU,CAAC,SAAS,CAAC,0BAA0B,CAAC,IAAI,OAAO,CAAC;QAChF,aAAa,CAAC,YAAY,CAAC,GAAG,CAAC,aAAa,EAAE,WAAW,CAAC,CAAC;QAC3D,KAAK,IAAI,CAAC,WAAW,CAAC,aAAa,CAAC,IAAI,CAAC,CAAC,KAAK,CAAC,OAAO,CAAC,IAAI,CAAC,CAAC;IAChE,CAAC;IAED;;OAEG;IACH,IAAI,mBAAmB;QAIrB,OAAO,IAAI,CAAC,oBAAoB,CAAC;IACnC,CAAC;IAED;;OAEG;IACH,IAAI,OAAO;QACT,OAAO,IAAI,CAAC,aAAa,KAAK,IAAI,CAAC;IACrC,CAAC;IAED;;OAEG;IACH,IAAI,KAAK;QACP,OAAO,IAAI,CAAC,MAAM,CAAC,OAAO,CAAC;IAC7B,CAAC;IAcD;;OAEG;IACK,KAAK,CAAC,WAAW,CAAC,SAAiB;;QACzC,MAAM,EAAE,aAAa,EAAE,GAAG,SAAS,CAAC;QAEpC,IAAI,YAAY,GAAqC,IAAI,CAAC;QAE1D,IAAI,CAAC,aAAa,EAAE;YAClB,OAAO,CAAC,IAAI,CAAC,8CAA8C,CAAC,CAAC;YAC7D,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,KAAK,CAAC,CAAC,CAAC;YAC3B,OAAO;SACR;aAAM,IAAI,aAAa,CAAC,UAAU,EAAE;YACnC,MAAM,SAAS,GAAG,aAAa,CAAC,UAAU,CAAC,SAAS,CAAC;YACrD,MAAM,IAAI,CAAC,4BAA4B,CAAC,SAAS,CAAC,CAAC;YAEnD,YAAY,GAAG,CAAC,MAAM,aAAa,CAAC,eAAe,CAAC,SAAS,CAAC,CAAC,IAAI,IAAI,CAAC;YACxE,sCAAsC;YACtC,OAAO,CAAC,IAAI,CAAC,kDAAkD,CAAC,CAAC;SAClE;QAED,IAAI,CAAC,YAAY,IAAI,aAAa,EAAE;YAClC,IAAI;gBACF,sCAAsC;gBACtC,OAAO,CAAC,IAAI,CAAC,2CAA2C,EAAE,SAAS,CAAC,CAAC;gBACrE,YAAY,GAAG,MAAM,aAAa,CAAC,QAAQ,CAAC,SAAS,CAAC,CAAC;gBACvD,sCAAsC;gBACtC,OAAO,CAAC,IAAI,CAAC,sDAAsD,CAAC,CAAC;aACtE;YAAC,OAAO,GAAQ,EAAE;gBACjB,OAAO,CAAC,IAAI,CAAC,GAAG,CAAC,CAAC;gBAClB,OAAO,CAAC,IAAI,CACV,+DAA+D,GAAG,EAAE,CACrE,CAAC;aACH;SACF;QAED,IAAI,CAAC,gBAAgB,CAAC,YAAY,CAAC,CAAC;QAEpC,8DAA8D;QAC9D,KAAK,CAAA,MAAA,aAAa,CAAC,UAAU,0CAAE,WAAW,CACxC;YACE,IAAI,EAAE,WAAW;SAClB,EACD,CAAC,IAAI,CAAC,eAAe,CAAC,KAAK,CAAC,CAC7B,CAAA,CAAC;QAEF,IAAI,CAAC,YAAY,EAAE;YACjB,IAAI,CAAC,MAAM,CAAC,MAAM,CAAC,KAAK,CAAC,CAAC,CAAC;SAC5B;aAAM;YACL,IAAI,CAAC,MAAM,CAAC,OAAO,CAAC,KAAK,CAAC,CAAC,CAAC;YAC5B,UAAU,CAAC,IAAI,CAAC,kBAAkB,EAAE,KAAK,CAAC,CAAC;SAC5C;IACH,CAAC;IAoCD;;OAEG;IACK,gBAAgB,CAAC,YAA8C;QACrE,IAAI,CAAC,aAAa,GAAG,YAAY,CAAC;QAClC,IAAI,CAAC,oBAAoB,CAAC,IAAI,CAAC,IAAI,CAAC,aAAa,CAAC,CAAC;IACrD,CAAC;CASF"}
+\ No newline at end of file
++{"version":3,"file":"service-worker-manager.js","sourceRoot":"","sources":["../src/service-worker-manager.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
+diff --git a/lib/service-worker.d.ts b/lib/service-worker.d.ts
+index e6d76a8d4e64ed162caaf4fcbb061450fcfca90e..f092b28427d65be23e0a965bccca97cf4e1d0050 100644
+--- a/lib/service-worker.d.ts
++++ b/lib/service-worker.d.ts
+@@ -6,8 +6,9 @@ declare const CACHE = "precache";
+ /**
+  * Communication channel for drive access
+  */
+-declare let messagePort: MessagePort;
+-declare const ready: Promise<void>;
++declare const messagePorts: {
++    [tabId: string]: MessagePort;
++};
+ /**
+  * Whether to enable the cache
+  */
+@@ -15,7 +16,7 @@ declare let enableCache: boolean;
+ /**
+  * Handle installation with the cache
+  */
+-declare function onInstall(event: ExtendableEvent): void;
++declare function onInstall(event: ExtendableEvent): Promise<void>;
+ /**
+  * Handle activation.
+  */
+@@ -38,15 +39,15 @@ declare function refetch(request: Request): Promise<Response>;
+ /**
+  * Whether a given URL should be broadcast
+  */
+-declare function shouldBroadcast(url: URL): boolean;
++declare function isDriveRequest(url: URL): boolean;
+ /**
+  * Whether the fallback behavior should be used
+  */
+ declare function shouldDrop(request: Request, url: URL): boolean;
+ /**
+- * Forward request to main using the broadcast channel
++ * Forward request to main using the MessageChannel
+  */
+-declare function broadcastOne(request: Request): Promise<Response>;
++declare function requestMainThread(request: Request): Promise<Response>;
+ declare function openCache(): Promise<Cache>;
+ /**
+  * Cache a request/response pair.
+diff --git a/lib/service-worker.js b/lib/service-worker.js
+index cc620fb9531b8dc3f08e788de0de5dba562b5e92..302c404eef6cf6d7fb5169bc867fdbdea7befa96 100644
+--- a/lib/service-worker.js
++++ b/lib/service-worker.js
+@@ -8,15 +8,7 @@ const CACHE = 'precache';
+ /**
+  * Communication channel for drive access
+  */
+-let messagePort;
+-const ready = new Promise((resolve) => {
+-    self.addEventListener('message', (event) => {
+-        if (event.data && event.data.type === 'INIT_PORT') {
+-            messagePort = event.ports[0];
+-            resolve();
+-        }
+-    });
+-});
++const messagePorts = {};
+ /**
+  * Whether to enable the cache
+  */
+@@ -27,12 +19,21 @@ let enableCache = false;
+ self.addEventListener('install', onInstall);
+ self.addEventListener('activate', onActivate);
+ self.addEventListener('fetch', onFetch);
++self.addEventListener('message', (event) => {
++    if (event.data && event.data.type === 'INIT_PORT') {
++        messagePorts[event.data.tabId] = event.ports[0];
++    }
++    if (event.data && event.data.type === 'DISCONNECT_PORT') {
++        messagePorts[event.data.tabId].close();
++        delete messagePorts[event.data.tabId];
++    }
++});
+ // Event handlers
+ /**
+  * Handle installation with the cache
+  */
+-function onInstall(event) {
+-    void self.skipWaiting();
++async function onInstall(event) {
++    await self.skipWaiting();
+     event.waitUntil(cacheAll());
+ }
+ /**
+@@ -55,8 +56,8 @@ async function onFetch(event) {
+         return;
+     }
+     let responsePromise = null;
+-    if (shouldBroadcast(url)) {
+-        responsePromise = broadcastOne(request);
++    if (isDriveRequest(url)) {
++        responsePromise = requestMainThread(request);
+     }
+     else if (!shouldDrop(request, url)) {
+         responsePromise = maybeFromCache(event);
+@@ -105,7 +106,7 @@ async function refetch(request) {
+ /**
+  * Whether a given URL should be broadcast
+  */
+-function shouldBroadcast(url) {
++function isDriveRequest(url) {
+     return url.origin === location.origin && url.pathname.includes('/api/drive');
+ }
+ /**
+@@ -117,17 +118,21 @@ function shouldDrop(request, url) {
+         url.pathname.includes('/api/'));
+ }
+ /**
+- * Forward request to main using the broadcast channel
++ * Forward request to main using the MessageChannel
+  */
+-async function broadcastOne(request) {
+-    await ready;
++async function requestMainThread(request) {
++    const message = await request.json();
++    const tabId = message.tabId;
++    const port = messagePorts[tabId];
++    if (!port) {
++        return new Response(JSON.stringify({ error: 'Port not initialized.' }));
++    }
+     const promise = new Promise((resolve) => {
+-        messagePort.onmessage = (event) => {
++        port.onmessage = (event) => {
+             resolve(new Response(JSON.stringify(event.data)));
+         };
+     });
+-    const message = await request.json();
+-    messagePort.postMessage(message);
++    port.postMessage(message.messageData);
+     return await promise;
+ }
+ async function openCache() {
+diff --git a/lib/service-worker.js.map b/lib/service-worker.js.map
+index 1b9e840faf29633cf98dea6f2dcf5ef482142bb9..75f9f96c20c21e4be7da2a3f151ddc3b9d64e6af 100644
+--- a/lib/service-worker.js.map
++++ b/lib/service-worker.js.map
+@@ -1 +1 @@
+-{"version":3,"file":"service-worker.js","sourceRoot":"","sources":["../src/service-worker.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
++{"version":3,"file":"service-worker.js","sourceRoot":"","sources":["../src/service-worker.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
+diff --git a/lib/tokens.d.ts b/lib/tokens.d.ts
+index 1aa18a81b54966381567d45bf82197dea050784d..0d9ba41f2e57368449a0518593a48f97d6db6c18 100644
+--- a/lib/tokens.d.ts
++++ b/lib/tokens.d.ts
+@@ -17,6 +17,10 @@ export interface IServiceWorkerManager {
+      * Whether the ServiceWorker is enabled or not.
+      */
+     readonly enabled: boolean;
++    /**
++     * The current tab UUID. This is used to communicate between the current tab and service-worker.
++     */
++    readonly tabId: string;
+     /**
+      * A Promise that resolves when the ServiceWorker is registered, or rejects if it cannot
+      */
+diff --git a/lib/tokens.js.map b/lib/tokens.js.map
+index 7243c402cd68047ef8130309c874aacbfc175a5b..8841a4558a4af13e36b324ace06881451576bfbe 100644
+--- a/lib/tokens.js.map
++++ b/lib/tokens.js.map
+@@ -1 +1 @@
+-{"version":3,"file":"tokens.js","sourceRoot":"","sources":["../src/tokens.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,KAAK,EAAE,MAAM,mBAAmB,CAAC;AAI1C,OAAO,MAAM,MAAM,uBAAuB,CAAC;AAE3C;;GAEG;AACH,MAAM,CAAC,MAAM,qBAAqB,GAAG,IAAI,KAAK,CAC5C,2CAA2C,CAC5C,CAAC;AA6CF,MAAM,CAAC,MAAM,WAAW,GAAG,GAAG,MAAM,EAAE,CAAC,KAAK,CAAC,GAAG,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC"}
+\ No newline at end of file
++{"version":3,"file":"tokens.js","sourceRoot":"","sources":["../src/tokens.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,KAAK,EAAE,MAAM,mBAAmB,CAAC;AAI1C,OAAO,MAAM,MAAM,uBAAuB,CAAC;AAE3C;;GAEG;AACH,MAAM,CAAC,MAAM,qBAAqB,GAAG,IAAI,KAAK,CAC5C,2CAA2C,CAC5C,CAAC;AAkDF,MAAM,CAAC,MAAM,WAAW,GAAG,GAAG,MAAM,EAAE,CAAC,KAAK,CAAC,GAAG,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC"}
+\ No newline at end of file
