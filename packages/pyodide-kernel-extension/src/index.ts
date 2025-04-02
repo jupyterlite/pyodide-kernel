@@ -79,7 +79,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
         const mountDrive = !!(serviceWorker?.enabled || crossOriginIsolated);
 
         if (serviceWorker?.enabled) {
-          options.tabId = serviceWorker.tabId;
+          options.windowId = serviceWorker.windowId;
         }
 
         if (mountDrive) {

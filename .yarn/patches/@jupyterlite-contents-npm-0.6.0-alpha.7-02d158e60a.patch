@@ -22,7 +22,7 @@ index 14d4d58e245cdbac131ec9f9727c5d4bd306948d..d413845c8e5a2c0bd6b20bd14874961d
       * Get the api/drive endpoint
       */
      get endpoint(): string;
-+    private _tabId;
++    private _windowId;
      private _baseUrl;
  }
  export declare class DriveFS {
@@ -50,7 +50,7 @@ index 14d4d58e245cdbac131ec9f9727c5d4bd306948d..d413845c8e5a2c0bd6b20bd14874961d
 +export declare namespace ServiceWorkerContentsAPI {
 +    interface IOptions extends ContentsAPI.IOptions {
 +        baseUrl: string;
-+        tabId: string;
++        windowId: string;
 +    }
 +}
  /**
@@ -60,7 +60,7 @@ index 14d4d58e245cdbac131ec9f9727c5d4bd306948d..d413845c8e5a2c0bd6b20bd14874961d
          PATH: PATH;
          ERRNO_CODES: ERRNO_CODES;
          baseUrl: string;
-+        tabId?: string;
++        windowId?: string;
          driveName: string;
          mountpoint: string;
      }
@@ -95,7 +95,7 @@ index e637a1179de95945a0c57ca2c8845840823bc3b0..e5f67203b73ce2ef1bc6ff8e3107cba4
 +    constructor(options) {
 +        super(options);
 +        this._baseUrl = options.baseUrl;
-+        this._tabId = options.tabId;
++        this._windowId = options.windowId;
      }
      request(data) {
          const xhr = new XMLHttpRequest();
@@ -103,7 +103,7 @@ index e637a1179de95945a0c57ca2c8845840823bc3b0..e5f67203b73ce2ef1bc6ff8e3107cba4
          try {
 -            xhr.send(JSON.stringify(data));
 +            xhr.send(JSON.stringify({
-+                tabId: this._tabId,
++                windowId: this._windowId,
 +                messageData: data,
 +            }));
          }
@@ -114,8 +114,8 @@ index e637a1179de95945a0c57ca2c8845840823bc3b0..e5f67203b73ce2ef1bc6ff8e3107cba4
       */
      createAPI(options) {
 -        return new ServiceWorkerContentsAPI(options.baseUrl, options.driveName, options.mountpoint, options.FS, options.ERRNO_CODES);
-+        if (!options.tabId || !options.baseUrl) {
-+            throw new Error('Cannot create service-worker API without current tabId');
++        if (!options.windowId || !options.baseUrl) {
++            throw new Error('Cannot create service-worker API without current windowId');
 +        }
 +        return new ServiceWorkerContentsAPI(options);
      }

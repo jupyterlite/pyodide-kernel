@@ -31,7 +31,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
     if (options.mountDrive) {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
-      const { baseUrl, tabId } = options;
+      const { baseUrl, windowId } = options;
 
       // This uses the ServiceWorkerContentsAPI by default
       const driveFS = new DriveFS({
@@ -39,7 +39,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
         PATH,
         ERRNO_CODES,
         baseUrl,
-        tabId,
+        windowId,
         driveName: this._driveName,
         mountpoint,
       });

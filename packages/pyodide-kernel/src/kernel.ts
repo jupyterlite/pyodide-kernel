@@ -102,7 +102,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   protected initRemoteOptions(
     options: PyodideKernel.IOptions,
   ): IPyodideWorkerKernel.IOptions {
-    const { pyodideUrl, tabId } = options;
+    const { pyodideUrl, windowId } = options;
     const indexUrl = pyodideUrl.slice(0, pyodideUrl.lastIndexOf('/') + 1);
     const baseUrl = PageConfig.getBaseUrl();
 
@@ -112,7 +112,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
 
     return {
       baseUrl,
-      tabId,
+      windowId,
       pyodideUrl,
       indexUrl,
       pipliteWheelUrl: options.pipliteWheelUrl || pipliteWheelUrl.default,

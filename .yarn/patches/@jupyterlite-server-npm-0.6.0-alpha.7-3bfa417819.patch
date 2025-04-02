@@ -9,7 +9,7 @@ index 2504c6764ace42939d07c635792fad75116ff7c8..1b6dafb9be847f5272bc4e382db67b90
 +    /**
 +     * The current tab id
 +     */
-+    get tabId(): string;
++    get windowId(): string;
      /**
       * Whether the ServiceWorker is enabled or not.
       */
@@ -17,7 +17,7 @@ index 2504c6764ace42939d07c635792fad75116ff7c8..1b6dafb9be847f5272bc4e382db67b90
       * Set the Service Worker registration.
       */
      private _setRegistration;
-+    private _tabId;
++    private _windowId;
      private _messageChannel;
      private _registration;
      private _registrationChanged;
@@ -50,7 +50,7 @@ index 542279ab2ce97254d61b3b223d3fee7ca8caac47..b535f9baafe7333aa256090a24e3813c
          this._registration = null;
          this._registrationChanged = new Signal(this);
          this._ready = new PromiseDelegate();
-+        this._tabId = UUID.uuid4();
++        this._windowId = UUID.uuid4();
          this._messageChannel = new MessageChannel();
          // listen to messages from the Service Worker
          this._messageChannel.port1.onmessage = this._onMessage;
@@ -61,8 +61,8 @@ index 542279ab2ce97254d61b3b223d3fee7ca8caac47..b535f9baafe7333aa256090a24e3813c
 +    /**
 +     * The current tab id
 +     */
-+    get tabId() {
-+        return this._tabId;
++    get windowId() {
++        return this._windowId;
 +    }
      /**
       * Whether the ServiceWorker is enabled or not.
@@ -114,12 +114,12 @@ index 542279ab2ce97254d61b3b223d3fee7ca8caac47..b535f9baafe7333aa256090a24e3813c
 +        if (controller) {
 +            void controller.postMessage({
 +                type: 'INIT_PORT',
-+                tabId: this._tabId,
++                windowId: this._windowId,
 +            }, [this._messageChannel.port2]);
 +            window.addEventListener('beforeunload', () => {
 +                controller.postMessage({
 +                    type: 'DISCONNECT_PORT',
-+                    tabId: this._tabId,
++                    windowId: this._windowId,
 +                });
 +            });
 +        }
@@ -147,7 +147,7 @@ index e6d76a8d4e64ed162caaf4fcbb061450fcfca90e..f092b28427d65be23e0a965bccca97cf
 -declare let messagePort: MessagePort;
 -declare const ready: Promise<void>;
 +declare const messagePorts: {
-+    [tabId: string]: MessagePort;
++    [windowId: string]: MessagePort;
 +};
  /**
   * Whether to enable the cache
@@ -207,11 +207,11 @@ index cc620fb9531b8dc3f08e788de0de5dba562b5e92..302c404eef6cf6d7fb5169bc867fdbde
  self.addEventListener('fetch', onFetch);
 +self.addEventListener('message', (event) => {
 +    if (event.data && event.data.type === 'INIT_PORT') {
-+        messagePorts[event.data.tabId] = event.ports[0];
++        messagePorts[event.data.windowId] = event.ports[0];
 +    }
 +    if (event.data && event.data.type === 'DISCONNECT_PORT') {
-+        messagePorts[event.data.tabId].close();
-+        delete messagePorts[event.data.tabId];
++        messagePorts[event.data.windowId].close();
++        delete messagePorts[event.data.windowId];
 +    }
 +});
  // Event handlers
@@ -256,8 +256,8 @@ index cc620fb9531b8dc3f08e788de0de5dba562b5e92..302c404eef6cf6d7fb5169bc867fdbde
 -    await ready;
 +async function requestMainThread(request) {
 +    const message = await request.json();
-+    const tabId = message.tabId;
-+    const port = messagePorts[tabId];
++    const windowId = message.windowId;
++    const port = messagePorts[windowId];
 +    if (!port) {
 +        return new Response(JSON.stringify({ error: 'Port not initialized.' }));
 +    }
@@ -293,7 +293,7 @@ index 1aa18a81b54966381567d45bf82197dea050784d..0d9ba41f2e57368449a0518593a48f97
 +    /**
 +     * The current tab UUID. This is used to communicate between the current tab and service-worker.
 +     */
-+    readonly tabId: string;
++    readonly windowId: string;
      /**
       * A Promise that resolves when the ServiceWorker is registered, or rejects if it cannot
       */

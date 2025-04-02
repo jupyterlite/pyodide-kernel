@@ -9,7 +9,7 @@ index 46d3100e1b824d7ab359773553c7c80227c85d2a..0510055562b4831b5a605f50d262fea7
 +        /**
 +         * The current tab ID.
 +         */
-+        tabId?: string;
++        windowId?: string;
          /**
           * The method to send messages back to the server.
           */
@@ -20,7 +20,7 @@ index 46d3100e1b824d7ab359773553c7c80227c85d2a..0510055562b4831b5a605f50d262fea7
 +        /**
 +         * The current tab ID.
 +         */
-+        tabId?: string;
++        windowId?: string;
      }
  }
  export interface IRemoteKernel extends Remote<IWorkerKernel> {
