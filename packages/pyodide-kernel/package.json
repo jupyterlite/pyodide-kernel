@@ -59,7 +59,7 @@
   "devDependencies": {
     "@babel/core": "^7.22.17",
     "esbuild": "^0.19.2",
-    "pyodide": "0.27.4",
+    "pyodide": "0.27.5",
     "rimraf": "^5.0.1",
     "typescript": "~5.2.2"
   },
