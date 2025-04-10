@@ -32,6 +32,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     this._worker = this.initWorker(options);
     this._remoteKernel = this.initRemote(options);
     this._contentsManager = options.contentsManager;
+    this._originId = options.originId;
   }
 
   /**
@@ -346,6 +347,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     | IRemotePyodideWorkerKernel
     | Remote<IRemotePyodideWorkerKernel>;
   private _ready = new PromiseDelegate<void>();
+  private _originId: string | undefined;
 }
 
 /**
@@ -394,5 +396,10 @@ export namespace PyodideKernel {
      * The Jupyterlite content manager
      */
     contentsManager: Contents.IManager;
+
+    /**
+     * The origin ID
+     */
+    originId?: string;
   }
 }

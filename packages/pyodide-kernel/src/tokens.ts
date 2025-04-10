@@ -91,6 +91,11 @@ export namespace IPyodideWorkerKernel {
     mountDrive: boolean;
 
     /**
+     * The origin ID
+     */
+    originId?: string;
+
+    /**
      * additional options to provide to `loadPyodide`
      * @see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide
      */

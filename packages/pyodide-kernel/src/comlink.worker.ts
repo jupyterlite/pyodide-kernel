@@ -24,6 +24,7 @@ class PyodideDriveFS extends DriveFS {
       options.mountpoint,
       options.FS,
       options.ERRNO_CODES,
+      options.originId,
     );
   }
 }
