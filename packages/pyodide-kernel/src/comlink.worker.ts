@@ -56,6 +56,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
         baseUrl,
         driveName: this._driveName,
         mountpoint,
+        originId: options.originId,
       });
       FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
