@@ -34,12 +34,7 @@ export class SharedBufferContentsAPI extends ContentsAPI {
  */
 class PyodideDriveFS extends DriveFS {
   createAPI(options: DriveFS.IOptions): ContentsAPI {
-    return new SharedBufferContentsAPI(
-      options.driveName,
-      options.mountpoint,
-      options.FS,
-      options.ERRNO_CODES,
-    );
+    return new SharedBufferContentsAPI(options);
   }
 }
 
