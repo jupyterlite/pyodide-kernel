@@ -24,6 +24,7 @@ class PyodideDriveFS extends DriveFS {
       options.mountpoint,
       options.FS,
       options.ERRNO_CODES,
+      options.originId,
     );
   }
 }
@@ -55,6 +56,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
         baseUrl,
         driveName: this._driveName,
         mountpoint,
+        originId: options.originId,
       });
       FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);

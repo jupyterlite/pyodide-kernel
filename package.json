@@ -134,5 +134,8 @@
       "eqeqeq": "error",
       "prefer-arrow-callback": "error"
     }
+  },
+  "resolutions": {
+    "@jupyterlite/contents@^0.6.0-alpha.4": "patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch"
   }
 }

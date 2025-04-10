@@ -99,6 +99,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
           mountDrive,
           loadPyodideOptions,
           contentsManager,
+          originId: broadcastChannel?.originId,
         });
       },
     });
