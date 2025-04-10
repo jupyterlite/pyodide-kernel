@@ -126,3 +126,6 @@ ui-tests/playwright-report/
 
 # Yarn cache
 .yarn/
+
+# Yarn patches
+!.yarn/patches
