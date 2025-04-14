@@ -198,6 +198,9 @@ jobs:
           set -eux
           python -m pip install "jupyterlab>=4.3.3,<4.4.0" dist/jupyterlite_pyodide_kernel*.whl
 
+          # TODO: remove
+          python -m pip install -U https://jupyterlite--1621.org.readthedocs.build/en/1621/_static/jupyterlite_core-0.6.0a7-py3-none-any.whl
+
       - name: Install dependencies
         working-directory: ui-tests
         env:
