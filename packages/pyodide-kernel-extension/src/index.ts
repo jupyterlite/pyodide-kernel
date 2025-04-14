@@ -7,8 +7,6 @@ import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
 import { IServiceWorkerManager } from '@jupyterlite/server';
 
-import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
-
 import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
 
 import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
@@ -34,12 +32,11 @@ const kernel: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
   autoStart: true,
   requires: [IKernelSpecs],
-  optional: [IServiceWorkerManager, IBroadcastChannelWrapper],
+  optional: [IServiceWorkerManager],
   activate: (
     app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
-    serviceWorker?: IServiceWorkerManager,
-    broadcastChannel?: IBroadcastChannelWrapper,
+    serviceWorkerManager?: IServiceWorkerManager,
   ) => {
     const contentsManager = app.serviceManager.contents;
 
@@ -79,10 +76,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
       create: async (options: IKernel.IOptions): Promise<IKernel> => {
         const { PyodideKernel } = await import('@jupyterlite/pyodide-kernel');
 
-        const mountDrive = !!(
-          (serviceWorker?.enabled && broadcastChannel?.enabled) ||
-          crossOriginIsolated
-        );
+        const mountDrive = !!(serviceWorkerManager?.enabled || crossOriginIsolated);
 
         if (mountDrive) {
           console.info('Pyodide contents will be synced with Jupyter Contents');
@@ -99,7 +93,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
           mountDrive,
           loadPyodideOptions,
           contentsManager,
-          originId: broadcastChannel?.originId,
+          originId: serviceWorkerManager?.originId,
         });
       },
     });
