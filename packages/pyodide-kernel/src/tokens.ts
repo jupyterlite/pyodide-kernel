@@ -31,6 +31,12 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
   ): TDriveResponse<T>;
 
   /**
+   * Process a log message
+   * @param msg
+   */
+  processLogMessage(msg: any): void;
+
+  /**
    * Process worker message
    * @param msg
    */
@@ -98,5 +104,10 @@ export namespace IPyodideWorkerKernel {
       lockFileURL: string;
       packages: string[];
     };
+
+    /**
+     * The kernel id.
+     */
+    kernelId?: string;
   }
 }
