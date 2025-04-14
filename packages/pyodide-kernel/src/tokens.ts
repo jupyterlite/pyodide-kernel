@@ -93,7 +93,7 @@ export namespace IPyodideWorkerKernel {
     /**
      * The origin ID
      */
-    originId?: string;
+    browsingContextId?: string;
 
     /**
      * additional options to provide to `loadPyodide`

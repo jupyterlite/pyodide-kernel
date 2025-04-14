@@ -151,7 +151,7 @@ export class PyodideRemoteKernel {
         baseUrl,
         driveName: this._driveName,
         mountpoint,
-        originId: this._originId,
+        browsingContextId: this._browsingContextId,
       });
       FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
@@ -529,7 +529,7 @@ export class PyodideRemoteKernel {
   /** TODO: real typing */
   protected _localPath = '';
   protected _driveName = '';
-  protected _originId: string | undefined;
+  protected _browsingContextId: string | undefined;
   protected _kernel: any;
   protected _interpreter: any;
   protected _stdout_stream: any;

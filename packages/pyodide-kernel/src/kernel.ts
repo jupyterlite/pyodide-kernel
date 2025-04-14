@@ -120,7 +120,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       location: this.location,
       mountDrive: options.mountDrive,
       loadPyodideOptions: options.loadPyodideOptions || {},
-      originId: options.originId,
+      browsingContextId: options.browsingContextId,
     };
   }
 
@@ -399,6 +399,6 @@ export namespace PyodideKernel {
     /**
      * The origin ID
      */
-    originId?: string;
+    browsingContextId?: string;
   }
 }

@@ -93,7 +93,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
           mountDrive,
           loadPyodideOptions,
           contentsManager,
-          originId: serviceWorkerManager?.originId,
+          browsingContextId: serviceWorkerManager?.browsingContextId,
         });
       },
     });

@@ -974,7 +974,7 @@ __metadata:
 
 "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A.":
   version: 0.6.0-alpha.7
-  resolution: "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::version=0.6.0-alpha.7&hash=bb1b1b&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
+  resolution: "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::version=0.6.0-alpha.7&hash=e2ab0c&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
   dependencies:
     "@jupyterlab/nbformat": ~4.4.0-rc.0
     "@jupyterlab/services": ~7.4.0-rc.0
@@ -983,7 +983,7 @@ __metadata:
     "@types/emscripten": ^1.39.6
     localforage: ^1.9.0
     mime: ^3.0.0
-  checksum: 1ff939b84969b6043034ca1cce29c477f82ac03fbc0481d281b333b8ee45ac6b645e7e5e79c5eecef19b7915438ea075e3a8c116c3df892cb3f8eb3ae2ca209d
+  checksum: ca8528312e06f5c9193c188b9a478e4dd7eaeb7b37e09b9056e5c663c28ecb72d28ee1016d0b29b4effae96d0d7182ab927ea3ffb71684073fa70d8e367c4057
   languageName: node
   linkType: hard
 
@@ -1091,7 +1091,7 @@ __metadata:
 
 "@jupyterlite/server@patch:@jupyterlite/server@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-server-npm-0.6.0-alpha.7-3bfa417819.patch::locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A.":
   version: 0.6.0-alpha.7
-  resolution: "@jupyterlite/server@patch:@jupyterlite/server@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-server-npm-0.6.0-alpha.7-3bfa417819.patch::version=0.6.0-alpha.7&hash=7c2143&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
+  resolution: "@jupyterlite/server@patch:@jupyterlite/server@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-server-npm-0.6.0-alpha.7-3bfa417819.patch::version=0.6.0-alpha.7&hash=b30b06&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
   dependencies:
     "@jupyterlab/coreutils": ~6.4.0-rc.0
     "@jupyterlab/nbformat": ~4.4.0-rc.0
@@ -1108,7 +1108,7 @@ __metadata:
     "@lumino/coreutils": ^2.2.0
     "@lumino/signaling": ^2.1.3
     mock-socket: ^9.3.1
-  checksum: 75e46c4bef0680796ec10b863acea47252c04af6bba582cafe5dcb38f697ee6721fe7dd1f083548122b86ac660526582b8da02e822730024af884086e12ae7e0
+  checksum: 1b448e9623ccc63139c23df8133b6fddc0906f1f1124efa443f861c672dcf2502d174d5df714cceb84689234f848cc5a2f6f0952cdddca3dd647c1be366806a8
   languageName: node
   linkType: hard
 

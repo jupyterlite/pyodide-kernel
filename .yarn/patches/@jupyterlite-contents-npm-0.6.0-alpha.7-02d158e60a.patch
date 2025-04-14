@@ -9,7 +9,7 @@ index 14d4d58e245cdbac131ec9f9727c5d4bd306948d..4f1ed8fefaed1b23adfea53737b8043e
 +    /**
 +     * A unique ID to identify the origin of this request
 +     */
-+    originId?: string;
++    browsingContextId?: string;
      /**
       * The path to the file/directory for which the request was sent
       */
@@ -37,7 +37,7 @@ index 14d4d58e245cdbac131ec9f9727c5d4bd306948d..4f1ed8fefaed1b23adfea53737b8043e
       */
      get endpoint(): string;
      private _baseUrl;
-+    private _originId;
++    private _browsingContextId;
  }
  export declare class DriveFS {
      FS: FS;
@@ -86,7 +86,7 @@ index 14d4d58e245cdbac131ec9f9727c5d4bd306948d..4f1ed8fefaed1b23adfea53737b8043e
 +        /**
 +         * The origin ID;
 +         */
-+        originId: string;
++        browsingContextId: string;
 +    }
 +}
  /**
@@ -96,7 +96,7 @@ index 14d4d58e245cdbac131ec9f9727c5d4bd306948d..4f1ed8fefaed1b23adfea53737b8043e
          baseUrl: string;
          driveName: string;
          mountpoint: string;
-+        originId?: string;
++        browsingContextId?: string;
      }
  }
  export {};
@@ -134,19 +134,19 @@ index e637a1179de95945a0c57ca2c8845840823bc3b0..f94ff22751817a304634dfb6012c7dc7
 +    constructor(options) {
 +        super(options);
 +        this._baseUrl = options.baseUrl;
-+        this._originId = options.originId || '';
++        this._browsingContextId = options.browsingContextId || '';
      }
      request(data) {
          const xhr = new XMLHttpRequest();
          xhr.open('POST', encodeURI(this.endpoint), false);
 +        // Add origin ID to the request
-+        const requestWithOriginId = {
++        const requestWithbrowsingContextId = {
 +            ...data,
-+            originId: this._originId,
++            browsingContextId: this._browsingContextId,
 +        };
          try {
 -            xhr.send(JSON.stringify(data));
-+            xhr.send(JSON.stringify(requestWithOriginId));
++            xhr.send(JSON.stringify(requestWithbrowsingContextId));
          }
          catch (e) {
              console.error(e);
@@ -155,8 +155,8 @@ index e637a1179de95945a0c57ca2c8845840823bc3b0..f94ff22751817a304634dfb6012c7dc7
       */
      createAPI(options) {
 -        return new ServiceWorkerContentsAPI(options.baseUrl, options.driveName, options.mountpoint, options.FS, options.ERRNO_CODES);
-+        if (!options.originId || !options.baseUrl) {
-+            throw new Error('Cannot create service-worker API without current originId');
++        if (!options.browsingContextId || !options.baseUrl) {
++            throw new Error('Cannot create service-worker API without current browsingContextId');
 +        }
 +        return new ServiceWorkerContentsAPI(options);
      }
@@ -178,11 +178,11 @@ index 53a7ab94a23c170b72c1fe4727459a401a63bf23..f66279d13f5658adda037756698bb95e
 @@ -80,6 +80,11 @@ export type TDriveRequest<T extends TDriveMethod> = {
     */
    method: T;
- 
+
 +  /**
 +   * A unique ID to identify the origin of this request
 +   */
-+  originId?: string;
++  browsingContextId?: string;
 +
    /**
     * The path to the file/directory for which the request was sent
@@ -197,13 +197,13 @@ index 53a7ab94a23c170b72c1fe4727459a401a63bf23..f66279d13f5658adda037756698bb95e
 +  constructor(options: ContentsAPI.IOptions) {
 +    this._driveName = options.driveName;
 +    this._mountpoint = options.mountpoint;
- 
+
 -    this.FS = FS;
 -    this.ERRNO_CODES = ERRNO_CODES;
 +    this.FS = options.FS;
 +    this.ERRNO_CODES = options.ERRNO_CODES;
    }
- 
+
    lookup(path: string): DriveFS.ILookup {
 @@ -550,24 +555,28 @@ export abstract class ContentsAPI {
   * An Emscripten-compatible synchronous Contents API using the service worker.
@@ -222,35 +222,35 @@ index 53a7ab94a23c170b72c1fe4727459a401a63bf23..f66279d13f5658adda037756698bb95e
 +   */
 +  constructor(options: ServiceWorkerContentsAPI.IOptions) {
 +    super(options);
- 
+
 -    this._baseUrl = baseUrl;
 +    this._baseUrl = options.baseUrl;
-+    this._originId = options.originId || '';
++    this._browsingContextId = options.browsingContextId || '';
    }
- 
+
    request<T extends TDriveMethod>(data: TDriveRequest<T>): TDriveResponse<T> {
      const xhr = new XMLHttpRequest();
      xhr.open('POST', encodeURI(this.endpoint), false);
- 
+
 +    // Add origin ID to the request
-+    const requestWithOriginId = {
++    const requestWithbrowsingContextId = {
 +      ...data,
-+      originId: this._originId,
++      browsingContextId: this._browsingContextId,
 +    };
 +
      try {
 -      xhr.send(JSON.stringify(data));
-+      xhr.send(JSON.stringify(requestWithOriginId));
++      xhr.send(JSON.stringify(requestWithbrowsingContextId));
      } catch (e) {
        console.error(e);
      }
 @@ -587,6 +596,7 @@ export class ServiceWorkerContentsAPI extends ContentsAPI {
    }
- 
+
    private _baseUrl: string;
-+  private _originId: string;
++  private _browsingContextId: string;
  }
- 
+
  export class DriveFS {
 @@ -617,13 +627,11 @@ export class DriveFS {
     * This is supposed to be overwritten if needed.
@@ -263,18 +263,18 @@ index 53a7ab94a23c170b72c1fe4727459a401a63bf23..f66279d13f5658adda037756698bb95e
 -      options.FS,
 -      options.ERRNO_CODES,
 -    );
-+    if (!options.originId || !options.baseUrl) {
-+      throw new Error('Cannot create service-worker API without current originId');
++    if (!options.browsingContextId || !options.baseUrl) {
++      throw new Error('Cannot create service-worker API without current browsingContextId');
 +    }
 +
 +    return new ServiceWorkerContentsAPI(options as ServiceWorkerContentsAPI.IOptions);
    }
- 
+
    mount(mount: any): IEmscriptenFSNode {
 @@ -665,6 +673,56 @@ export class DriveFS {
    }
  }
- 
+
 +/**
 + * A namespace for ContentsAPI configurations, etc.
 + */
@@ -321,7 +321,7 @@ index 53a7ab94a23c170b72c1fe4727459a401a63bf23..f66279d13f5658adda037756698bb95e
 +    /**
 +     * The origin ID;
 +     */
-+    originId: string;
++    browsingContextId: string;
 +  }
 +}
 +
@@ -332,6 +332,6 @@ index 53a7ab94a23c170b72c1fe4727459a401a63bf23..f66279d13f5658adda037756698bb95e
      baseUrl: string;
      driveName: string;
      mountpoint: string;
-+    originId?: string;
++    browsingContextId?: string;
    }
  }

@@ -21,7 +21,7 @@ index 2504c6764ace42939d07c635792fad75116ff7c8..3d1802a471f2c6b75dcc8246f31aef8c
 +     * The origin ID used for the broadcast channel communication.
       */
 -    get ready(): Promise<void>;
-+    get originId(): string;
++    get browsingContextId(): string;
      /**
 -     * Handle a message received on the MessageChannel
 +     * Whether the ServiceWorker is ready or not.
@@ -57,7 +57,7 @@ index 2504c6764ace42939d07c635792fad75116ff7c8..3d1802a471f2c6b75dcc8246f31aef8c
      private _registrationChanged;
      private _ready;
 +    private _broadcastChannel;
-+    private _originId;
++    private _browsingContextId;
 +    private _contents;
      private _driveContentsProcessor;
  }
@@ -132,8 +132,8 @@ index 542279ab2ce97254d61b3b223d3fee7ca8caac47..a792bcfc150705d612b15eb70ae2f6fe
 -            if (text === 'ok') {
 -                setTimeout(this._pingServiceWorker, 20000);
 +            const request = event.data;
-+            const originId = request === null || request === void 0 ? void 0 : request.originId;
-+            if (originId !== this._originId) {
++            const browsingContextId = request === null || request === void 0 ? void 0 : request.browsingContextId;
++            if (browsingContextId !== this._browsingContextId) {
 +                // Message is not meant for us
 +                return;
              }
@@ -156,7 +156,7 @@ index 542279ab2ce97254d61b3b223d3fee7ca8caac47..a792bcfc150705d612b15eb70ae2f6fe
          const enableCache = PageConfig.getOption('enableServiceWorkerCache') || 'false';
          fullWorkerUrl.searchParams.set('enableCache', enableCache);
 +        // Initialize broadcast channel related properties
-+        this._originId = UUID.uuid4();
++        this._browsingContextId = UUID.uuid4();
 +        this._contents = options.contents;
 +        this._broadcastChannel = new BroadcastChannel(DRIVE_API_PATH);
 +        this._broadcastChannel.addEventListener('message', this._onBroadcastMessage);
@@ -173,8 +173,8 @@ index 542279ab2ce97254d61b3b223d3fee7ca8caac47..a792bcfc150705d612b15eb70ae2f6fe
 +    /**
 +     * The origin ID used for the broadcast channel communication.
 +     */
-+    get originId() {
-+        return this._originId;
++    get browsingContextId() {
++        return this._browsingContextId;
 +    }
      /**
       * Whether the ServiceWorker is ready or not.
@@ -333,7 +333,7 @@ index 1aa18a81b54966381567d45bf82197dea050784d..719cd20f943f979f1e26fc5dda228aea
 +    /**
 +     * The unique ID that identifies this broadcast channel instance.
 +     */
-+    readonly originId: string;
++    readonly browsingContextId: string;
      /**
       * A Promise that resolves when the ServiceWorker is registered, or rejects if it cannot
       */
@@ -361,12 +361,12 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
 +++ b/src/service-worker-manager.ts
 @@ -1,51 +1,55 @@
  import { PageConfig, URLExt } from '@jupyterlab/coreutils';
- 
+
 -import { PromiseDelegate } from '@lumino/coreutils';
 -
 -import { ISignal, Signal } from '@lumino/signaling';
 +import { Contents } from '@jupyterlab/services';
- 
+
  import {
 +  DRIVE_API_PATH,
    DriveContentsProcessor,
@@ -374,25 +374,25 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
    TDriveMethod,
    TDriveRequest,
  } from '@jupyterlite/contents';
- 
+
 +import { PromiseDelegate, UUID } from '@lumino/coreutils';
 +
 +import { ISignal, Signal } from '@lumino/signaling';
 +
  import { IServiceWorkerManager, WORKER_NAME } from './tokens';
- 
+
  /**
 - * The version of the app.
 + * The version of the app
   */
  const VERSION = PageConfig.getOption('appVersion');
- 
+
  /**
 - * Used to keep the Service Worker alive.
 + * Used to keep the service worker alive
   */
  const SW_PING_ENDPOINT = '/api/service-worker-heartbeat';
- 
+
  /**
 - * A class that manages the Service Worker.
 + * A class that manages the ServiceWorker registration and communication,
@@ -409,21 +409,21 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
 +    const fullWorkerUrl = new URL(workerUrl, window.location.href);
 +    const enableCache = PageConfig.getOption('enableServiceWorkerCache') || 'false';
 +    fullWorkerUrl.searchParams.set('enableCache', enableCache);
- 
+
 -    // listen to messages from the Service Worker
 -    this._messageChannel.port1.onmessage = this._onMessage;
 +    // Initialize broadcast channel related properties
-+    this._originId = UUID.uuid4();
++    this._browsingContextId = UUID.uuid4();
 +    this._contents = options.contents;
 +    this._broadcastChannel = new BroadcastChannel(DRIVE_API_PATH);
 +    this._broadcastChannel.addEventListener('message', this._onBroadcastMessage);
- 
+
 -    const contents = options.contents;
      this._driveContentsProcessor = new DriveContentsProcessor({
 -      contentsManager: contents,
 +      contentsManager: this._contents,
      });
- 
+
 -    const workerUrl =
 -      options?.workerUrl ?? URLExt.join(PageConfig.getBaseUrl(), WORKER_NAME);
 -    const fullWorkerUrl = new URL(workerUrl, window.location.href);
@@ -431,20 +431,20 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
 -    fullWorkerUrl.searchParams.set('enableCache', enableCache);
      void this._initialize(fullWorkerUrl.href).catch(console.warn);
    }
- 
+
 @@ -67,26 +71,21 @@ export class ServiceWorkerManager implements IServiceWorkerManager {
    }
- 
+
    /**
 -   * Whether the ServiceWorker is ready or not.
 +   * The origin ID used for the broadcast channel communication.
     */
 -  get ready(): Promise<void> {
 -    return this._ready.promise;
-+  get originId(): string {
-+    return this._originId;
++  get browsingContextId(): string {
++    return this._browsingContextId;
    }
- 
+
    /**
 -   * Handle a message received on the MessageChannel
 +   * Whether the ServiceWorker is ready or not.
@@ -460,7 +460,7 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
 +  get ready(): Promise<void> {
 +    return this._ready.promise;
 +  }
- 
+
    /**
 -   * Initialize the Service Worker
 +   * Initialize the ServiceWorkerManager.
@@ -468,7 +468,7 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
    private async _initialize(workerUrl: string): Promise<void> {
      const { serviceWorker } = navigator;
 @@ -95,7 +94,6 @@ export class ServiceWorkerManager implements IServiceWorkerManager {
- 
+
      if (!serviceWorker) {
        console.warn('ServiceWorkers not supported in this browser');
 -      this._ready.reject(void 0);
@@ -476,9 +476,9 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
      } else if (serviceWorker.controller) {
        const scriptURL = serviceWorker.controller.scriptURL;
 @@ -123,14 +121,6 @@ export class ServiceWorkerManager implements IServiceWorkerManager {
- 
+
      this._setRegistration(registration);
- 
+
 -    // transfer the port for communication with the Service Worker
 -    void serviceWorker.controller?.postMessage(
 -      {
@@ -492,7 +492,7 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
      } else {
 @@ -140,9 +130,9 @@ export class ServiceWorkerManager implements IServiceWorkerManager {
    }
- 
+
    /**
 -   * Unregister previous service workers if the version has changed.
 +   * Unregister old service workers if the version has changed.
@@ -504,11 +504,11 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
      // and unregister all service workers if they are different.
 @@ -160,32 +150,56 @@ export class ServiceWorkerManager implements IServiceWorkerManager {
      }
- 
+
      localStorage.setItem(versionKey, VERSION);
 -  };
 +  }
- 
+
    /**
 -   * Ping the Service Worker to keep it alive.
 +   * Ping the service worker to keep it alive.
@@ -522,7 +522,7 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
      }
 -  };
 +  }
- 
+
    /**
 -   * Set the Service Worker registration.
 +   * Set the registration and emit a signal.
@@ -531,7 +531,7 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
      this._registration = registration;
      this._registrationChanged.emit(this._registration);
    }
- 
+
 -  private _messageChannel: MessageChannel;
 +  /**
 +   * Handle a message received on the BroadcastChannel
@@ -544,9 +544,9 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
 +    }
 +
 +    const request = event.data;
-+    const originId = request?.originId;
++    const browsingContextId = request?.browsingContextId;
 +
-+    if (originId !== this._originId) {
++    if (browsingContextId !== this._browsingContextId) {
 +      // Message is not meant for us
 +      return;
 +    }
@@ -562,7 +562,7 @@ index f057fc3acec1d986ce475dbd3f6593decb1988e4..69771ab2b0f968d47d3777a18b36a557
    private _ready = new PromiseDelegate<void>();
 -  private _driveContentsProcessor: IDriveContentsProcessor;
 +  private _broadcastChannel: BroadcastChannel;
-+  private _originId: string;
++  private _browsingContextId: string;
 +  private _contents: Contents.IManager | undefined;
 +  private _driveContentsProcessor: DriveContentsProcessor | undefined;
  }
@@ -585,7 +585,7 @@ index 012eb45ac2269aac5bf545ef06875940c3d888b0..d6d0131301e25bac6ff34345c0dfddda
 -  });
 -});
 +const broadcast = new BroadcastChannel('/api/drive.v1');
- 
+
  /**
   * Whether to enable the cache
 @@ -144,16 +135,14 @@ function shouldDrop(request: Request, url: URL): boolean {
@@ -600,11 +600,11 @@ index 012eb45ac2269aac5bf545ef06875940c3d888b0..d6d0131301e25bac6ff34345c0dfddda
        resolve(new Response(JSON.stringify(event.data)));
      };
    });
- 
+
    const message = await request.json();
 -  messagePort.postMessage(message);
 +  broadcast.postMessage(message);
- 
+
    return await promise;
  }
 diff --git a/src/tokens.ts b/src/tokens.ts
@@ -615,22 +615,22 @@ index 84aaae1ebbf0ee5c6ac91ee60077b3e41cf9d043..aae3f63f95128bd7fa099b1faf69f91c
 -import { Contents } from '@jupyterlab/services';
 -
  import { Token } from '@lumino/coreutils';
- 
+
  import { ISignal } from '@lumino/signaling';
- 
+
 +import { Contents } from '@jupyterlab/services';
 +
  import SW_URL from './service-worker?text';
- 
+
  /**
 @@ -30,6 +30,11 @@ export interface IServiceWorkerManager {
     */
    readonly enabled: boolean;
- 
+
 +  /**
 +   * The unique ID that identifies this broadcast channel instance.
 +   */
-+  readonly originId: string;
++  readonly browsingContextId: string;
 +
    /**
     * A Promise that resolves when the ServiceWorker is registered, or rejects if it cannot
@@ -643,4 +643,4 @@ index 84aaae1ebbf0ee5c6ac91ee60077b3e41cf9d043..aae3f63f95128bd7fa099b1faf69f91c
 +     * The contents manager to use for handling drive contents requests
       */
      contents: Contents.IManager;
- 
+

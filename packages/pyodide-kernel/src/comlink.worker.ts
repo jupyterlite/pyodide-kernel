@@ -31,7 +31,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
     if (options.mountDrive) {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
-      const { baseUrl, originId } = options;
+      const { baseUrl, browsingContextId } = options;
 
       const driveFS = new DriveFS({
         FS: FS as any,
@@ -40,7 +40,7 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
         baseUrl,
         driveName: this._driveName,
         mountpoint,
-        originId,
+        browsingContextId,
       });
       FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
