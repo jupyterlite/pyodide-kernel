@@ -91,6 +91,13 @@ export namespace IPyodideWorkerKernel {
     mountDrive: boolean;
 
     /**
+     * A unique ID to identify the origin of this request.
+     * This should be provided by `IServiceWorkerManager` and is used to
+     * identify the browsing context from which the request originated.
+     */
+    browsingContextId?: string;
+
+    /**
      * additional options to provide to `loadPyodide`
      * @see https://pyodide.org/en/stable/usage/api/js-api.html#globalThis.loadPyodide
      */

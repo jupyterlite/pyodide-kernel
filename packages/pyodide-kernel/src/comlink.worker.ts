@@ -7,26 +7,11 @@
 
 import { expose } from 'comlink';
 
-import { ContentsAPI, DriveFS, ServiceWorkerContentsAPI } from '@jupyterlite/contents';
+import { DriveFS } from '@jupyterlite/contents';
 
 import { IPyodideWorkerKernel } from './tokens';
 
 import { PyodideRemoteKernel } from './worker';
-
-/**
- * A custom drive implementation which uses the service worker
- */
-class PyodideDriveFS extends DriveFS {
-  createAPI(options: DriveFS.IOptions): ContentsAPI {
-    return new ServiceWorkerContentsAPI(
-      options.baseUrl,
-      options.driveName,
-      options.mountpoint,
-      options.FS,
-      options.ERRNO_CODES,
-    );
-  }
-}
 
 export class PyodideComlinkKernel extends PyodideRemoteKernel {
   constructor() {
@@ -46,15 +31,16 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
     if (options.mountDrive) {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
-      const { baseUrl } = options;
+      const { baseUrl, browsingContextId } = options;
 
-      const driveFS = new PyodideDriveFS({
+      const driveFS = new DriveFS({
         FS: FS as any,
         PATH,
         ERRNO_CODES,
         baseUrl,
         driveName: this._driveName,
         mountpoint,
+        browsingContextId,
       });
       FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
