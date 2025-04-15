@@ -1010,7 +1010,7 @@ __metadata:
     "@jupyterlab/coreutils": ^6.4.0
     "@jupyterlite/contents": ^0.6.0-alpha.8
     "@jupyterlite/kernel": ^0.6.0-alpha.8
-    "@jupyterlite/pyodide-kernel": ^0.6.0-alpha.4
+    "@jupyterlite/pyodide-kernel": ^0.6.0-alpha.5
     "@jupyterlite/server": ^0.6.0-alpha.8
     rimraf: ^5.0.1
     typescript: ~5.2.2
@@ -1034,7 +1034,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jupyterlite/pyodide-kernel@^0.6.0-alpha.4, @jupyterlite/pyodide-kernel@workspace:packages/pyodide-kernel":
+"@jupyterlite/pyodide-kernel@^0.6.0-alpha.5, @jupyterlite/pyodide-kernel@workspace:packages/pyodide-kernel":
   version: 0.0.0-use.local
   resolution: "@jupyterlite/pyodide-kernel@workspace:packages/pyodide-kernel"
   dependencies:
