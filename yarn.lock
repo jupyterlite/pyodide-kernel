@@ -974,7 +974,7 @@ __metadata:
 
 "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A.":
   version: 0.6.0-alpha.7
-  resolution: "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::version=0.6.0-alpha.7&hash=e2ab0c&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
+  resolution: "@jupyterlite/contents@patch:@jupyterlite/contents@npm%3A0.6.0-alpha.7#./.yarn/patches/@jupyterlite-contents-npm-0.6.0-alpha.7-02d158e60a.patch::version=0.6.0-alpha.7&hash=83780e&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
   dependencies:
     "@jupyterlab/nbformat": ~4.4.0-rc.0
     "@jupyterlab/services": ~7.4.0-rc.0
@@ -983,7 +983,7 @@ __metadata:
     "@types/emscripten": ^1.39.6
     localforage: ^1.9.0
     mime: ^3.0.0
-  checksum: ca8528312e06f5c9193c188b9a478e4dd7eaeb7b37e09b9056e5c663c28ecb72d28ee1016d0b29b4effae96d0d7182ab927ea3ffb71684073fa70d8e367c4057
+  checksum: 9dbfd13b9138e0b0dedc1694e32402029cf65f3bb62a1b7e0ff0d9634daacc676118eabdd4842539a8f0195ec47cfe56d01fa9be54113f75ef700b5de36acd7c
   languageName: node
   linkType: hard
 

@@ -141,7 +141,7 @@ index e637a1179de95945a0c57ca2c8845840823bc3b0..f94ff22751817a304634dfb6012c7dc7
          xhr.open('POST', encodeURI(this.endpoint), false);
 +        // Add origin ID to the request
 +        const requestWithbrowsingContextId = {
-+            ...data,
++            data,
 +            browsingContextId: this._browsingContextId,
 +        };
          try {
