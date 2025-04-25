@@ -5,6 +5,8 @@ import type Pyodide from 'pyodide';
 
 import type { DriveFS } from '@jupyterlite/contents';
 
+import { URLExt } from '@jupyterlab/coreutils';
+
 import { KernelMessage } from '@jupyterlab/services';
 
 import type { IPyodideWorkerKernel } from './tokens';
@@ -449,48 +451,72 @@ export class PyodideRemoteKernel {
    * @param content The incoming message with the reply
    */
   async inputReply(content: any, parent: any) {
-    await this.setup(parent);
-
-    this._resolveInputReply(content);
+    // Should never be called as input_reply messages are returned via service worker
   }
 
   /**
-   * Send a input request to the front-end.
+   * Send a input request to the front-end via the service worker and block until the
+   * reply is received.
    *
    * @param prompt the text to show at the prompt
    * @param password Is the request for a password?
    */
-  async sendInputRequest(prompt: string, password: boolean) {
-    const content = {
-      prompt,
-      password,
-    };
+  sendInputRequest(prompt: string, password: boolean): string | undefined {
+    const parentHeader = this.formatResult(this._kernel._parent_header)['header'];
 
-    this._sendWorkerMessage({
-      type: 'input_request',
-      parentHeader: this.formatResult(this._kernel._parent_header)['header'],
-      content,
+    // Filling out the input_request message fields based on jupyterlite BaseKernet.inputRequest
+    const inputRequest = KernelMessage.createMessage<KernelMessage.IInputRequestMsg>({
+      channel: 'stdin',
+      msgType: 'input_request',
+      session: parentHeader?.session ?? '',
+      parentHeader: parentHeader,
+      content: {
+        prompt,
+        password,
+      },
     });
+
+    try {
+      if (!this._options) {
+        throw new Error('Kernel options not set');
+      }
+
+      const { baseUrl, browsingContextId } = this._options;
+      if (!browsingContextId) {
+        throw new Error('Kernel browsingContextId not set');
+      }
+
+      const xhr = new XMLHttpRequest();
+      const url = URLExt.join(baseUrl, '/stdin/kernel');
+      xhr.open('POST', url, false); // Synchronous XMLHttpRequest
+      const msg = JSON.stringify({
+        browsingContextId,
+        data: inputRequest,
+      });
+      // Send input request, this blocks until the input reply is received.
+      xhr.send(msg);
+      const inputReply = JSON.parse(xhr.response as string);
+
+      if ('error' in inputReply) {
+        // Service worker may return an error instead of an input reply message.
+        throw new Error(inputReply['error']);
+      }
+
+      return inputReply.content?.value;
+    } catch (err) {
+      console.warn(`Failed to request stdin via service worker: ${err}`);
+      return undefined;
+    }
   }
 
-  async getpass(prompt: string) {
+  getpass(prompt: string): string | undefined {
     prompt = typeof prompt === 'undefined' ? '' : prompt;
-    await this.sendInputRequest(prompt, true);
-    const replyPromise = new Promise((resolve) => {
-      this._resolveInputReply = resolve;
-    });
-    const result: any = await replyPromise;
-    return result['value'];
+    return this.sendInputRequest(prompt, true);
   }
 
-  async input(prompt: string) {
+  input(prompt: string): string | undefined {
     prompt = typeof prompt === 'undefined' ? '' : prompt;
-    await this.sendInputRequest(prompt, false);
-    const replyPromise = new Promise((resolve) => {
-      this._resolveInputReply = resolve;
-    });
-    const result: any = await replyPromise;
-    return result['value'];
+    return this.sendInputRequest(prompt, false);
   }
 
   /**
@@ -534,7 +560,6 @@ export class PyodideRemoteKernel {
   protected _interpreter: any;
   protected _stdout_stream: any;
   protected _stderr_stream: any;
-  protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
   protected _sendWorkerMessage: (msg: any) => void = () => {};
 }
