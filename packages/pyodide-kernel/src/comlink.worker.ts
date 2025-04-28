@@ -7,6 +7,10 @@
 
 import { expose } from 'comlink';
 
+import { URLExt } from '@jupyterlab/coreutils';
+
+import { KernelMessage } from '@jupyterlab/services';
+
 import { DriveFS } from '@jupyterlite/contents';
 
 import { IPyodideWorkerKernel } from './tokens';
@@ -46,6 +50,57 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
       FS.mount(driveFS, {}, mountpoint);
       FS.chdir(mountpoint);
       this._driveFS = driveFS;
+    }
+  }
+
+  /**
+   * Send input request and receive input reply via service worker.
+   */
+  protected sendInputRequest(prompt: string, password: boolean): string | undefined {
+    const parentHeader = this.formatResult(this._kernel._parent_header)['header'];
+
+    // Filling out the input_request message fields based on jupyterlite BaseKernet.inputRequest
+    const inputRequest = KernelMessage.createMessage<KernelMessage.IInputRequestMsg>({
+      channel: 'stdin',
+      msgType: 'input_request',
+      session: parentHeader?.session ?? '',
+      parentHeader: parentHeader,
+      content: {
+        prompt,
+        password,
+      },
+    });
+
+    try {
+      if (!this._options) {
+        throw new Error('Kernel options not set');
+      }
+
+      const { baseUrl, browsingContextId } = this._options;
+      if (!browsingContextId) {
+        throw new Error('Kernel browsingContextId not set');
+      }
+
+      const xhr = new XMLHttpRequest();
+      const url = URLExt.join(baseUrl, '/stdin/kernel');
+      xhr.open('POST', url, false); // Synchronous XMLHttpRequest
+      const msg = JSON.stringify({
+        browsingContextId,
+        data: inputRequest,
+      });
+      // Send input request, this blocks until the input reply is received.
+      xhr.send(msg);
+      const inputReply = JSON.parse(xhr.response as string);
+
+      if ('error' in inputReply) {
+        // Service worker may return an error instead of an input reply message.
+        throw new Error(inputReply['error']);
+      }
+
+      return inputReply.content?.value;
+    } catch (err) {
+      console.warn(`Failed to request stdin via service worker: ${err}`);
+      return undefined;
     }
   }
 }

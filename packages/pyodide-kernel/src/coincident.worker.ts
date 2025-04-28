@@ -64,6 +64,11 @@ export class PyodideCoincidentKernel extends PyodideRemoteKernel {
       this._driveFS = driveFS;
     }
   }
+
+  protected sendInputRequest(prompt: string, password: boolean): string | undefined {
+    // TODO: SharedArrayBuffer implementation
+    return undefined;
+  }
 }
 
 const worker = new PyodideCoincidentKernel();
