@@ -450,6 +450,7 @@ export abstract class PyodideRemoteKernel {
    */
   async inputReply(content: any, parent: any) {
     // Should never be called as input_reply messages are returned via service worker
+    // or SharedArrayBuffer.
   }
 
   /**

@@ -43,6 +43,22 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
 }
 
 /**
+ * An interface for Coincident Pyodide workers that include extra SharedArrayBuffer
+ * functionality.
+ */
+export interface ICoincidentPyodideWorkerKernel extends IPyodideWorkerKernel {
+  /**
+   * Process stdin request, blocking until the reply is received.
+   * This is sync for the web worker, async for the UI thread.
+   * @param inputRequest
+   */
+  processStdinRequest(content: {
+    prompt: string;
+    password: boolean;
+  }): string | undefined;
+}
+
+/**
  * Deprecated.
  */
 export type IRemotePyodideWorkerKernel = IPyodideWorkerKernel;
