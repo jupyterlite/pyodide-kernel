@@ -103,7 +103,15 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       });
     }
     const remoteOptions = this.initRemoteOptions(options);
-    remote.initialize(remoteOptions).then(this._ready.resolve.bind(this._ready));
+    remote
+      .initialize(remoteOptions)
+      .then(this._ready.resolve.bind(this._ready))
+      .catch((err) => {
+        this._logger({
+          payload: { type: 'text', level: 'critical', data: err.message },
+          kernelId: this.id,
+        });
+      });
     return remote;
   }
 
