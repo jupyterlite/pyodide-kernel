@@ -160,9 +160,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     return this._ready.promise;
   }
 
-  private _processLogMessage(msg: any): void {
-    const data = msg.msg as string;
-    const payload: ILogPayload = { type: 'text', level: 'info', data };
+  private _processLogMessage(payload: ILogPayload): void {
     this._logger({ payload, kernelId: this.id });
   }
 
