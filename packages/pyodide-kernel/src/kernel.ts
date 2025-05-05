@@ -92,7 +92,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       };
     } else {
       remote = wrap(this._worker) as IPyodideWorkerKernel;
-      // we use the normal postMessage mechanism
+      // we use the normal postMessage mechanism in the case of comlink
       this._worker.addEventListener('message', (ev) => {
         if (typeof ev?.data?._kernelMessage !== 'undefined') {
           // only process non comlink messages
@@ -428,7 +428,7 @@ export namespace PyodideKernel {
     browsingContextId?: string;
 
     /**
-     * The logger
+     * The logger function to use for logging messages from the kernel.
      */
     logger?: (options: { payload: ILogPayload; kernelId: string }) => void;
   }

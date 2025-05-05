@@ -40,9 +40,9 @@ const kernel: JupyterFrontEndPlugin<void> = {
   activate: (
     app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
-    serviceWorkerManager?: IServiceWorkerManager,
-    loggerRegistry?: ILoggerRegistry,
-    notebookTracker?: INotebookTracker,
+    serviceWorkerManager: IServiceWorkerManager | null,
+    loggerRegistry: ILoggerRegistry | null,
+    notebookTracker: INotebookTracker | null,
   ) => {
     const contentsManager = app.serviceManager.contents;
 
@@ -87,7 +87,6 @@ const kernel: JupyterFrontEndPlugin<void> = {
       }
 
       const logger = loggerRegistry.getLogger(notebook.sessionContext.path);
-      // TODO set the logger level to info by default?
       logger.log(payload);
     };
 
