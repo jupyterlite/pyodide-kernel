@@ -949,9 +949,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/builder@npm:~4.4.0-beta.2":
-  version: 4.4.0-beta.2
-  resolution: "@jupyterlab/builder@npm:4.4.0-beta.2"
+"@jupyterlab/builder@npm:~4.4.0":
+  version: 4.4.1
+  resolution: "@jupyterlab/builder@npm:4.4.1"
   dependencies:
     "@lumino/algorithm": ^2.0.3
     "@lumino/application": ^2.4.3
@@ -986,7 +986,7 @@ __metadata:
     worker-loader: ^3.0.2
   bin:
     build-labextension: lib/build-labextension.js
-  checksum: 253dea45bd643bffc3b46ae5398255c6a2a2e66e289363031a4e19937251bab29b20ef9776fa82ae27af3229b6cb7c2d539306e35df02e57c8a3e6cbdce84a77
+  checksum: 8a1e0003d5c1e73b5bb9c30edf990eb577d08d9964d1ada2ee439d75257754c11d3a2b7870be1684c59d5804ce2d3a104d803cbe1755e702dda48c847fe87b42
   languageName: node
   linkType: hard
 
@@ -1541,7 +1541,7 @@ __metadata:
   resolution: "@jupyterlite/pyodide-kernel-extension@workspace:packages/pyodide-kernel-extension"
   dependencies:
     "@jupyterlab/application": ^4.4.0
-    "@jupyterlab/builder": ~4.4.0-beta.2
+    "@jupyterlab/builder": ~4.4.0
     "@jupyterlab/coreutils": ^6.4.0
     "@jupyterlab/logconsole": ^4.4.0
     "@jupyterlab/notebook": ^4.4.0
