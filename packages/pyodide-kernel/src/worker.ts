@@ -222,6 +222,14 @@ export class PyodideRemoteKernel {
   }
 
   /**
+   * Register the callback function to log messages from the worker back to the main thread.
+   * @param callback the callback to register
+   */
+  registerLogCallback(callback: (msg: any) => void): void {
+    this._logMessage = callback;
+  }
+
+  /**
    * Makes sure pyodide is ready before continuing, and cache the parent message.
    */
   async setup(parent: any): Promise<void> {

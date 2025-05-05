@@ -46,6 +46,11 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
    * Register a callback for handling messages from the worker.
    */
   registerCallback(callback: (msg: any) => void): void;
+
+  /**
+   * Register a callback for handling log messages from the worker.
+   */
+  registerLogCallback(callback: (msg: any) => void): void;
 }
 
 /**

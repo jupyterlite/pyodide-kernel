@@ -72,7 +72,7 @@ const sendWorkerMessage = workerAPI.processWorkerMessage.bind(workerAPI);
 worker.registerCallback(sendWorkerMessage);
 
 const logMessage = workerAPI.processLogMessage.bind(workerAPI);
-worker.registerCallback(logMessage);
+worker.registerLogCallback(logMessage);
 
 workerAPI.initialize = worker.initialize.bind(worker);
 workerAPI.execute = worker.execute.bind(worker);
