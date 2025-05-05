@@ -3,9 +3,11 @@
 
 import type Pyodide from 'pyodide';
 
-import type { DriveFS } from '@jupyterlite/contents';
+import type { ILogPayload } from '@jupyterlab/logconsole';
 
 import { KernelMessage } from '@jupyterlab/services';
+
+import type { DriveFS } from '@jupyterlite/contents';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
@@ -58,11 +60,11 @@ export class PyodideRemoteKernel {
     });
 
     const log = (msg: string) => {
-      this._logMessage({ type: 'log', msg });
+      this._logMessage({ type: 'text', level: 'info', data: msg });
     };
 
     const err = (msg: string) => {
-      this._logMessage({ type: 'error', msg });
+      this._logMessage({ type: 'text', level: 'critical', data: msg });
     };
 
     // Workaround for being able to get information about packages being loaded by Pyodide
@@ -558,5 +560,5 @@ export class PyodideRemoteKernel {
   protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
   protected _sendWorkerMessage: (msg: any) => void = () => {};
-  protected _logMessage: (msg: any) => void = () => {};
+  protected _logMessage: (msg: ILogPayload) => void = () => {};
 }

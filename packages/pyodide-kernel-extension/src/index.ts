@@ -88,7 +88,6 @@ const kernel: JupyterFrontEndPlugin<void> = {
 
       const logger = loggerRegistry.getLogger(notebook.sessionContext.path);
       // TODO set the logger level to info by default?
-      logger.level = 'info';
       logger.log(payload);
     };
 
