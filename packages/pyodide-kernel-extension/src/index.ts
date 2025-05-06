@@ -7,8 +7,6 @@ import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
 import { ILoggerRegistry, ILogPayload } from '@jupyterlab/logconsole';
 
-import { INotebookTracker } from '@jupyterlab/notebook';
-
 import { IServiceWorkerManager } from '@jupyterlite/server';
 
 import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
@@ -34,17 +32,17 @@ const PLUGIN_ID = '@jupyterlite/pyodide-kernel-extension:kernel';
  */
 const kernel: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
+  description: 'A plugin providing the Pyodide kernel.',
   autoStart: true,
   requires: [IKernelSpecs],
-  optional: [IServiceWorkerManager, ILoggerRegistry, INotebookTracker],
+  optional: [IServiceWorkerManager, ILoggerRegistry],
   activate: (
     app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
     serviceWorkerManager: IServiceWorkerManager | null,
     loggerRegistry: ILoggerRegistry | null,
-    notebookTracker: INotebookTracker | null,
   ) => {
-    const contentsManager = app.serviceManager.contents;
+    const { contents: contentsManager, sessions } = app.serviceManager;
 
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
@@ -70,22 +68,24 @@ const kernel: JupyterFrontEndPlugin<void> = {
 
     // The logger will find the notebook associated with the kernel id
     // and log the payload to the log console for that notebook.
-    const logger = (options: { payload: ILogPayload; kernelId: string }) => {
-      if (!notebookTracker || !loggerRegistry) {
+    const logger = async (options: { payload: ILogPayload; kernelId: string }) => {
+      if (!loggerRegistry) {
         // nothing to do in this case
         return;
       }
 
       const { payload, kernelId } = options;
-      const notebook = notebookTracker.find(
-        (nb) => nb.sessionContext.session?.kernel?.id === kernelId,
-      );
 
-      if (!notebook) {
-        return;
+      // Find the session path that corresponds to the kernel ID
+      let sessionPath = '';
+      for (const session of sessions.running()) {
+        if (session.kernel?.id === kernelId) {
+          sessionPath = session.path;
+          break;
+        }
       }
 
-      const logger = loggerRegistry.getLogger(notebook.sessionContext.path);
+      const logger = loggerRegistry.getLogger(sessionPath);
       logger.log(payload);
     };
 
