@@ -125,7 +125,6 @@ const kernel: JupyterFrontEndPlugin<void> = {
         });
       },
     });
-    void app.serviceManager.kernelspecs.refreshSpecs();
   },
 };
 
