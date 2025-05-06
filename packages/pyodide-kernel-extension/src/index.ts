@@ -68,21 +68,20 @@ const kernel: JupyterFrontEndPlugin<void> = {
       }
     }
 
+    // The logger will find the notebook associated with the kernel id
+    // and log the payload to the log console for that notebook.
     const logger = (options: { payload: ILogPayload; kernelId: string }) => {
       if (!notebookTracker || !loggerRegistry) {
         // nothing to do in this case
-        // TODO: simply log to the console?
         return;
       }
 
       const { payload, kernelId } = options;
-
       const notebook = notebookTracker.find(
         (nb) => nb.sessionContext.session?.kernel?.id === kernelId,
       );
 
       if (!notebook) {
-        // no notebook found
         return;
       }
 
