@@ -14,11 +14,11 @@ import {
   TDriveResponse,
 } from '@jupyterlite/contents';
 
-import { IPyodideWorkerKernel } from './tokens';
+import { IPyodideCoincidentKernel, IPyodideWorkerKernel } from './tokens';
 
 import { PyodideRemoteKernel } from './worker';
 
-const workerAPI = coincident(self) as IPyodideWorkerKernel;
+const workerAPI = coincident(self) as IPyodideCoincidentKernel;
 
 /**
  * An Emscripten-compatible synchronous Contents API using shared array buffers.
@@ -69,10 +69,10 @@ export class PyodideCoincidentKernel extends PyodideRemoteKernel {
 const worker = new PyodideCoincidentKernel();
 
 const sendWorkerMessage = workerAPI.processWorkerMessage.bind(workerAPI);
-worker.registerCallback(sendWorkerMessage);
+worker.registerWorkerMessageCallback(sendWorkerMessage);
 
 const logMessage = workerAPI.processLogMessage.bind(workerAPI);
-worker.registerLogCallback(logMessage);
+worker.registerLogMessageCallback(logMessage);
 
 workerAPI.initialize = worker.initialize.bind(worker);
 workerAPI.execute = worker.execute.bind(worker);

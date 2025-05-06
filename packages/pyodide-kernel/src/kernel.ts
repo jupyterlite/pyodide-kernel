@@ -18,7 +18,12 @@ import {
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 
-import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
+import {
+  IPyodideCoincidentKernel,
+  IPyodideComlinkKernel,
+  IPyodideWorkerKernel,
+  IRemotePyodideWorkerKernel,
+} from './tokens';
 
 import { allJSONUrl, pipliteWheelUrl } from './_pypi';
 
@@ -67,9 +72,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    *  - https://github.com/jupyterlite/pyodide-kernel/pull/126
    */
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
-    let remote: IPyodideWorkerKernel;
+    let remote: IPyodideComlinkKernel | IPyodideCoincidentKernel;
     if (crossOriginIsolated) {
-      remote = coincident(this._worker) as IPyodideWorkerKernel;
+      remote = coincident(this._worker) as IPyodideCoincidentKernel;
       remote.processLogMessage = this._processLogMessage.bind(this);
       remote.processWorkerMessage = this._processWorkerMessage.bind(this);
       // The coincident worker uses its own filesystem API:
@@ -91,7 +96,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
         return await this._contentsProcessor.processDriveRequest(data);
       };
     } else {
-      remote = wrap(this._worker) as IPyodideWorkerKernel;
+      remote = wrap(this._worker) as IPyodideComlinkKernel;
       // we use the normal postMessage mechanism in the case of comlink
       this._worker.addEventListener('message', (ev) => {
         if (typeof ev?.data?._kernelMessage !== 'undefined') {
