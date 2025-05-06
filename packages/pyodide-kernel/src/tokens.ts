@@ -29,17 +29,38 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
   processDriveRequest<T extends TDriveMethod>(
     data: TDriveRequest<T>,
   ): TDriveResponse<T>;
+}
+
+/**
+ * An interface for Pyodide workers that use coincident.
+ */
+export interface IPyodideCoincidentKernel extends IPyodideWorkerKernel {
+  /**
+   * Process a log message
+   * @param msg
+   */
+  processLogMessage(msg: any): void;
 
   /**
    * Process worker message
    * @param msg
    */
   processWorkerMessage(msg: any): void;
+}
 
+/**
+ * An interface for Pyodide workers that use comlink.
+ */
+export interface IPyodideComlinkKernel extends IPyodideWorkerKernel {
   /**
    * Register a callback for handling messages from the worker.
    */
-  registerCallback(callback: (msg: any) => void): void;
+  registerWorkerMessageCallback(callback: (msg: any) => void): void;
+
+  /**
+   * Register a callback for handling log messages from the worker.
+   */
+  registerLogMessageCallback(callback: (msg: any) => void): void;
 }
 
 /**
@@ -105,5 +126,10 @@ export namespace IPyodideWorkerKernel {
       lockFileURL: string;
       packages: string[];
     };
+
+    /**
+     * The kernel id.
+     */
+    kernelId?: string;
   }
 }

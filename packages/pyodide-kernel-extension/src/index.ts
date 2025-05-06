@@ -5,6 +5,8 @@ import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application'
 
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
+import { ILoggerRegistry, ILogPayload } from '@jupyterlab/logconsole';
+
 import { IServiceWorkerManager } from '@jupyterlite/server';
 
 import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
@@ -30,15 +32,17 @@ const PLUGIN_ID = '@jupyterlite/pyodide-kernel-extension:kernel';
  */
 const kernel: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
+  description: 'A plugin providing the Pyodide kernel.',
   autoStart: true,
   requires: [IKernelSpecs],
-  optional: [IServiceWorkerManager],
+  optional: [IServiceWorkerManager, ILoggerRegistry],
   activate: (
     app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
-    serviceWorkerManager?: IServiceWorkerManager,
+    serviceWorkerManager: IServiceWorkerManager | null,
+    loggerRegistry: ILoggerRegistry | null,
   ) => {
-    const contentsManager = app.serviceManager.contents;
+    const { contents: contentsManager, sessions } = app.serviceManager;
 
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
@@ -61,6 +65,29 @@ const kernel: JupyterFrontEndPlugin<void> = {
         loadPyodideOptions[key] = new URL(value, baseUrl).href;
       }
     }
+
+    // The logger will find the notebook associated with the kernel id
+    // and log the payload to the log console for that notebook.
+    const logger = async (options: { payload: ILogPayload; kernelId: string }) => {
+      if (!loggerRegistry) {
+        // nothing to do in this case
+        return;
+      }
+
+      const { payload, kernelId } = options;
+
+      // Find the session path that corresponds to the kernel ID
+      let sessionPath = '';
+      for (const session of sessions.running()) {
+        if (session.kernel?.id === kernelId) {
+          sessionPath = session.path;
+          break;
+        }
+      }
+
+      const logger = loggerRegistry.getLogger(sessionPath);
+      logger.log(payload);
+    };
 
     kernelspecs.register({
       spec: {
@@ -94,6 +121,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
           loadPyodideOptions,
           contentsManager,
           browsingContextId: serviceWorkerManager?.browsingContextId,
+          logger,
         });
       },
     });
