@@ -9,7 +9,7 @@ import { KernelMessage } from '@jupyterlab/services';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
-export class PyodideRemoteKernel {
+export abstract class PyodideRemoteKernel {
   constructor() {
     this._initialized = new Promise((resolve, reject) => {
       this._initializer = { resolve, reject };
@@ -449,48 +449,30 @@ export class PyodideRemoteKernel {
    * @param content The incoming message with the reply
    */
   async inputReply(content: any, parent: any) {
-    await this.setup(parent);
-
-    this._resolveInputReply(content);
+    // Should never be called as input_reply messages are returned via service worker
+    // or SharedArrayBuffer.
   }
 
   /**
-   * Send a input request to the front-end.
+   * Send a input request to the front-end and block until the reply is received.
    *
    * @param prompt the text to show at the prompt
    * @param password Is the request for a password?
+   * @returns String value from the input reply message, or undefined if there is none.
    */
-  async sendInputRequest(prompt: string, password: boolean) {
-    const content = {
-      prompt,
-      password,
-    };
+  protected abstract sendInputRequest(
+    prompt: string,
+    password: boolean,
+  ): string | undefined;
 
-    this._sendWorkerMessage({
-      type: 'input_request',
-      parentHeader: this.formatResult(this._kernel._parent_header)['header'],
-      content,
-    });
+  getpass(prompt: string): string | undefined {
+    prompt = typeof prompt === 'undefined' ? '' : prompt;
+    return this.sendInputRequest(prompt, true);
   }
 
-  async getpass(prompt: string) {
+  input(prompt: string): string | undefined {
     prompt = typeof prompt === 'undefined' ? '' : prompt;
-    await this.sendInputRequest(prompt, true);
-    const replyPromise = new Promise((resolve) => {
-      this._resolveInputReply = resolve;
-    });
-    const result: any = await replyPromise;
-    return result['value'];
-  }
-
-  async input(prompt: string) {
-    prompt = typeof prompt === 'undefined' ? '' : prompt;
-    await this.sendInputRequest(prompt, false);
-    const replyPromise = new Promise((resolve) => {
-      this._resolveInputReply = resolve;
-    });
-    const result: any = await replyPromise;
-    return result['value'];
+    return this.sendInputRequest(prompt, false);
   }
 
   /**
@@ -534,7 +516,6 @@ export class PyodideRemoteKernel {
   protected _interpreter: any;
   protected _stdout_stream: any;
   protected _stderr_stream: any;
-  protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
   protected _sendWorkerMessage: (msg: any) => void = () => {};
 }

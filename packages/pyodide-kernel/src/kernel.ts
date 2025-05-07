@@ -9,7 +9,11 @@ import { Contents, KernelMessage } from '@jupyterlab/services';
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 
-import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
+import {
+  ICoincidentPyodideWorkerKernel,
+  IPyodideWorkerKernel,
+  IRemotePyodideWorkerKernel,
+} from './tokens';
 
 import { allJSONUrl, pipliteWheelUrl } from './_pypi';
 import {
@@ -62,9 +66,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    *  - https://github.com/jupyterlite/pyodide-kernel/pull/126
    */
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
-    let remote: IPyodideWorkerKernel;
+    let remote: IPyodideWorkerKernel | ICoincidentPyodideWorkerKernel;
     if (crossOriginIsolated) {
-      remote = coincident(this._worker) as IPyodideWorkerKernel;
+      remote = coincident(this._worker) as ICoincidentPyodideWorkerKernel;
       remote.processWorkerMessage = this._processWorkerMessage.bind(this);
       // The coincident worker uses its own filesystem API:
       (remote.processDriveRequest as any) = async <T extends TDriveMethod>(
@@ -84,6 +88,21 @@ export class PyodideKernel extends BaseKernel implements IKernel {
 
         return await this._contentsProcessor.processDriveRequest(data);
       };
+
+      ((remote as ICoincidentPyodideWorkerKernel).processStdinRequest as any) =
+        async (content: {
+          prompt: string;
+          password: boolean;
+        }): Promise<string | undefined> => {
+          const msg = {
+            type: 'input_request',
+            content,
+          };
+
+          this._processWorkerMessage(msg);
+          this._inputDelegate = new PromiseDelegate<string | undefined>();
+          return await this._inputDelegate.promise;
+        };
     } else {
       remote = wrap(this._worker) as IPyodideWorkerKernel;
       // we use the normal postMessage mechanism
@@ -337,7 +356,8 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * @param content - The content of the reply.
    */
   async inputReply(content: KernelMessage.IInputReplyMsg['content']): Promise<void> {
-    return await this._remoteKernel.inputReply(content, this.parent);
+    const value = 'value' in content ? content.value : undefined;
+    this._inputDelegate.resolve(value);
   }
 
   private _contentsManager: Contents.IManager;
@@ -347,6 +367,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     | IRemotePyodideWorkerKernel
     | Remote<IRemotePyodideWorkerKernel>;
   private _ready = new PromiseDelegate<void>();
+  private _inputDelegate = new PromiseDelegate<string | undefined>();
 }
 
 /**
