@@ -3,9 +3,11 @@
 
 import type Pyodide from 'pyodide';
 
-import type { DriveFS } from '@jupyterlite/contents';
+import type { ILogPayload } from '@jupyterlab/logconsole';
 
 import { KernelMessage } from '@jupyterlab/services';
+
+import type { DriveFS } from '@jupyterlite/contents';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
@@ -56,6 +58,27 @@ export abstract class PyodideRemoteKernel {
       indexURL: indexUrl,
       ...options.loadPyodideOptions,
     });
+
+    const log = (msg: string) => {
+      this._logMessage({ type: 'text', level: 'info', data: msg });
+    };
+
+    const err = (msg: string) => {
+      this._logMessage({ type: 'text', level: 'critical', data: msg });
+    };
+
+    // Workaround for being able to get information about packages being loaded by Pyodide
+    // See discussion in https://github.com/pyodide/pyodide/discussions/5512
+    const origLoadPackage = this._pyodide.loadPackage;
+    this._pyodide.loadPackage = (pkgs, options) =>
+      origLoadPackage(pkgs, {
+        // Use custom callbacks to surface messages from Pyodide
+        messageCallback: (msg: string) => log(msg),
+        errorCallback: (msg: string) => {
+          err(msg);
+        },
+        ...options,
+      });
   }
 
   protected async initPackageManager(
@@ -192,10 +215,20 @@ export abstract class PyodideRemoteKernel {
 
   /**
    * Register the callback function to send messages from the worker back to the main thread.
+   *
    * @param callback the callback to register
    */
-  registerCallback(callback: (msg: any) => void): void {
+  registerWorkerMessageCallback(callback: (msg: any) => void): void {
     this._sendWorkerMessage = callback;
+  }
+
+  /**
+   * Register the callback function to log messages from the worker back to the main thread.
+   *
+   * @param callback the callback to register
+   */
+  registerLogMessageCallback(callback: (msg: any) => void): void {
+    this._logMessage = callback;
   }
 
   /**
@@ -518,4 +551,5 @@ export abstract class PyodideRemoteKernel {
   protected _stderr_stream: any;
   protected _driveFS: DriveFS | null = null;
   protected _sendWorkerMessage: (msg: any) => void = () => {};
+  protected _logMessage: (msg: ILogPayload) => void = () => {};
 }

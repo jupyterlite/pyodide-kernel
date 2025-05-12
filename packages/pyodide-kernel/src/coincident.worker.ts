@@ -74,7 +74,10 @@ export class PyodideCoincidentKernel extends PyodideRemoteKernel {
 const worker = new PyodideCoincidentKernel();
 
 const sendWorkerMessage = workerAPI.processWorkerMessage.bind(workerAPI);
-worker.registerCallback(sendWorkerMessage);
+worker.registerWorkerMessageCallback(sendWorkerMessage);
+
+const logMessage = workerAPI.processLogMessage.bind(workerAPI);
+worker.registerLogMessageCallback(logMessage);
 
 workerAPI.initialize = worker.initialize.bind(worker);
 workerAPI.execute = worker.execute.bind(worker);
