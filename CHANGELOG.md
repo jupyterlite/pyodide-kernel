@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.6.0b0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.6.0-alpha.6...f02ceab56b178b483fc395cc93a229129900643a))
+
+### Enhancements made
+
+- Surface the Pyodide logs to the UI [#177](https://github.com/jupyterlite/pyodide-kernel/pull/177) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-05-07&to=2025-05-12&type=c))
+
+[@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-05-07..2025-05-12&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.6.0a6
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.6.0-alpha.5...5668ec5078db592a4d14a66c75d12ea55894ad94))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-04-15&to=2025-05-07&type=c))
 
 [@ianthomas23](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aianthomas23+updated%3A2025-04-15..2025-05-07&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-04-15..2025-05-07&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.6.0a5
 

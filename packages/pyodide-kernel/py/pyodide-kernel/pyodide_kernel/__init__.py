@@ -1,6 +1,6 @@
 """A Python kernel backed by Pyodide"""
 
-__version__ = "0.6.0a6"
+__version__ = "0.6.0b0"
 
 import sys
 
