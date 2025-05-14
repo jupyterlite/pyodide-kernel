@@ -58,6 +58,20 @@ export abstract class PyodideRemoteKernel {
       indexURL: indexUrl,
       ...options.loadPyodideOptions,
     });
+    // @ts-expect-error: pyodide._api is private
+    this._pyodide._api.on_fatal = async (e: any) => {
+      let error = '';
+      if (e.name === 'Exit') {
+        error = 'Pyodide has exited and can no longer be used.';
+      } else {
+        error = `Pyodide has suffered a fatal error. Please report this to the Pyodide maintainers. The cause of the error was: ${e.name} ${e.message}`;
+      }
+      this._logMessage({
+        type: 'text',
+        level: 'critical',
+        data: error,
+      });
+    };
 
     const log = (msg: string) => {
       console.log(msg);
