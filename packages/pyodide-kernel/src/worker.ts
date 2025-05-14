@@ -60,10 +60,12 @@ export abstract class PyodideRemoteKernel {
     });
 
     const log = (msg: string) => {
+      console.log(msg);
       this._logMessage({ type: 'text', level: 'info', data: msg });
     };
 
     const err = (msg: string) => {
+      console.error(msg);
       this._logMessage({ type: 'text', level: 'critical', data: msg });
     };
 
