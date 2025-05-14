@@ -64,7 +64,11 @@ export abstract class PyodideRemoteKernel {
       if (e.name === 'Exit') {
         error = 'Pyodide has exited and can no longer be used.';
       } else {
-        error = `Pyodide has suffered a fatal error. Please report this to the Pyodide maintainers. The cause of the error was: ${e.name} ${e.message}`;
+        error = `Pyodide has suffered a fatal error. Please report this to the Pyodide maintainers.
+The cause of the error was: ${e.name}
+${e.message}
+Stack trace:
+${e.stack}`;
       }
       this._logMessage({
         type: 'text',
