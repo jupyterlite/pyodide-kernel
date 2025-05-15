@@ -2,6 +2,30 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.6.0b1
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.6.0-beta.0...dd2e9fe130d857f3f0f202552a0702a088ea68b5))
+
+### Enhancements made
+
+- Log Pyodide fatal errors [#188](https://github.com/jupyterlite/pyodide-kernel/pull/188) ([@jtpio](https://github.com/jtpio))
+
+### Bugs fixed
+
+- Log messages to the dev tools console [#187](https://github.com/jupyterlite/pyodide-kernel/pull/187) ([@jtpio](https://github.com/jtpio))
+
+### Maintenance and upkeep improvements
+
+- Update to JupyterLite 0.6.0b0 [#185](https://github.com/jupyterlite/pyodide-kernel/pull/185) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-05-12&to=2025-05-15&type=c))
+
+[@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2025-05-12..2025-05-15&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-05-12..2025-05-15&type=Issues) | [@lesteve](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Alesteve+updated%3A2025-05-12..2025-05-15&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.6.0b0
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.6.0-alpha.6...f02ceab56b178b483fc395cc93a229129900643a))
@@ -15,8 +39,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-05-07&to=2025-05-12&type=c))
 
 [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-05-07..2025-05-12&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.6.0a6
 
