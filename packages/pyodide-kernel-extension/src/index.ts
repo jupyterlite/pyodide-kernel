@@ -105,13 +105,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
 
         const mountDrive = !!(serviceWorkerManager?.enabled || crossOriginIsolated);
 
-        if (mountDrive) {
-          console.info('Pyodide contents will be synced with Jupyter Contents');
-        } else {
-          console.warn('Pyodide contents will NOT be synced with Jupyter Contents');
-        }
-
-        return new PyodideKernel({
+        const kernel = new PyodideKernel({
           ...options,
           pyodideUrl,
           pipliteWheelUrl,
@@ -123,6 +117,32 @@ const kernel: JupyterFrontEndPlugin<void> = {
           browsingContextId: serviceWorkerManager?.browsingContextId,
           logger,
         });
+
+        if (mountDrive) {
+          console.info('Pyodide contents will be synced with Jupyter Contents');
+        } else {
+          const warningMessage =
+            'Pyodide contents will NOT be synced with Jupyter Contents. ' +
+            'For full functionality, try using a regular browser tab instead of private/incognito mode, ' +
+            'especially in Firefox where this is a known limitation.';
+          console.warn(warningMessage);
+
+          // Wait for kernel to be ready before logging the warning
+          kernel.ready.then(() => {
+            if (loggerRegistry) {
+              void logger({
+                payload: {
+                  type: 'text',
+                  data: warningMessage,
+                  level: 'warning',
+                },
+                kernelId: options.id,
+              });
+            }
+          });
+        }
+
+        return kernel;
       },
     });
   },
