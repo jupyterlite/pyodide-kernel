@@ -21,10 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 #: a list of Warehouse-like API endpoints or derived multi-package all.json
-_PIPLITE_URLS = []
+_PIPLITE_URLS: list[str] = []
 
 #: a cache of available packages
-_PIPLITE_INDICES = {}
+_PIPLITE_INDICES: dict[str, dict[str, Any]] = {}
 
 #: don't fall back to pypi.org if a package is not found in _PIPLITE_URLS
 _PIPLITE_DISABLE_PYPI = False
@@ -44,7 +44,7 @@ async def _get_pypi_json_from_index(
     name: str,
     piplite_url: str,
     fetch_kwargs: dict[str, Any],
-    compat_layer: type[CompatibilityLayer]
+    compat_layer: type[CompatibilityLayer],
 ) -> ProjectInfo:
     """Attempt to load a specific ``pkgname``'s releases from a specific piplite
     URL's index.
@@ -53,7 +53,9 @@ async def _get_pypi_json_from_index(
 
     if not index:
         try:
-            data, headers = await compat_layer.fetch_string_and_headers(piplite_url, fetch_kwargs)
+            data, headers = await compat_layer.fetch_string_and_headers(
+                piplite_url, fetch_kwargs
+            )
         except Exception as err:
             logger.warn("Could not fetch %s: %s", piplite_url, err)
 
@@ -97,8 +99,8 @@ async def _query_package(
         pypi_json_from_index = await _get_pypi_json_from_index(
             name=name,
             piplite_url=piplite_url,
-            fetch_kwargs=fetch_kwargs,
-            compat_layer=compat_layer
+            fetch_kwargs=fetch_kwargs or {},
+            compat_layer=compat_layer,
         )
         if pypi_json_from_index:
             return pypi_json_from_index
@@ -139,7 +141,7 @@ async def _install(
             constraints=constraints,
             index_urls=index_urls,
             verbose=verbose,
-            reinstall=reinstall
+            reinstall=reinstall,
         )
 
 

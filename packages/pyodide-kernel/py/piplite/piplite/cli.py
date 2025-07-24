@@ -93,11 +93,12 @@ async def get_transformed_code(argv: list[str]) -> typing.Optional[str]:
 
     if action == "help":
         pass
+
     if action == "install":
         if kwargs["requirements"]:
             return f"""await __import__("piplite").install(**{kwargs})\n"""
         else:
-            warn("piplite needs at least one package to install")
+            return """warn("piplite needs at least one package to install")"""
 
 
 async def get_action_kwargs(argv: list[str]) -> tuple[typing.Optional[str], dict]:
@@ -158,6 +159,7 @@ async def _packages_from_requirements_line(
 
     `micropip` has a sufficient pep508 implementation to handle most cases
     """
+    reqs: list[str] = []
     req = line.strip().split("#")[0].strip()
     # is it another requirement file?
     req_file_match = re.match(REQ_FILE_PREFIX, req)
@@ -170,7 +172,8 @@ async def _packages_from_requirements_line(
 
     if req.startswith("-"):
         warn(f"{req_path}:{line_no}: unrecognized requirement: {req}")
-        req = None
-    if not req:
-        return []
-    return [req]
+
+    if req:
+        reqs += [req]
+
+    return reqs
