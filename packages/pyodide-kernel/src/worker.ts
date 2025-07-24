@@ -136,7 +136,6 @@ ${e.stack}`;
     const preloaded = (options.loadPyodideOptions || {}).packages || [];
 
     const toLoad = [
-      'ssl',
       'sqlite3',
       'ipykernel',
       'comm',
