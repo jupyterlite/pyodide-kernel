@@ -47,17 +47,17 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^4.4.0",
-    "@jupyterlab/coreutils": "^6.4.0",
-    "@jupyterlab/logconsole": "^4.4.0",
-    "@jupyterlite/contents": "^0.6.0",
-    "@jupyterlite/kernel": "^0.6.0",
+    "@jupyterlab/application": "^4.4.4",
+    "@jupyterlab/coreutils": "^6.4.4",
+    "@jupyterlab/logconsole": "^4.4.4",
+    "@jupyterlite/contents": "^0.6.3",
+    "@jupyterlite/kernel": "^0.6.3",
     "@jupyterlite/pyodide-kernel": "^0.6.1",
-    "@jupyterlite/server": "^0.6.0"
+    "@jupyterlite/server": "^0.6.3"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "~4.4.0",
-    "rimraf": "^5.0.1",
+    "@jupyterlab/builder": "~4.4.4",
+    "rimraf": "^6.0.1",
     "typescript": "~5.2.2"
   },
   "publishConfig": {

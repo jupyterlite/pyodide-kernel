@@ -14,18 +14,17 @@ import logging
 from unittest.mock import patch
 
 import micropip
-from micropip.package_index import ProjectInfo
+from micropip.package_index import ProjectInfo, CompatibilityLayer
 from micropip.package_index import query_package as _MP_QUERY_PACKAGE
-from micropip.package_index import fetch_string_and_headers as _MP_FETCH_STRING
 
 logger = logging.getLogger(__name__)
 
 
 #: a list of Warehouse-like API endpoints or derived multi-package all.json
-_PIPLITE_URLS = []
+_PIPLITE_URLS: list[str] = []
 
 #: a cache of available packages
-_PIPLITE_INDICES = {}
+_PIPLITE_INDICES: dict[str, dict[str, Any]] = {}
 
 #: don't fall back to pypi.org if a package is not found in _PIPLITE_URLS
 _PIPLITE_DISABLE_PYPI = False
@@ -41,7 +40,12 @@ class PiplitePyPIDisabled(ValueError):
     pass
 
 
-async def _get_pypi_json_from_index(name, piplite_url, fetch_kwargs) -> ProjectInfo:
+async def _get_pypi_json_from_index(
+    name: str,
+    piplite_url: str,
+    fetch_kwargs: dict[str, Any],
+    compat_layer: type[CompatibilityLayer],
+) -> ProjectInfo:
     """Attempt to load a specific ``pkgname``'s releases from a specific piplite
     URL's index.
     """
@@ -49,7 +53,9 @@ async def _get_pypi_json_from_index(name, piplite_url, fetch_kwargs) -> ProjectI
 
     if not index:
         try:
-            data, headers = await _MP_FETCH_STRING(piplite_url, fetch_kwargs)
+            data, headers = await compat_layer.fetch_string_and_headers(
+                piplite_url, fetch_kwargs
+            )
         except Exception as err:
             logger.warn("Could not fetch %s: %s", piplite_url, err)
 
@@ -80,16 +86,21 @@ async def _get_pypi_json_from_index(name, piplite_url, fetch_kwargs) -> ProjectI
 async def _query_package(
     name: str,
     index_urls: list[str] | str | None = None,
+    *,
+    compat_layer: type[CompatibilityLayer],
     fetch_kwargs: dict[str, Any] | None = None,
 ) -> ProjectInfo:
     """Fetch the warehouse API metadata for a specific ``pkgname``."""
     for piplite_url in _PIPLITE_URLS:
         if not piplite_url.split("?")[0].split("#")[0].endswith(ALL_JSON):
-            logger.warn("Non-all.json piplite URL not supported %s", piplite_url)
+            logger.warning("Non-all.json piplite URL not supported %s", piplite_url)
             continue
 
         pypi_json_from_index = await _get_pypi_json_from_index(
-            name, piplite_url, fetch_kwargs
+            name=name,
+            piplite_url=piplite_url,
+            fetch_kwargs=fetch_kwargs or {},
+            compat_layer=compat_layer,
         )
         if pypi_json_from_index:
             return pypi_json_from_index
@@ -102,6 +113,7 @@ async def _query_package(
     return await _MP_QUERY_PACKAGE(
         name=name,
         index_urls=index_urls,
+        compat_layer=compat_layer,
         fetch_kwargs=fetch_kwargs,
     )
 
@@ -115,6 +127,8 @@ async def _install(
     index_urls: list[str] | str | None = None,
     *,
     verbose: bool | int = False,
+    constraints: list[str] | None = None,
+    reinstall: bool = False,
 ):
     """Invoke micropip.install with a patch to get data from local indexes"""
     with patch("micropip.package_index.query_package", _query_package):
@@ -124,8 +138,10 @@ async def _install(
             deps=deps,
             credentials=credentials,
             pre=pre,
+            constraints=constraints,
             index_urls=index_urls,
             verbose=verbose,
+            reinstall=reinstall,
         )
 
 
@@ -138,6 +154,8 @@ def install(
     index_urls: list[str] | str | None = None,
     *,
     verbose: bool | int = False,
+    constraints: list[str] | None = None,
+    reinstall: bool = False,
 ):
     """Install the given package and all of its dependencies.
 
@@ -221,6 +239,24 @@ def install(
         - If a list of URLs is provided, micropip will try each URL in order until
           it finds a package. If no package is found, an error will be raised.
 
+    constraints :
+
+        A list of requirements with versions/URLs which will be used only if
+        needed by any ``requirements``.
+
+        Unlike ``requirements``, the package name _must_ be provided in the
+        PEP-508 format e.g. ``pkgname@https://...``.
+
+    reinstall :
+
+        If ``False`` (default), micropip will show an error if the requested package
+        is already installed, but with a incompatible version. If ``True``,
+        micropip will uninstall the existing packages that are not compatible with
+        the requested version and install the packages again.
+
+        Note that packages that are already imported will not be reloaded, so make
+        sure to reload the module after reinstalling by e.g. running importlib.reload(module).
+
     verbose :
         Print more information about the process.
         By default, micropip is silent. Setting ``verbose=True`` will print
@@ -236,6 +272,8 @@ def install(
             pre=pre,
             index_urls=index_urls,
             verbose=verbose,
+            constraints=constraints,
+            reinstall=reinstall,
         )
     )
 
