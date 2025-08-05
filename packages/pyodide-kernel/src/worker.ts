@@ -559,7 +559,7 @@ ${e.stack}`;
     reject: () => void;
     resolve: () => void;
   } | null = null;
-  protected _pyodide: Pyodide.PyodideInterface = null as any;
+  protected _pyodide: Pyodide.PyodideAPI = null as any;
   /** TODO: real typing */
   protected _localPath = '';
   protected _driveName = '';
