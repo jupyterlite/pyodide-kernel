@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "hatchling >=1.4.0",
-    "jupyterlab >=4.4.4,<4.5.0a0",
+    "jupyterlab >=4.5.0a1,<4.6.0a0",
 ]
 build-backend = "hatchling.build"
 
@@ -37,7 +37,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "jupyterlite-core >=0.6.3,<0.7.0",
+    "jupyterlite-core >=0.7.0a1,<0.8.0",
     "pkginfo"
 ]
 
