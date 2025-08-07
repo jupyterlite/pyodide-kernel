@@ -56,6 +56,14 @@ export abstract class PyodideRemoteKernel {
     }
     this._pyodide = await loadPyodide({
       indexURL: indexUrl,
+      stdout: (text: string) => {
+        console.log(text);
+        this._logMessage({ type: 'text', level: 'info', data: text });
+      },
+      stderr: (text: string) => {
+        console.error(text);
+        this._logMessage({ type: 'text', level: 'critical', data: text });
+      },
       ...options.loadPyodideOptions,
     });
     // @ts-expect-error: pyodide._api is private
@@ -76,29 +84,6 @@ ${e.stack}`;
         data: error,
       });
     };
-
-    const log = (msg: string) => {
-      console.log(msg);
-      this._logMessage({ type: 'text', level: 'info', data: msg });
-    };
-
-    const err = (msg: string) => {
-      console.error(msg);
-      this._logMessage({ type: 'text', level: 'critical', data: msg });
-    };
-
-    // Workaround for being able to get information about packages being loaded by Pyodide
-    // See discussion in https://github.com/pyodide/pyodide/discussions/5512
-    const origLoadPackage = this._pyodide.loadPackage;
-    this._pyodide.loadPackage = (pkgs, options) =>
-      origLoadPackage(pkgs, {
-        // Use custom callbacks to surface messages from Pyodide
-        messageCallback: (msg: string) => log(msg),
-        errorCallback: (msg: string) => {
-          err(msg);
-        },
-        ...options,
-      });
   }
 
   protected async initPackageManager(
