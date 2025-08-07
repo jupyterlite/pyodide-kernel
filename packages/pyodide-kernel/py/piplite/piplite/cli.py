@@ -154,7 +154,7 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
         if args.verbose:
             kwargs["keep_going"] = True
 
-        if args.reinstall:
+        if args.force_reinstall:
             kwargs["reinstall"] = True
 
         for req_file in args.requirements or []:
