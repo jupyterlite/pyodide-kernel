@@ -37,7 +37,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "jupyterlite-core >=0.7.0a1,<0.8.0",
+    "jupyterlite-core >=0.7.0a3,<0.8.0",
     "pkginfo"
 ]
 
