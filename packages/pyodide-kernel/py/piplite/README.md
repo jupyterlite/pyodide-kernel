@@ -1,7 +1,7 @@
 # piplite
 
 This is a companion package to
-[micropip](https://github.com/pyodide/pyodide/tree/main/packages/micropip) which only
+[micropip](https://github.com/pyodide/micropip) which only
 works inside a [Pyodide](https://github.com/pyodide/pyodide/) runtime.
 
 It adds the ability to use extra Warehouse-like API responses to resolve `pip`
