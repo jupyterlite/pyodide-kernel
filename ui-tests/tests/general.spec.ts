@@ -1,6 +1,4 @@
-import { test } from '@jupyterlab/galata';
-
-import { expect } from '@playwright/test';
+import { test, expect } from '@jupyterlab/galata';
 
 const TIMEOUT = 600000;
 
