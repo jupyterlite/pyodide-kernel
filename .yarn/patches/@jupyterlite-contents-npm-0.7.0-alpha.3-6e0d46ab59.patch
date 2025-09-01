@@ -1,0 +1,78 @@
+diff --git a/lib/drivefs.js b/lib/drivefs.js
+index 0beac1bd286636d70cf3b15746df1cba15b165f0..65e930e982fd0134c93684fae2b8d1ddb7dbafd6 100644
+--- a/lib/drivefs.js
++++ b/lib/drivefs.js
+@@ -38,16 +38,46 @@ export class DriveFSEmscriptenStreamOps {
+     }
+     open(stream) {
+         const path = this.fs.realPath(stream.node);
+-        if (this.fs.FS.isFile(stream.node.mode)) {
+-            stream.file = this.fs.API.get(path);
++
++    if (this.fs.FS.isFile(stream.node.mode)) {
++      try {
++        const file = this.fs.API.get(path);
++        stream.file = file;
++      } catch (e) {
++        // If we're opening a file for writing and the file does not exist, create it! Otherwise, throw the proper error
++        // We need to do this because the current thread is thinking a file exist (isFile returns true)
++        // whilst it was actually deleted in the main thread
++
++        // if writing
++        const flags = stream.flags ?? stream.shared.flags;
++        let parsedFlags = typeof flags === 'string' ? parseInt(flags, 10) : flags;
++        parsedFlags &= 0x1fff;
++
++        let needsWrite = true;
++        if (parsedFlags in flagNeedsWrite) {
++          needsWrite = flagNeedsWrite[parsedFlags];
+         }
++        if (needsWrite) {
++          stream.node = this.fs.node_ops.mknod(
++            stream.node.parent,
++            stream.node.name,
++            stream.node.mode,
++            0, // dev should be 0 for regular files
++          );
++          const file = this.fs.API.get(path);
++          stream.file = file;
++        } else {
++          throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['ENOENT']);
++        }
++      }
++    }
+     }
+     close(stream) {
+         if (!this.fs.FS.isFile(stream.node.mode) || !stream.file) {
+             return;
+         }
+         const path = this.fs.realPath(stream.node);
+-        const flags = stream.flags;
++        const flags = stream.flags ?? stream.shared.flags;
+         let parsedFlags = typeof flags === 'string' ? parseInt(flags, 10) : flags;
+         parsedFlags &= 0x1fff;
+         let needsWrite = true;
+@@ -86,7 +116,7 @@ export class DriveFSEmscriptenStreamOps {
+     llseek(stream, offset, whence) {
+         let position = offset;
+         if (whence === SEEK_CUR) {
+-            position += stream.position;
++            position += stream.position ?? stream.shared.position;
+         }
+         else if (whence === SEEK_END) {
+             if (this.fs.FS.isFile(stream.node.mode)) {
+@@ -134,7 +164,13 @@ export class DriveFSEmscriptenNodeOps {
+                         const size = value;
+                         const path = this.fs.realPath(node);
+                         if (this.fs.FS.isFile(node.mode) && size >= 0) {
+-                            const file = this.fs.API.get(path);
++                            let file;
++                            try {
++                            file = this.fs.API.get(path);
++                            } catch (e) {
++                            // TODO: Should do anything here? Should we create the file?
++                            break;
++                            }
+                             const oldData = file.data ? file.data : new Uint8Array();
+                             if (size !== oldData.length) {
+                                 if (size < oldData.length) {
