@@ -1,0 +1,20 @@
+diff --git a/src/drivefs.ts b/src/drivefs.ts
+index ff0c4334d0d64a065329ecd2e2c867a1ba0608cf..582ca3e31cb005a759932f30810c17e0d218188b 100644
+--- a/src/drivefs.ts
++++ b/src/drivefs.ts
+@@ -160,10 +160,11 @@ export class DriveFSEmscriptenStreamOps implements IEmscriptenStreamOps {
+   }
+ 
+   open(stream: IDriveStream): void {
+-    const path = this.fs.realPath(stream.node);
+-    if (this.fs.FS.isFile(stream.node.mode)) {
+-      stream.file = this.fs.API.get(path);
+-    }
++    throw new Error('OPEN SHOULD THROW!');
++    // const path = this.fs.realPath(stream.node);
++    // if (this.fs.FS.isFile(stream.node.mode)) {
++    //   stream.file = this.fs.API.get(path);
++    // }
+   }
+ 
+   close(stream: IDriveStream): void {
