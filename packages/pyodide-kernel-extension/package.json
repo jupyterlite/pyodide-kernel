@@ -50,10 +50,10 @@
     "@jupyterlab/application": "^4.5.0-alpha.2",
     "@jupyterlab/coreutils": "^6.5.0-alpha.2",
     "@jupyterlab/logconsole": "^4.5.0-alpha.2",
-    "@jupyterlite/contents": "^0.7.0-alpha.3",
-    "@jupyterlite/kernel": "^0.7.0-alpha.3",
+    "@jupyterlite/contents": "^0.7.0-alpha.5",
+    "@jupyterlite/kernel": "^0.7.0-alpha.5",
     "@jupyterlite/pyodide-kernel": "^0.7.0-alpha.1",
-    "@jupyterlite/server": "^0.7.0-alpha.3"
+    "@jupyterlite/server": "^0.7.0-alpha.5"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^4.5.0-alpha.2",
