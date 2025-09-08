@@ -3317,14 +3317,14 @@ __metadata:
   linkType: hard
 
 "debug@npm:4, debug@npm:^4.3.4, debug@npm:^4.4.1":
-  version: 4.4.2
-  resolution: "debug@npm:4.4.2"
+  version: 4.4.1
+  resolution: "debug@npm:4.4.1"
   dependencies:
     ms: ^2.1.3
   peerDependenciesMeta:
     supports-color:
       optional: true
-  checksum: d322b27c3d319b514b416ef346f91e0a9cafba1285d5dd4624fc1586eab577d2351a2403eb0e767dd73ac837eb80f159ed6064ea8b587dc633fdc51c87a7bb4e
+  checksum: a43826a01cda685ee4cec00fb2d3322eaa90ccadbef60d9287debc2a886be3e835d9199c80070ede75a409ee57828c4c6cd80e4b154f2843f0dc95a570dc0729
   languageName: node
   linkType: hard
 
