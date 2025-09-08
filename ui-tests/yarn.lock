@@ -163,22 +163,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/lang-javascript@npm:^6.0.0":
-  version: 6.2.2
-  resolution: "@codemirror/lang-javascript@npm:6.2.2"
-  dependencies:
-    "@codemirror/autocomplete": ^6.0.0
-    "@codemirror/language": ^6.6.0
-    "@codemirror/lint": ^6.0.0
-    "@codemirror/state": ^6.0.0
-    "@codemirror/view": ^6.17.0
-    "@lezer/common": ^1.0.0
-    "@lezer/javascript": ^1.0.0
-  checksum: 66379942a8347dff2bd76d10ed7cf313bca83872f8336fdd3e14accfef23e7b690cd913c9d11a3854fba2b32299da07fc3275995327642c9ee43c2a8e538c19d
-  languageName: node
-  linkType: hard
-
-"@codemirror/lang-javascript@npm:^6.2.3":
+"@codemirror/lang-javascript@npm:^6.0.0, @codemirror/lang-javascript@npm:^6.2.3":
   version: 6.2.4
   resolution: "@codemirror/lang-javascript@npm:6.2.4"
   dependencies:
@@ -294,21 +279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.3.0, @codemirror/language@npm:^6.4.0, @codemirror/language@npm:^6.6.0, @codemirror/language@npm:^6.8.0":
-  version: 6.11.0
-  resolution: "@codemirror/language@npm:6.11.0"
-  dependencies:
-    "@codemirror/state": ^6.0.0
-    "@codemirror/view": ^6.23.0
-    "@lezer/common": ^1.1.0
-    "@lezer/highlight": ^1.0.0
-    "@lezer/lr": ^1.0.0
-    style-mod: ^4.0.0
-  checksum: 5556dc163d5bd1d771a4f64e2750d3d1dc1f39030bc6e4b9a4704e4de7501e8d3511002e0f8f96cd8deef782730e0b49b576e30f0ea820e1c632995bd75caddd
-  languageName: node
-  linkType: hard
-
-"@codemirror/language@npm:^6.11.0":
+"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.11.0, @codemirror/language@npm:^6.3.0, @codemirror/language@npm:^6.4.0, @codemirror/language@npm:^6.6.0, @codemirror/language@npm:^6.8.0":
   version: 6.11.2
   resolution: "@codemirror/language@npm:6.11.2"
   dependencies:
@@ -353,16 +324,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0, @codemirror/state@npm:^6.5.0":
-  version: 6.5.0
-  resolution: "@codemirror/state@npm:6.5.0"
-  dependencies:
-    "@marijn/find-cluster-break": ^1.0.0
-  checksum: f7fbed072cc67bf250f7d231668a00b988748cacaaa2ce3ea74ff13c7c392db76000e7d517933521cc6ad9dc3651c7b6d33accab3e3d4b9816cd3c5714661a84
-  languageName: node
-  linkType: hard
-
-"@codemirror/state@npm:^6.5.2":
+"@codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.4.0, @codemirror/state@npm:^6.5.0, @codemirror/state@npm:^6.5.2":
   version: 6.5.2
   resolution: "@codemirror/state@npm:6.5.2"
   dependencies:
@@ -371,18 +333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0":
-  version: 6.36.5
-  resolution: "@codemirror/view@npm:6.36.5"
-  dependencies:
-    "@codemirror/state": ^6.5.0
-    style-mod: ^4.1.0
-    w3c-keyname: ^2.2.4
-  checksum: 14d8e4d776060ff3af6efc151d937704ceae095dedfe31b7e81e93c784dc6d15211e14b37954e3c0e80a2bbb8678257436fcea1878575b7077c181e9c86656e1
-  languageName: node
-  linkType: hard
-
-"@codemirror/view@npm:^6.38.1":
+"@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.38.1":
   version: 6.38.2
   resolution: "@codemirror/view@npm:6.38.2"
   dependencies:
@@ -2421,14 +2372,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/geojson@npm:*":
-  version: 7946.0.16
-  resolution: "@types/geojson@npm:7946.0.16"
-  checksum: d66e5e023f43b3e7121448117af1930af7d06410a32a585a8bc9c6bb5d97e0d656cd93d99e31fa432976c32e98d4b780f82bf1fd1acd20ccf952eb6b8e39edf2
-  languageName: node
-  linkType: hard
-
-"@types/geojson@npm:7946.0.4":
+"@types/geojson@npm:*, @types/geojson@npm:7946.0.4":
   version: 7946.0.4
   resolution: "@types/geojson@npm:7946.0.4"
   checksum: 541aea46540c918b9fe21ab73f497fe17b1eaf4d0d3baeb5f5614029b7f488c37f63843b644c024a8178dc2fb66d3d6623c25d9cf61d7b553aa19c8dc7f99047
@@ -3372,15 +3316,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.3.4":
-  version: 4.3.5
-  resolution: "debug@npm:4.3.5"
+"debug@npm:4, debug@npm:^4.3.4, debug@npm:^4.4.1":
+  version: 4.4.2
+  resolution: "debug@npm:4.4.2"
   dependencies:
-    ms: 2.1.2
+    ms: ^2.1.3
   peerDependenciesMeta:
     supports-color:
       optional: true
-  checksum: 7c002b51e256257f936dda09eb37167df952758c57badf6bf44bdc40b89a4bcb8e5a0a2e4c7b53f97c69e2970dd5272d33a757378a12c8f8e64ea7bf99e8e86e
+  checksum: d322b27c3d319b514b416ef346f91e0a9cafba1285d5dd4624fc1586eab577d2351a2403eb0e767dd73ac837eb80f159ed6064ea8b587dc633fdc51c87a7bb4e
   languageName: node
   linkType: hard
 
@@ -3390,18 +3334,6 @@ __metadata:
   dependencies:
     ms: 2.0.0
   checksum: d2f51589ca66df60bf36e1fa6e4386b318c3f1e06772280eea5b1ae9fd3d05e9c2b7fd8a7d862457d00853c75b00451aa2d7459b924629ee385287a650f58fe6
-  languageName: node
-  linkType: hard
-
-"debug@npm:^4.4.1":
-  version: 4.4.2
-  resolution: "debug@npm:4.4.2"
-  dependencies:
-    ms: ^2.1.3
-  peerDependenciesMeta:
-    supports-color:
-      optional: true
-  checksum: d322b27c3d319b514b416ef346f91e0a9cafba1285d5dd4624fc1586eab577d2351a2403eb0e767dd73ac837eb80f159ed6064ea8b587dc633fdc51c87a7bb4e
   languageName: node
   linkType: hard
 
@@ -4014,14 +3946,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"internmap@npm:1 - 2":
-  version: 2.0.3
-  resolution: "internmap@npm:2.0.3"
-  checksum: 7ca41ec6aba8f0072fc32fa8a023450a9f44503e2d8e403583c55714b25efd6390c38a87161ec456bf42d7bc83aab62eb28f5aef34876b1ac4e60693d5e1d241
-  languageName: node
-  linkType: hard
-
-"internmap@npm:^1.0.0":
+"internmap@npm:1 - 2, internmap@npm:^1.0.0":
   version: 1.0.1
   resolution: "internmap@npm:1.0.1"
   checksum: 9d00f8c0cf873a24a53a5a937120dab634c41f383105e066bb318a61864e6292d24eb9516e8e7dccfb4420ec42ca474a0f28ac9a6cc82536898fa09bbbe53813
@@ -4662,13 +4587,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.2":
-  version: 2.1.2
-  resolution: "ms@npm:2.1.2"
-  checksum: 673cdb2c3133eb050c745908d8ce632ed2c02d85640e2edb3ace856a2266a813b30c613569bf3354fdf4ea7d1a1494add3bfa95e2713baa27d0c2c71fc44f58f
-  languageName: node
-  linkType: hard
-
 "ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
@@ -4838,14 +4756,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picocolors@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "picocolors@npm:1.0.1"
-  checksum: fa68166d1f56009fc02a34cdfd112b0dd3cf1ef57667ac57281f714065558c01828cdf4f18600ad6851cbe0093952ed0660b1e0156bddf2184b6aaf5817553a5
-  languageName: node
-  linkType: hard
-
-"picocolors@npm:^1.1.1":
+"picocolors@npm:^1.0.1, picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
   checksum: e1cf46bf84886c79055fdfa9dcb3e4711ad259949e3565154b004b260cd356c5d54b31a1437ce9782624bf766272fe6b0154f5f0c744fb7af5d454d2b60db045
