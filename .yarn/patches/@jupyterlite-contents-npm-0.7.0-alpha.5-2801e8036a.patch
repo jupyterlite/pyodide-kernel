@@ -1,0 +1,26 @@
+diff --git a/lib/drivefs.js b/lib/drivefs.js
+index 5b5569a23e6f1aadd5f9c40da6f2a21306888d54..0bb034d2e34eb067a1206c8944663830d5bfc651 100644
+--- a/lib/drivefs.js
++++ b/lib/drivefs.js
+@@ -234,7 +234,7 @@ export class DriveFSEmscriptenNodeOps {
+             throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['EPERM']);
+         };
+         this.readlink = (node) => {
+-            throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['EPERM']);
++            console.log("XXX", node); throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['EINVAL']);
+         };
+         this.fs = fs;
+     }
+diff --git a/src/drivefs.ts b/src/drivefs.ts
+index b781d60a6ea5eb9a680be9547342591b9a10b158..2035e510b88ca998f7e6974fe5d2b86b48a9b6ed 100644
+--- a/src/drivefs.ts
++++ b/src/drivefs.ts
+@@ -425,7 +425,7 @@ export class DriveFSEmscriptenNodeOps implements IEmscriptenNodeOps {
+   };
+
+   readlink = (node: IEmscriptenFSNode | IEmscriptenStream): string => {
+-    throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['EPERM']);
++    console.log("XXX", node); throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['EINVAL']);
+   };
+ }
+

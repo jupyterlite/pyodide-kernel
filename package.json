@@ -57,7 +57,8 @@
     "yarn-berry-deduplicate": "^6.1.1"
   },
   "resolutions": {
-    "@jupyterlab/observables": "~5.5.0-alpha.3"
+    "@jupyterlab/observables": "~5.5.0-alpha.3",
+    "@jupyterlite/contents@^0.7.0-alpha.5": "patch:@jupyterlite/contents@npm%3A0.7.0-alpha.5#./.yarn/patches/@jupyterlite-contents-npm-0.7.0-alpha.5-2801e8036a.patch"
   },
   "prettier": {
     "singleQuote": true,
