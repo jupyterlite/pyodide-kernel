@@ -68,7 +68,7 @@ lint = [
 
 test = [
     "pytest-console-scripts >=1.4.0",
-    "pytest-cov",
+    "pytest-cov <7",
     "pytest-html",
     "pytest",
 ]
@@ -97,11 +97,11 @@ exclude = [
     "/jupyterlite_pyodide_kernel/tests/fixtures/.pyodide"
 ]
 include = [
+    "/*.md",
+    "/install.json",
     "/jupyterlite_pyodide_kernel",
     "/package.json",
-    "/install.json",
     "/ts*.json",
-    "/*.md"
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -112,25 +112,6 @@ include = [
 [tool.hatch.build.targets.wheel.shared-data]
 "jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension"
 "install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension/install.json"
-
-[tool.pytest.ini_options]
-addopts = [
-    "--pyargs",
-    "jupyterlite_pyodide_kernel",
-    "-vv",
-    # asyncio
-    "--script-launch-mode=subprocess",
-    # cov
-    "--cov=jupyterlite_pyodide_kernel",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-report=html:build/reports/htmlcov",
-    "--cov-branch",
-    "--cov-fail-under=95",
-    "--no-cov-on-fail",
-    # html
-    "--html=build/reports/pytest.html",
-    "--self-contained-html",
-]
 
 [tool.jupyter-releaser.options]
 version_cmd = "python scripts/bump-version.py"
@@ -151,8 +132,36 @@ before-build-python = [
     "jlpm build:prod",
 ]
 
+# non-build tools, sorted by name
 [tool.check-wheel-contents]
 ignore = ["W002"]
+
+[tool.coverage.paths]
+source = [
+    "jupyterlite_pyodide_kernel/",
+    "*/site-packages/jupyterlite_pyodide_kernel/"
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--pyargs",
+    "jupyterlite_pyodide_kernel",
+    "-vv",
+    "--tb=long",
+    "--color=yes",
+    # pytest-console-scripts
+    "--script-launch-mode=subprocess",
+    # cov
+    "--cov=jupyterlite_pyodide_kernel",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:build/reports/htmlcov",
+    "--cov-branch",
+    "--cov-fail-under=95",
+    "--no-cov-on-fail",
+    # html
+    "--html=build/reports/pytest.html",
+    "--self-contained-html",
+]
 
 [tool.ruff]
 cache-dir = "build/.cache/ruff"
