@@ -56,9 +56,6 @@
     "typescript": "~5.2.2",
     "yarn-berry-deduplicate": "^6.1.1"
   },
-  "resolutions": {
-    "@jupyterlab/observables": "~5.5.0-alpha.4"
-  },
   "prettier": {
     "singleQuote": true,
     "printWidth": 88,

@@ -847,7 +847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/observables@npm:~5.5.0-alpha.4":
+"@jupyterlab/observables@npm:^5.5.0-alpha.4, @jupyterlab/observables@npm:~5.5.0-alpha.4":
   version: 5.5.0-alpha.4
   resolution: "@jupyterlab/observables@npm:5.5.0-alpha.4"
   dependencies:
