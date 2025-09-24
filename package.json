@@ -57,7 +57,7 @@
     "yarn-berry-deduplicate": "^6.1.1"
   },
   "resolutions": {
-    "@jupyterlab/observables": "~5.5.0-alpha.3"
+    "@jupyterlab/observables": "~5.5.0-alpha.4"
   },
   "prettier": {
     "singleQuote": true,
