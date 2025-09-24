@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel-extension",
-  "version": "0.7.0-alpha.2",
+  "version": "0.7.0-alpha.3",
   "description": "JupyterLite - Pyodide Kernel Extension",
   "homepage": "https://github.com/jupyterlite/pyodide-kernel",
   "bugs": {
@@ -52,7 +52,7 @@
     "@jupyterlab/logconsole": "^4.5.0-alpha.4",
     "@jupyterlite/contents": "^0.7.0-alpha.6",
     "@jupyterlite/kernel": "^0.7.0-alpha.6",
-    "@jupyterlite/pyodide-kernel": "^0.7.0-alpha.2",
+    "@jupyterlite/pyodide-kernel": "^0.7.0-alpha.3",
     "@jupyterlite/server": "^0.7.0-alpha.6"
   },
   "devDependencies": {
