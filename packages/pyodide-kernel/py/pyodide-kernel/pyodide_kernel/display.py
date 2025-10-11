@@ -58,6 +58,7 @@ class LiteDisplayHook(DisplayHook):
     def __init__(self, *args, **kwargs):
         super(LiteDisplayHook, self).__init__(*args, **kwargs)
         self.publish_execution_result = None
+        self.publish_execution_error = None
 
     def start_displayhook(self):
         self.data = {}

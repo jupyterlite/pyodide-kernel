@@ -273,7 +273,7 @@ ${e.stack}`;
       const bundle = {
         ename: ename,
         evalue: evalue,
-        traceback: traceback,
+        traceback: this.formatResult(traceback),
       };
 
       this._sendWorkerMessage({
@@ -347,6 +347,7 @@ ${e.stack}`;
     this._interpreter.display_pub.update_display_data_callback =
       updateDisplayDataCallback;
     this._interpreter.displayhook.publish_execution_result = publishExecutionResult;
+    this._interpreter.displayhook.publish_execution_error = publishExecutionError;
     this._interpreter.input = this.input.bind(this);
     this._interpreter.getpass = this.getpass.bind(this);
 
