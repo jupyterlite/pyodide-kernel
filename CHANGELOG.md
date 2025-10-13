@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.7.0a5
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.7.0-alpha.4...21ad9d45d2c0aa0759e7b5295fb1df532a110400))
+
+### Bugs fixed
+
+- Test with the prod build, revert `terser` update [#231](https://github.com/jupyterlite/pyodide-kernel/pull/231) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-10-10&to=2025-10-13&type=c))
+
+[@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-10-10..2025-10-13&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.7.0a4
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.7.0-alpha.3...29a5f1647aa266e8b030cedc55610ea427d14305))
@@ -19,8 +35,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-09-24&to=2025-10-10&type=c))
 
 [@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2025-09-24..2025-10-10&type=Issues) | [@Carreau](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3ACarreau+updated%3A2025-09-24..2025-10-10&type=Issues) | [@dependabot](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Adependabot+updated%3A2025-09-24..2025-10-10&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2025-09-24..2025-10-10&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-09-24..2025-10-10&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.7.0a3
 
