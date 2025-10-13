@@ -44,7 +44,7 @@ jobs:
         run: jlpm lint:py:check
 
       - name: Build the JS extension
-        run: jlpm build
+        run: jlpm build:prod
 
       - name: Package the extension
         run: jlpm dist:pypi
