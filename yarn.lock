@@ -1113,7 +1113,7 @@ __metadata:
     coincident: ^1.2.3
     comlink: ^4.4.2
     esbuild: ^0.19.2
-    pyodide: 0.28.3
+    pyodide: 0.29.0
     rimraf: ^6.0.1
     typescript: ~5.2.2
   languageName: unknown
@@ -1983,10 +1983,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/emscripten@npm:^1.39.6":
-  version: 1.39.10
-  resolution: "@types/emscripten@npm:1.39.10"
-  checksum: 1721da76593f9194e0b7c90a581e2d31c23bd4eb28f93030cd1dc58216cdf1e692c045274f2eedaed29c652c25c9a4dff2e503b11bd1258d07095c009a1956b1
+"@types/emscripten@npm:^1.39.6, @types/emscripten@npm:^1.41.4":
+  version: 1.41.4
+  resolution: "@types/emscripten@npm:1.41.4"
+  checksum: e7776acdfe3e95d43ff301eadf8cb21df0eb16395db02e1c4aa1646f01a53e2be5e375935f16123ac4432c5e720db395497a8ef45cf20ef962fa67e3456e556b
   languageName: node
   linkType: hard
 
@@ -7607,12 +7607,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pyodide@npm:0.28.3":
-  version: 0.28.3
-  resolution: "pyodide@npm:0.28.3"
+"pyodide@npm:0.29.0":
+  version: 0.29.0
+  resolution: "pyodide@npm:0.29.0"
   dependencies:
+    "@types/emscripten": ^1.41.4
     ws: ^8.5.0
-  checksum: bc58b0fd539102b9610d399e9d0ea28f095384766d3ebc995d59c1de06922f946adb78f298a37744a65e4e7bbfde08c61f9884ed85bb541efafcb8e453b901c1
+  checksum: 4e9d69e6cfd63c1fe23e4d955c0ed81dd99029d5521f911a960a95f267963092320afc7daa0dae90e918b3019cacf978cf23891c8686043095f03bc3ed7a5907
   languageName: node
   linkType: hard
 
