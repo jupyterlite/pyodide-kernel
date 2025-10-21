@@ -189,16 +189,17 @@ ${e.stack}`;
 
   /**
    * Recursively convert a Map to a JavaScript object
-   * @param obj A Map, Array, or other  object to convert
+   * @param obj A Map, Array, or other object to convert
    */
   mapToObject(obj: any) {
     const out: any = obj instanceof Array ? [] : {};
-    obj.forEach((value: any, key: string) => {
+    const entries = obj instanceof Map ? obj.entries() : Object.entries(obj);
+    for (const [key, value] of entries) {
       out[key] =
         value instanceof Map || value instanceof Array
           ? this.mapToObject(value)
           : value;
-    });
+    }
     return out;
   }
 
