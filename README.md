@@ -15,7 +15,7 @@
 
 ## Requirements
 
-- `python >=3.9`
+- `python >=3.10`
 
 ### Compatibility
 
@@ -47,7 +47,7 @@ yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Noteboo
 |      `>=0.4.7,<=0.5.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |
 |      `>=0.5.0,<=0.6.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |
 |      `>=0.6.0,<=0.7.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |
-|      `>=0.7.0,<=0.8.0`       | `0.28.*`  | `3.13.*` |   `4.0.9`    |
+|      `>=0.7.0,<=0.8.0`       | `0.29.*`  | `3.13.*` |   `4.0.9`    |
 
 Note that the Emscripten version is strict down to the bugfix version.
 
