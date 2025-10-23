@@ -2,6 +2,24 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.7.0b0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.7.0-alpha.5...47a31daaf306ed0e90712f8989854e63489c4e02))
+
+### Maintenance and upkeep improvements
+
+- Update to JupyterLite 0.7.0b0 [#235](https://github.com/jupyterlite/pyodide-kernel/pull/235) ([@jtpio](https://github.com/jtpio))
+- Update minimum supported python to 3.10 [#234](https://github.com/jupyterlite/pyodide-kernel/pull/234) ([@bollwyvl](https://github.com/bollwyvl))
+- update to pyodide 0.29.0 [#233](https://github.com/jupyterlite/pyodide-kernel/pull/233) ([@bollwyvl](https://github.com/bollwyvl))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-10-13&to=2025-10-23&type=c))
+
+[@bollwyvl](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2025-10-13..2025-10-23&type=Issues) | [@github-actions](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Agithub-actions+updated%3A2025-10-13..2025-10-23&type=Issues) | [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-10-13..2025-10-23&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.7.0a5
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.7.0-alpha.4...21ad9d45d2c0aa0759e7b5295fb1df532a110400))
@@ -15,8 +33,6 @@
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-10-10&to=2025-10-13&type=c))
 
 [@jtpio](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-10-10..2025-10-13&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.7.0a4
 
