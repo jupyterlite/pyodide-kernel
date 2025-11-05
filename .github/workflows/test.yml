@@ -65,14 +65,14 @@ jobs:
           cat *.txt
 
       - name: Upload extension packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
           path: dist
           if-no-files-found: error
 
       - name: Upload test config
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pyproject-toml
           path: pyproject.toml
@@ -165,7 +165,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: |-
             jupyterlite-pyodide-kernel-pytest-${{ github.run_number }}-${{ matrix.os }}-${{ matrix.python-version}}
@@ -196,7 +196,7 @@ jobs:
       - name: Install the extension
         run: |
           set -eux
-          python -m pip install "jupyterlab>=4.5.0b0,<4.6.0" dist/jupyterlite_pyodide_kernel*.whl
+          python -m pip install "jupyterlab>=4.5.0rc0,<4.6.0" dist/jupyterlite_pyodide_kernel*.whl
 
       - name: Install dependencies
         working-directory: ui-tests
@@ -218,7 +218,7 @@ jobs:
 
       - name: Upload Playwright Test report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: |-
             jupyterlite-pyodide-kernel-playwright-tests-${{ github.run_number }}-${{ matrix.project }}
