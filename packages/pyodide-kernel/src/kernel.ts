@@ -123,14 +123,18 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       });
     }
     const remoteOptions = this.initRemoteOptions(options);
-    remote
-      .initialize(remoteOptions)
-      .then(this._ready.resolve.bind(this._ready))
+
+    Private.withKernelInitLock(this.id, this._ready.promise)
+      .then(async () => {
+        await remote.initialize(remoteOptions);
+        this._ready.resolve(void 0);
+      })
       .catch((err) => {
         this._logger({
           payload: { type: 'text', level: 'critical', data: err.message },
           kernelId: this.id,
         });
+        this._ready.reject(err.message);
       });
     return remote;
   }
@@ -451,5 +455,41 @@ export namespace PyodideKernel {
      * The logger function to use for logging messages from the kernel.
      */
     logger?: (options: { payload: ILogPayload; kernelId: string }) => void;
+  }
+}
+
+namespace Private {
+  let _aKernelIsStarting: PromiseDelegate<void> | null = null;
+  let _aKernelId: string | null = null;
+
+  /**
+   * Force serial startup of pyodide runtimes.
+   *
+   * @see https://github.com/jupyterlite/jupyterlite/issues/1743
+   */
+  export async function withKernelInitLock(id: string, kernelReady: Promise<void>) {
+    while (_aKernelIsStarting) {
+      console.info(
+        `... kernel ${id} waiting for kernel ${_aKernelId} to release initialization lock`,
+      );
+      try {
+        await _aKernelIsStarting.promise;
+      } catch (err) {
+        // another kernel failed to start
+      }
+    }
+
+    console.info(`... kernel ${id} acquired initialization lock`);
+    _aKernelIsStarting = new PromiseDelegate();
+    _aKernelId = id;
+
+    kernelReady
+      .then(() => _aKernelIsStarting && _aKernelIsStarting.resolve())
+      .catch((err) => _aKernelIsStarting && _aKernelIsStarting.reject(err))
+      .finally(() => {
+        _aKernelIsStarting = null;
+        _aKernelId = null;
+        console.info(`... kernel ${id} released initialization lock`);
+      });
   }
 }
