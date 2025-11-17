@@ -124,7 +124,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     }
     const remoteOptions = this.initRemoteOptions(options);
 
-    Private.withKernelInitLock(this.id, this._ready.promise)
+    Private.withKernelInitLock(this)
       .then(async () => {
         await remote.initialize(remoteOptions);
         this._ready.resolve(void 0);
@@ -171,6 +171,11 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   dispose(): void {
     if (this.isDisposed) {
       return;
+    }
+    try {
+      this._ready.reject(`${this.id} was disposed`);
+    } catch (err) {
+      // nothing to see here
     }
     this._worker.terminate();
     (this._worker as any) = null;
@@ -467,7 +472,9 @@ namespace Private {
    *
    * @see https://github.com/jupyterlite/jupyterlite/issues/1743
    */
-  export async function withKernelInitLock(id: string, kernelReady: Promise<void>) {
+  export async function withKernelInitLock(kernel: PyodideKernel) {
+    const { id, ready } = kernel;
+
     while (_aKernelIsStarting) {
       console.info(
         `... kernel ${id} waiting for kernel ${_aKernelId} to release initialization lock`,
@@ -475,15 +482,20 @@ namespace Private {
       try {
         await _aKernelIsStarting.promise;
       } catch (err) {
-        // another kernel failed to start
+        // nothing to see here
       }
+    }
+
+    if (kernel.isDisposed) {
+      console.info(`kernel ${id} was disposed before acquiring initialization lock`);
+      return;
     }
 
     console.info(`... kernel ${id} acquired initialization lock`);
     _aKernelIsStarting = new PromiseDelegate();
     _aKernelId = id;
 
-    kernelReady
+    ready
       .then(() => _aKernelIsStarting && _aKernelIsStarting.resolve())
       .catch((err) => _aKernelIsStarting && _aKernelIsStarting.reject(err))
       .finally(() => {
