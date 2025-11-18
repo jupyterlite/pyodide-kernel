@@ -1,5 +1,5 @@
 diff --git a/lib/drivefs.js b/lib/drivefs.js
-index 5b110b5feb702ae94c3509b45aff88b89ae07a47..a15f3271fe5c9ec001b94f5bb8a9f6b3ee8bf8b4 100644
+index 5b110b5feb702ae94c3509b45aff88b89ae07a47..b76eb9b4d65fc24c07b9b420692e04dc02a43652 100644
 --- a/lib/drivefs.js
 +++ b/lib/drivefs.js
 @@ -1,5 +1,6 @@
@@ -46,7 +46,7 @@ index 5b110b5feb702ae94c3509b45aff88b89ae07a47..a15f3271fe5c9ec001b94f5bb8a9f6b3
                      case 'dontFollow':
                          // Ignore for now
                          break;
-@@ -347,16 +360,11 @@ export class ContentsAPI {
+@@ -347,16 +360,13 @@ export class ContentsAPI {
              method: 'getattr',
              path: this.normalizePath(path),
          });
@@ -63,12 +63,14 @@ index 5b110b5feb702ae94c3509b45aff88b89ae07a47..a15f3271fe5c9ec001b94f5bb8a9f6b3
 +        // Emscripten 4.0.9+ (used by Pyodide 0.28+) requires all three timestamps
 +        // to be valid Date objects with .getTime() method (see https://github.com/emscripten-core/emscripten/pull/22998).
 +        // Fallback to epoch if any timestamp is missing/null/undefined.
-+        const date = new Date(stats.atime || stats.mtime || stats.ctime || 0);
-+        stats.atime = stats.mtime = stats.ctime = date;
++        const defaultDate = new Date(0);
++        stats.atime = stats.atime ? new Date(stats.atime) : defaultDate;
++        stats.mtime = stats.mtime ? new Date(stats.mtime) : defaultDate;
++        stats.ctime = stats.ctime ? new Date(stats.ctime) : defaultDate;
          // ensure a non-undefined size (0 isn't great, though)
          stats.size = stats.size || 0;
          return stats;
-@@ -393,13 +401,16 @@ export class ServiceWorkerContentsAPI extends ContentsAPI {
+@@ -393,13 +403,16 @@ export class ServiceWorkerContentsAPI extends ContentsAPI {
      request(data) {
          const xhr = new XMLHttpRequest();
          xhr.open('POST', encodeURI(this.endpoint), false);
