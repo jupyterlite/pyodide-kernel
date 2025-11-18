@@ -6,13 +6,13 @@ import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
 
-import { ILogPayload } from '@jupyterlab/logconsole';
+import type { ILogPayload } from '@jupyterlab/logconsole';
 
 import { Contents, KernelMessage } from '@jupyterlab/services';
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 
-import {
+import type {
   ICoincidentPyodideWorkerKernel,
   IComlinkPyodideKernel,
   IPyodideWorkerKernel,
@@ -124,15 +124,9 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     }
     const remoteOptions = this.initRemoteOptions(options);
 
-    Private.withKernelInitLock(this)
-      .then(async () => {
-        if (this.isDisposed) {
-          this._ready.reject(`${this.id} disposed before initializing`);
-          return;
-        }
-        await remote.initialize(remoteOptions);
-        this._ready.resolve(void 0);
-      })
+    remote
+      .initialize(remoteOptions)
+      .then(this._ready.resolve.bind(this._ready))
       .catch((err) => {
         this._logger({
           payload: { type: 'text', level: 'critical', data: err.message },
@@ -464,48 +458,5 @@ export namespace PyodideKernel {
      * The logger function to use for logging messages from the kernel.
      */
     logger?: (options: { payload: ILogPayload; kernelId: string }) => void;
-  }
-}
-
-namespace Private {
-  let _aKernelIsStarting: PromiseDelegate<void> | null = null;
-  let _aKernelId: string | null = null;
-
-  /**
-   * Force serial startup of pyodide runtimes.
-   *
-   * @see https://github.com/jupyterlite/jupyterlite/issues/1743
-   */
-  export async function withKernelInitLock(kernel: PyodideKernel) {
-    const { id, ready } = kernel;
-
-    while (_aKernelIsStarting) {
-      console.info(
-        `... kernel ${id} waiting for kernel ${_aKernelId} to release initialization lock`,
-      );
-      try {
-        await _aKernelIsStarting.promise;
-      } catch (err) {
-        // nothing to see here
-      }
-    }
-
-    if (kernel.isDisposed) {
-      console.info(`kernel ${id} was disposed before acquiring initialization lock`);
-      return;
-    }
-
-    console.info(`... kernel ${id} acquired initialization lock`);
-    _aKernelIsStarting = new PromiseDelegate();
-    _aKernelId = id;
-
-    ready
-      .then(() => _aKernelIsStarting?.resolve(void 0))
-      .catch((err) => _aKernelIsStarting?.reject(err))
-      .finally(() => {
-        _aKernelIsStarting = null;
-        _aKernelId = null;
-        console.info(`... kernel ${id} released initialization lock`);
-      });
   }
 }
