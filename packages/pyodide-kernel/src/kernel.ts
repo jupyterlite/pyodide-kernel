@@ -126,6 +126,10 @@ export class PyodideKernel extends BaseKernel implements IKernel {
 
     Private.withKernelInitLock(this)
       .then(async () => {
+        if (this.isDisposed) {
+          this._ready.reject(`${this.id} disposed before initializing`);
+          return;
+        }
         await remote.initialize(remoteOptions);
         this._ready.resolve(void 0);
       })
@@ -496,8 +500,8 @@ namespace Private {
     _aKernelId = id;
 
     ready
-      .then(() => _aKernelIsStarting && _aKernelIsStarting.resolve())
-      .catch((err) => _aKernelIsStarting && _aKernelIsStarting.reject(err))
+      .then(() => _aKernelIsStarting?.resolve(void 0))
+      .catch((err) => _aKernelIsStarting?.reject(err))
       .finally(() => {
         _aKernelIsStarting = null;
         _aKernelId = null;
