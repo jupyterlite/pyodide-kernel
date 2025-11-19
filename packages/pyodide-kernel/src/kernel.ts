@@ -6,13 +6,13 @@ import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
 
-import { ILogPayload } from '@jupyterlab/logconsole';
+import type { ILogPayload } from '@jupyterlab/logconsole';
 
 import { Contents, KernelMessage } from '@jupyterlab/services';
 
 import { BaseKernel, IKernel } from '@jupyterlite/kernel';
 
-import {
+import type {
   ICoincidentPyodideWorkerKernel,
   IComlinkPyodideKernel,
   IPyodideWorkerKernel,
@@ -123,6 +123,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       });
     }
     const remoteOptions = this.initRemoteOptions(options);
+
     remote
       .initialize(remoteOptions)
       .then(this._ready.resolve.bind(this._ready))
@@ -131,6 +132,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
           payload: { type: 'text', level: 'critical', data: err.message },
           kernelId: this.id,
         });
+        this._ready.reject(err.message);
       });
     return remote;
   }
@@ -167,6 +169,11 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   dispose(): void {
     if (this.isDisposed) {
       return;
+    }
+    try {
+      this._ready.reject(`${this.id} was disposed`);
+    } catch (err) {
+      // nothing to see here
     }
     this._worker.terminate();
     (this._worker as any) = null;
