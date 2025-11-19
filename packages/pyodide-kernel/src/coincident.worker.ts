@@ -12,7 +12,7 @@ import {
   TDriveMethod,
   TDriveRequest,
   TDriveResponse,
-} from '@jupyterlite/contents';
+} from '@jupyterlite/services';
 
 import { ICoincidentPyodideWorkerKernel, IPyodideWorkerKernel } from './tokens';
 

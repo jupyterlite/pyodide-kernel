@@ -7,9 +7,7 @@ import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
 import { ILoggerRegistry, ILogPayload } from '@jupyterlab/logconsole';
 
-import { IServiceWorkerManager } from '@jupyterlite/server';
-
-import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
+import { IServiceWorkerManager, IKernel, IKernelSpecs } from '@jupyterlite/services';
 
 import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
 
