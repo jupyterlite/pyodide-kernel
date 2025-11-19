@@ -7,7 +7,7 @@ import type { ILogPayload } from '@jupyterlab/logconsole';
 
 import { KernelMessage } from '@jupyterlab/services';
 
-import type { DriveFS } from '@jupyterlite/services';
+import type { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
@@ -169,7 +169,7 @@ ${e.stack}`;
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
       const { baseUrl } = options;
-      const { DriveFS } = await import('@jupyterlite/services');
+      const { DriveFS } = await import('@jupyterlite/services/lib/contents/drivefs');
 
       const driveFS = new DriveFS({
         FS: FS as any,
