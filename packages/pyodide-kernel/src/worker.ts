@@ -7,7 +7,7 @@ import type { ILogPayload } from '@jupyterlab/logconsole';
 
 import { KernelMessage } from '@jupyterlab/services';
 
-import type { DriveFS } from '@jupyterlite/services';
+import type { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
 import type { IPyodideWorkerKernel } from './tokens';
 

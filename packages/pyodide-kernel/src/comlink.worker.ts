@@ -11,7 +11,7 @@ import { URLExt } from '@jupyterlab/coreutils';
 
 import { KernelMessage } from '@jupyterlab/services';
 
-import { DriveFS } from '@jupyterlite/services';
+import { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
 import { IPyodideWorkerKernel } from './tokens';
 
