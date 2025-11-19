@@ -648,7 +648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/application@npm:^4.5.0":
+"@jupyterlab/application@npm:^4.5.0, @jupyterlab/application@npm:~4.5.0":
   version: 4.5.0
   resolution: "@jupyterlab/application@npm:4.5.0"
   dependencies:
@@ -676,7 +676,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/apputils@npm:^4.6.0":
+"@jupyterlab/apputils@npm:^4.6.0, @jupyterlab/apputils@npm:~4.6.0":
   version: 4.6.0
   resolution: "@jupyterlab/apputils@npm:4.6.0"
   dependencies:
@@ -784,7 +784,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/docregistry@npm:^4.5.0":
+"@jupyterlab/docregistry@npm:^4.5.0, @jupyterlab/docregistry@npm:~4.5.0":
   version: 4.5.0
   resolution: "@jupyterlab/docregistry@npm:4.5.0"
   dependencies:
@@ -873,7 +873,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/rendermime-interfaces@npm:^3.13.0":
+"@jupyterlab/rendermime-interfaces@npm:^3.13.0, @jupyterlab/rendermime-interfaces@npm:~3.13.0":
   version: 3.13.0
   resolution: "@jupyterlab/rendermime-interfaces@npm:3.13.0"
   dependencies:
@@ -941,7 +941,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/statedb@npm:^4.5.0":
+"@jupyterlab/statedb@npm:^4.5.0, @jupyterlab/statedb@npm:~4.5.0":
   version: 4.5.0
   resolution: "@jupyterlab/statedb@npm:4.5.0"
   dependencies:
@@ -970,7 +970,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlab/translation@npm:^4.5.0":
+"@jupyterlab/translation@npm:^4.5.0, @jupyterlab/translation@npm:~4.5.0":
   version: 4.5.0
   resolution: "@jupyterlab/translation@npm:4.5.0"
   dependencies:
@@ -1014,6 +1014,46 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jupyterlite/application@npm:^0.7.0-rc.0":
+  version: 0.7.0-rc.0
+  resolution: "@jupyterlite/application@npm:0.7.0-rc.0"
+  dependencies:
+    "@jupyterlab/application": ~4.5.0
+    "@jupyterlab/coreutils": ~6.5.0
+    "@jupyterlab/docregistry": ~4.5.0
+    "@jupyterlab/rendermime-interfaces": ~3.13.0
+    "@lumino/coreutils": ^2.2.2
+    "@lumino/signaling": ^2.1.5
+    "@lumino/widgets": ^2.7.2
+  checksum: 77b11b21d384b8c5b9f95fee52effa1835046f9e033fd022845447f9418bb7148b5bd8ae8b18889cdca049c379efb89cdb78c5e09ee8dbc3f3141bfed8c230d5
+  languageName: node
+  linkType: hard
+
+"@jupyterlite/apputils@npm:^0.7.0-rc.0":
+  version: 0.7.0-rc.0
+  resolution: "@jupyterlite/apputils@npm:0.7.0-rc.0"
+  dependencies:
+    "@jupyterlab/application": ~4.5.0
+    "@jupyterlab/apputils": ~4.6.0
+    "@jupyterlab/coreutils": ~6.5.0
+    "@jupyterlab/nbformat": ~4.5.0
+    "@jupyterlab/observables": ~5.5.0
+    "@jupyterlab/services": ~7.5.0
+    "@jupyterlab/settingregistry": ~4.5.0
+    "@jupyterlab/statedb": ~4.5.0
+    "@jupyterlab/translation": ~4.5.0
+    "@jupyterlite/application": ^0.7.0-rc.0
+    "@jupyterlite/services": ^0.7.0-rc.0
+    "@jupyterlite/types": ^0.7.0-rc.0
+    "@lumino/application": ^2.4.5
+    "@lumino/coreutils": ^2.2.2
+    "@lumino/signaling": ^2.1.5
+    "@types/emscripten": ^1.39.6
+    mock-socket: ^9.3.1
+  checksum: f08421e14c57024f9d64106b374661da336ca0b7bf81ea4f9df814c1ed062af95a55d86982e0074e0df90f48b28422f3400487f40897ee69481e2c63e352a561
+  languageName: node
+  linkType: hard
+
 "@jupyterlite/localforage@npm:^0.7.0-rc.0":
   version: 0.7.0-rc.0
   resolution: "@jupyterlite/localforage@npm:0.7.0-rc.0"
@@ -1034,6 +1074,7 @@ __metadata:
     "@jupyterlab/builder": ^4.5.0
     "@jupyterlab/coreutils": ^6.5.0
     "@jupyterlab/logconsole": ^4.5.0
+    "@jupyterlite/apputils": ^0.7.0-rc.0
     "@jupyterlite/pyodide-kernel": ^0.7.0-beta.0
     "@jupyterlite/services": ^0.7.0-rc.0
     rimraf: ^6.0.1
@@ -1097,6 +1138,15 @@ __metadata:
     mime: ^3.0.0
     mock-socket: ^9.3.1
   checksum: bef35b92594089f4f4bb3372285753b1a7b15a3a8df08f50e02ed55bacb13276ec32371b3d0e52d0f6857d07307116b1de6cc8bafe13aeb5a3819981a5ecae9a
+  languageName: node
+  linkType: hard
+
+"@jupyterlite/types@npm:^0.7.0-rc.0":
+  version: 0.7.0-rc.0
+  resolution: "@jupyterlite/types@npm:0.7.0-rc.0"
+  dependencies:
+    "@lumino/coreutils": ^2.2.2
+  checksum: 81aa263319ac9bc7c89125e83dcf88729a211a0dec0083722f2884d54944a5db9e8d4307fa9bdc1bb04813f5f2a2bf07be7d5dc00d6437e3dbbabfb019f48a01
   languageName: node
   linkType: hard
 
