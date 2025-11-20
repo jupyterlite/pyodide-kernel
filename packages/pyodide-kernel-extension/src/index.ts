@@ -1,15 +1,17 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
+import type { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
 
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
-import { ILoggerRegistry, ILogPayload } from '@jupyterlab/logconsole';
+import type { ILogPayload } from '@jupyterlab/logconsole';
+import { ILoggerRegistry } from '@jupyterlab/logconsole';
 
 import { IServiceWorkerManager } from '@jupyterlite/apputils';
 
-import { IKernel, IKernelSpecs } from '@jupyterlite/services';
+import type { IKernel } from '@jupyterlite/services';
+import { IKernelSpecs } from '@jupyterlite/services';
 
 import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
 

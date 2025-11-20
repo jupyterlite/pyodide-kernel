@@ -1,6 +1,7 @@
 import coincident from 'coincident';
 
-import { Remote, wrap } from 'comlink';
+import type { Remote } from 'comlink';
+import { wrap } from 'comlink';
 
 import { PromiseDelegate } from '@lumino/coreutils';
 
@@ -8,9 +9,10 @@ import { PageConfig } from '@jupyterlab/coreutils';
 
 import type { ILogPayload } from '@jupyterlab/logconsole';
 
-import { Contents, KernelMessage } from '@jupyterlab/services';
+import type { Contents, KernelMessage } from '@jupyterlab/services';
 
-import { BaseKernel, IKernel } from '@jupyterlite/services';
+import type { IKernel } from '@jupyterlite/services';
+import { BaseKernel } from '@jupyterlite/services';
 
 import type {
   ICoincidentPyodideWorkerKernel,
@@ -21,11 +23,8 @@ import type {
 
 import { allJSONUrl, pipliteWheelUrl } from './_pypi';
 
-import {
-  DriveContentsProcessor,
-  TDriveMethod,
-  TDriveRequest,
-} from '@jupyterlite/services';
+import type { TDriveMethod, TDriveRequest } from '@jupyterlite/services';
+import { DriveContentsProcessor } from '@jupyterlite/services';
 
 /**
  * A kernel that executes Python code with Pyodide.

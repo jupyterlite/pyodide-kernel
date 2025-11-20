@@ -13,7 +13,7 @@ import { KernelMessage } from '@jupyterlab/services';
 
 import { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
-import { IPyodideWorkerKernel } from './tokens';
+import type { IPyodideWorkerKernel } from './tokens';
 
 import { PyodideRemoteKernel } from './worker';
 
