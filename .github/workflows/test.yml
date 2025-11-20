@@ -196,7 +196,7 @@ jobs:
       - name: Install the extension
         run: |
           set -eux
-          python -m pip install "jupyterlab>=4.5.0rc0,<4.6.0" dist/jupyterlite_pyodide_kernel*.whl
+          python -m pip install "jupyterlab>=4.5.0,<4.6.0" dist/jupyterlite_pyodide_kernel*.whl
 
       - name: Install dependencies
         working-directory: ui-tests

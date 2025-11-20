@@ -10,7 +10,7 @@ import type { ILogPayload } from '@jupyterlab/logconsole';
 
 import { Contents, KernelMessage } from '@jupyterlab/services';
 
-import { BaseKernel, IKernel } from '@jupyterlite/kernel';
+import { BaseKernel, IKernel } from '@jupyterlite/services';
 
 import type {
   ICoincidentPyodideWorkerKernel,
@@ -25,7 +25,7 @@ import {
   DriveContentsProcessor,
   TDriveMethod,
   TDriveRequest,
-} from '@jupyterlite/contents';
+} from '@jupyterlite/services';
 
 /**
  * A kernel that executes Python code with Pyodide.

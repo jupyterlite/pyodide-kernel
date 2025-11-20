@@ -47,16 +47,15 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@jupyterlab/application": "^4.5.0-rc.0",
-    "@jupyterlab/coreutils": "^6.5.0-rc.0",
-    "@jupyterlab/logconsole": "^4.5.0-rc.0",
-    "@jupyterlite/contents": "^0.7.0-beta.1",
-    "@jupyterlite/kernel": "^0.7.0-beta.1",
+    "@jupyterlab/application": "^4.5.0",
+    "@jupyterlab/coreutils": "^6.5.0",
+    "@jupyterlab/logconsole": "^4.5.0",
+    "@jupyterlite/apputils": "^0.7.0-rc.0",
     "@jupyterlite/pyodide-kernel": "^0.7.0-beta.0",
-    "@jupyterlite/server": "^0.7.0-beta.1"
+    "@jupyterlite/services": "^0.7.0-rc.0"
   },
   "devDependencies": {
-    "@jupyterlab/builder": "^4.5.0-rc.0",
+    "@jupyterlab/builder": "^4.5.0",
     "rimraf": "^6.0.1",
     "typescript": "~5.2.2"
   },
@@ -68,15 +67,7 @@
     "outputDir": "../../jupyterlite_pyodide_kernel/labextension",
     "webpackConfig": "webpack.config.js",
     "sharedPackages": {
-      "@jupyterlite/kernel": {
-        "bundled": false,
-        "singleton": true
-      },
-      "@jupyterlite/server": {
-        "bundled": false,
-        "singleton": true
-      },
-      "@jupyterlite/contents": {
+      "@jupyterlite/services": {
         "bundled": false,
         "singleton": true
       }
