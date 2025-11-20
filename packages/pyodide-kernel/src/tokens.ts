@@ -5,7 +5,7 @@
  * Definitions for the Pyodide kernel.
  */
 
-import {
+import type {
   TDriveMethod,
   TDriveRequest,
   TDriveResponse,

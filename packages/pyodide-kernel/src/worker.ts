@@ -5,7 +5,7 @@ import type Pyodide from 'pyodide';
 
 import type { ILogPayload } from '@jupyterlab/logconsole';
 
-import { KernelMessage } from '@jupyterlab/services';
+import type { KernelMessage } from '@jupyterlab/services';
 
 import type { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 

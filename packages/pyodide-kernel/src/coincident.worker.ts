@@ -6,15 +6,14 @@
  */
 import coincident from 'coincident';
 
-import {
-  ContentsAPI,
-  DriveFS,
+import type {
   TDriveMethod,
   TDriveRequest,
   TDriveResponse,
 } from '@jupyterlite/services/lib/contents/drivefs';
+import { ContentsAPI, DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
-import { ICoincidentPyodideWorkerKernel, IPyodideWorkerKernel } from './tokens';
+import type { ICoincidentPyodideWorkerKernel, IPyodideWorkerKernel } from './tokens';
 
 import { PyodideRemoteKernel } from './worker';
 
