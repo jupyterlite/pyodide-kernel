@@ -73,9 +73,6 @@
       }
     }
   },
-  "jupyterlite": {
-    "liteExtension": true
-  },
   "piplite": {
     "wheelDir": "static/pypi"
   }
