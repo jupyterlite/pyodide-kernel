@@ -50,9 +50,9 @@
     "@jupyterlab/application": "^4.5.0",
     "@jupyterlab/coreutils": "^6.5.0",
     "@jupyterlab/logconsole": "^4.5.0",
-    "@jupyterlite/apputils": "^0.7.0-rc.0",
+    "@jupyterlite/apputils": "^0.7.0-rc.2",
     "@jupyterlite/pyodide-kernel": "^0.7.0-rc.0",
-    "@jupyterlite/services": "^0.7.0-rc.0"
+    "@jupyterlite/services": "^0.7.0-rc.2"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^4.5.0",
