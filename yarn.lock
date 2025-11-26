@@ -1032,9 +1032,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlite/application@npm:^0.7.0-rc.2":
-  version: 0.7.0-rc.2
-  resolution: "@jupyterlite/application@npm:0.7.0-rc.2"
+"@jupyterlite/application@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@jupyterlite/application@npm:0.7.0"
   dependencies:
     "@jupyterlab/application": ~4.5.0
     "@jupyterlab/coreutils": ~6.5.0
@@ -1043,13 +1043,13 @@ __metadata:
     "@lumino/coreutils": ^2.2.2
     "@lumino/signaling": ^2.1.5
     "@lumino/widgets": ^2.7.2
-  checksum: 8367313f8f17a4966ea8a744cc6b16077c380fad32ed4b85585fb365285c8c9edfba7f7d64fd00fe88e72fdecfc94d379fa25cd3135a61e9ebb1725d6c9e2468
+  checksum: ea743bf6a81ff0b92a61aca0f88cbf31a192a14daf7544cceb936c6e811e4aaac9db65e9a69f017cdaf0c879f5c927fd3aef280c99339b4b68da74c49607938e
   languageName: node
   linkType: hard
 
-"@jupyterlite/apputils@npm:^0.7.0-rc.2":
-  version: 0.7.0-rc.2
-  resolution: "@jupyterlite/apputils@npm:0.7.0-rc.2"
+"@jupyterlite/apputils@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@jupyterlite/apputils@npm:0.7.0"
   dependencies:
     "@jupyterlab/application": ~4.5.0
     "@jupyterlab/apputils": ~4.6.0
@@ -1061,27 +1061,27 @@ __metadata:
     "@jupyterlab/settingregistry": ~4.5.0
     "@jupyterlab/statedb": ~4.5.0
     "@jupyterlab/translation": ~4.5.0
-    "@jupyterlite/application": ^0.7.0-rc.2
-    "@jupyterlite/services": ^0.7.0-rc.2
-    "@jupyterlite/types": ^0.7.0-rc.2
+    "@jupyterlite/application": ^0.7.0
+    "@jupyterlite/services": ^0.7.0
+    "@jupyterlite/types": ^0.7.0
     "@lumino/application": ^2.4.5
     "@lumino/coreutils": ^2.2.2
     "@lumino/signaling": ^2.1.5
     "@types/emscripten": ^1.39.6
     mock-socket: ^9.3.1
-  checksum: b53988acf682e7f18cd570c9fcc7d03f591ef860778be525759c446c9bb66ec6b8baa21f1f4b791085cf5be7561de03a3923bcfcc02258f66e7ca64faeff5e9f
+  checksum: 87c249d55b73456645d86d909f974a7a11fd091312f174b32fba3aa065c53649195fb0242167d02e45b7c3d51412fa3a16bf3b8b760649b1139edcc3ee6c95b8
   languageName: node
   linkType: hard
 
-"@jupyterlite/localforage@npm:^0.7.0-rc.2":
-  version: 0.7.0-rc.2
-  resolution: "@jupyterlite/localforage@npm:0.7.0-rc.2"
+"@jupyterlite/localforage@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@jupyterlite/localforage@npm:0.7.0"
   dependencies:
     "@jupyterlab/coreutils": ~6.5.0
     "@lumino/coreutils": ^2.2.2
     localforage: ^1.9.0
     localforage-memoryStorageDriver: ^0.9.2
-  checksum: 82ff74f7fcb2e637f384db2bc11248b16fbb4b7e2e89b9638e06e7ee8a6b0690ba4c64034f32d2297938a985cbcd4138f433ba2fd2532ecf92b3bb6b26fed992
+  checksum: bf206fb2d043a35f56f5400473080e04896f30c193dcb0688b9c5277dad933f352746bbb3197e6f760a56d5f674d03000ddd4fb6e64679269621d6e1a77a8ac2
   languageName: node
   linkType: hard
 
@@ -1093,9 +1093,9 @@ __metadata:
     "@jupyterlab/builder": ^4.5.0
     "@jupyterlab/coreutils": ^6.5.0
     "@jupyterlab/logconsole": ^4.5.0
-    "@jupyterlite/apputils": ^0.7.0-rc.2
+    "@jupyterlite/apputils": ^0.7.0
     "@jupyterlite/pyodide-kernel": ^0.7.0-rc.1
-    "@jupyterlite/services": ^0.7.0-rc.2
+    "@jupyterlite/services": ^0.7.0
     rimraf: ^6.0.1
     typescript: ~5.2.2
   languageName: unknown
@@ -1125,7 +1125,7 @@ __metadata:
     "@babel/core": ^7.22.17
     "@jupyterlab/coreutils": ^6.5.0
     "@jupyterlab/logconsole": ^4.5.0
-    "@jupyterlite/services": ^0.7.0-rc.2
+    "@jupyterlite/services": ^0.7.0
     coincident: ^1.2.3
     comlink: ^4.4.2
     esbuild: ^0.19.2
@@ -1135,16 +1135,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jupyterlite/services@npm:^0.7.0-rc.2":
-  version: 0.7.0-rc.2
-  resolution: "@jupyterlite/services@npm:0.7.0-rc.2"
+"@jupyterlite/services@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@jupyterlite/services@npm:0.7.0"
   dependencies:
     "@jupyterlab/coreutils": ~6.5.0
     "@jupyterlab/nbformat": ~4.5.0
     "@jupyterlab/observables": ~5.5.0
     "@jupyterlab/services": ~7.5.0
     "@jupyterlab/settingregistry": ~4.5.0
-    "@jupyterlite/localforage": ^0.7.0-rc.2
+    "@jupyterlite/localforage": ^0.7.0
     "@lumino/algorithm": ^2.0.4
     "@lumino/coreutils": ^2.2.2
     "@lumino/disposable": ^2.1.5
@@ -1156,16 +1156,16 @@ __metadata:
     localforage: ^1.9.0
     mime: ^3.0.0
     mock-socket: ^9.3.1
-  checksum: 859dc4f66ab14928d293bf8fb718b2ec009075435e9be4d74e7f6cfeb93672f2bdd6e1477198f66a70a41ade2f6a3564c5d25f18e9b6605f42fb12b0a84bd137
+  checksum: d677e95e0941e9161bbfe55674795d8e6ad25df7f711a846d31242a629b6d7d845711a47f65864dcc738d119c345cd60cf83f803021c181fd622bdf376d27100
   languageName: node
   linkType: hard
 
-"@jupyterlite/types@npm:^0.7.0-rc.2":
-  version: 0.7.0-rc.2
-  resolution: "@jupyterlite/types@npm:0.7.0-rc.2"
+"@jupyterlite/types@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@jupyterlite/types@npm:0.7.0"
   dependencies:
     "@lumino/coreutils": ^2.2.2
-  checksum: d8d9e3f587ad0ef7162c84ea7753c1d32d2baedde681e9c7d6eb8e358278be7076239daf97a28b5cab0c12422f804c9fdc59b334352a0edff74aa850b98a42ea
+  checksum: 9375d47829206e39fd78c0fba9f63fa55c42cc12d6aa9632fe65afcc56ac19bee0f7b0512db29e107e0f52ac18d6dc79275d9eee3843737ed6d1c9f753fed10d
   languageName: node
   linkType: hard
 
