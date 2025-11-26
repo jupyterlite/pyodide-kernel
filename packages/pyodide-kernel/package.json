@@ -52,7 +52,7 @@
   "dependencies": {
     "@jupyterlab/coreutils": "^6.5.0",
     "@jupyterlab/logconsole": "^4.5.0",
-    "@jupyterlite/services": "^0.7.0-rc.2",
+    "@jupyterlite/services": "^0.7.0",
     "coincident": "^1.2.3",
     "comlink": "^4.4.2"
   },
