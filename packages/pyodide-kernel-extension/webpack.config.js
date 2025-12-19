@@ -2,6 +2,11 @@
 
 module.exports = /** @type { import('@rspack/core').Configuration } */ ({
   devtool: 'source-map',
+  optimization: {
+    // Disable realContentHash to avoid "circular hash dependency" error
+    // when bundling worker files that contain hash-like strings
+    realContentHash: false,
+  },
   module: {
     rules: [
       {
