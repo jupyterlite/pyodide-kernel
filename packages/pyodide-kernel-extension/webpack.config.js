@@ -1,6 +1,6 @@
 // @ts-check
 
-module.exports = /** @type { import('webpack').Configuration } */ ({
+module.exports = /** @type { import('@rspack/core').Configuration } */ ({
   devtool: 'source-map',
   module: {
     rules: [
