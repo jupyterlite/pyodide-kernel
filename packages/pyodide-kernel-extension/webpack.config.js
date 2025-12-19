@@ -1,7 +1,13 @@
 // @ts-check
 
-module.exports = /** @type { import('webpack').Configuration } */ ({
+module.exports = /** @type { import('@rspack/core').Configuration } */ ({
   devtool: 'source-map',
+  optimization: {
+    // Disable realContentHash to avoid "circular hash dependency" error
+    // when bundling worker files that contain hash-like strings
+    // TODO: remove if handled upstream? https://github.com/jupyterlab/jupyterlab/issues/18245
+    realContentHash: false,
+  },
   module: {
     rules: [
       {

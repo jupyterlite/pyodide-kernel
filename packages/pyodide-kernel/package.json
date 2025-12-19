@@ -50,9 +50,9 @@
     "watch": "tsc -b --watch"
   },
   "dependencies": {
-    "@jupyterlab/coreutils": "^6.5.0",
-    "@jupyterlab/logconsole": "^4.5.0",
-    "@jupyterlite/services": "^0.7.0",
+    "@jupyterlab/coreutils": "^6.6.0-alpha.0",
+    "@jupyterlab/logconsole": "^4.6.0-alpha.0",
+    "@jupyterlite/services": "^0.8.0-alpha.0",
     "coincident": "^1.2.3",
     "comlink": "^4.4.2"
   },
