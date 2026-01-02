@@ -3,10 +3,11 @@
 import json
 from pathlib import Path
 
+
 import pytest
 from jupyterlite_core.constants import UTF8
 
-from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
+from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION, PYODIDE_PYTHON_VERSION
 
 from .conftest import HERE
 
@@ -18,6 +19,9 @@ if not KERNEL_PKG_JSON.exists():  # pragma: no cover
     pytest.skip(
         "not in a source checkout, skipping repo tests", allow_module_level=True
     )
+
+KERNEL_PKG_PY = KERNEL_PKG / "py"
+PYPROJECTS = sorted(KERNEL_PKG_PY.glob("*/pyproject.toml"))
 
 
 def test_pyodide_version():
@@ -41,3 +45,11 @@ def the_default_pyodide_url():
 )
 def test_pyodide_url(pkg_path: Path, the_default_pyodide_url: str):
     assert the_default_pyodide_url in (PACKAGES / pkg_path).read_text(**UTF8)
+
+
+@pytest.mark.parametrize("pkg", sorted(p.parent.name for p in PYPROJECTS))
+def test_wheel_requires_python(pkg: str) -> None:
+    py_proj = KERNEL_PKG_PY / pkg / "pyproject.toml"
+    assert f"""requires-python = ">={PYODIDE_PYTHON_VERSION}""" in py_proj.read_text(
+        **UTF8
+    )

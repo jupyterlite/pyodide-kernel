@@ -31,6 +31,9 @@ PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 #: probably only compatible with this version of pyodide
 PYODIDE_VERSION = "0.29.0"
 
+#: probably only compatible with this version of python in browser
+PYODIDE_PYTHON_VERSION = "3.13"
+
 #: the only kind of noarch wheel piplite understands
 NOARCH_WHL = "py3-none-any.whl"
 
