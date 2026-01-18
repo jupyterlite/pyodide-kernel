@@ -152,6 +152,7 @@ ${e.stack}`;
 
   protected async initGlobals(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const { globals } = this._pyodide;
+    this._shell = globals.get('pyodide_kernel').ipython_shell.copy();
     this._kernel = globals.get('pyodide_kernel').kernel_instance.copy();
     this._stdout_stream = globals.get('pyodide_kernel').stdout_stream.copy();
     this._stderr_stream = globals.get('pyodide_kernel').stderr_stream.copy();
@@ -355,6 +356,13 @@ ${e.stack}`;
     const res = await this._kernel.run(content.code);
     const results = this.formatResult(res);
 
+    if if (results['status'] === 'ok') {
+      const user_expressions = this._shell.user_expressions(this._pyodide.toPy(user_expressions | {}));
+      results['user_expressions'] = this.formatResult(user_expressions);
+    } else {
+      results['user_expressions'] = {};
+    }
+
     if (results['status'] === 'error') {
       publishExecutionError(results['ename'], results['evalue'], results['traceback']);
     }
@@ -551,6 +559,7 @@ ${e.stack}`;
   protected _localPath = '';
   protected _driveName = '';
   protected _browsingContextId: string | undefined;
+  protected _shell: any;
   protected _kernel: any;
   protected _interpreter: any;
   protected _stdout_stream: any;
