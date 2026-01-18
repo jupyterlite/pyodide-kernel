@@ -357,7 +357,7 @@ ${e.stack}`;
     const results = this.formatResult(res);
 
     if (results['status'] === 'ok') {
-      const user_expressions = this._shell.user_expressions(this._pyodide.toPy(user_expressions || {}));
+      const user_expressions = this._shell.user_expressions(this._pyodide.toPy(content.user_expressions || {}));
       results['user_expressions'] = this.formatResult(user_expressions);
     } else {
       results['user_expressions'] = {};
