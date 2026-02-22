@@ -116,22 +116,15 @@ ${e.stack}`;
 
     const pythonConfig = [
       'import piplite.piplite',
-      'piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS = {',
-      '    "keep_going": False,',
-      '    "deps": True,',
-      '    "credentials": None,',
-      '    "pre": False,',
-      '    "verbose": False,',
-      '}',
-      `piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}`,
-      `piplite.piplite._PIPLITE_INTERNAL_FLAGS = {"disable_pypi": ${disablePyPIFallback ? 'True' : 'False'}}`,
+      `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS["piplite_urls"] = ${JSON.stringify(pipliteUrls)}`,
+      `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS["disable_pypi"] = ${disablePyPIFallback ? 'True' : 'False'}`,
     ];
 
     if (pipliteInstallDefaultOptions) {
       for (const [key, value] of Object.entries(pipliteInstallDefaultOptions)) {
         if (value !== undefined) {
           pythonConfig.push(
-            `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS["${key}"] = ${JSON.stringify(value)}`,
+            `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS[${JSON.stringify(key)}] = ${JSON.stringify(value)}`,
           );
         }
       }

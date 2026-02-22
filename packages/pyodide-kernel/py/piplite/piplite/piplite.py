@@ -20,29 +20,24 @@ from micropip.package_index import query_package as _MP_QUERY_PACKAGE
 logger = logging.getLogger(__name__)
 
 
-#: a list of Warehouse-like API endpoints or derived multi-package all.json
-_PIPLITE_URLS: list[str] = []
-
 #: a cache of available packages
 _PIPLITE_INDICES: dict[str, dict[str, Any]] = {}
 
 #: a well-known file name respected by the rest of the build chain
 ALL_JSON = "/all.json"
 
-#: default arguments for piplite.install
-_PIPLITE_DEFAULT_INSTALL_ARGS = {
-    "requirements": None,
-    "keep_going": False,
-    "deps": True,
-    "credentials": None,
-    "pre": False,
-    "index_urls": None,
-    "verbose": False,
-}
-
-# Internal flags that affect package lookup behavior
-_PIPLITE_INTERNAL_FLAGS = {
-    "disable_pypi": False,  # don't fall back to pypi.org if package not found in _PIPLITE_URLS
+#: This is the runtime configuration set from the JS side via worker.ts, which acts as
+#: a single source of truth for all site-level piplite settings.
+#:
+#: Keys written by worker.ts on every kernel start:
+#:   piplite_urls  – list of local all.json warehouse index URLs
+#:   disable_pypi  – whether to block fallback to pypi.org
+#:
+#: Keys that are optionally written by worker.ts from pipliteInstallDefaultOptions:
+#:   index_urls    – default index URL(s) that get forwarded to micropip.install
+_PIPLITE_DEFAULT_INSTALL_ARGS: dict[str, Any] = {
+    "piplite_urls": [], # a list of Warehouse-like API endpoints or derived multi-package all.json
+    "disable_pypi": False, # don't fall back to pypi.org if package not found in _PIPLITE_URLS
 }
 
 
@@ -104,7 +99,7 @@ async def _query_package(
     fetch_kwargs: dict[str, Any] | None = None,
 ) -> ProjectInfo:
     """Fetch the warehouse API metadata for a specific ``pkgname``."""
-    for piplite_url in _PIPLITE_URLS:
+    for piplite_url in _PIPLITE_DEFAULT_INSTALL_ARGS.get("piplite_urls", []):
         if not piplite_url.split("?")[0].split("#")[0].endswith(ALL_JSON):
             logger.warning("Non-all.json piplite URL not supported %s", piplite_url)
             continue
@@ -118,7 +113,7 @@ async def _query_package(
         if pypi_json_from_index:
             return pypi_json_from_index
 
-    if _PIPLITE_INTERNAL_FLAGS["disable_pypi"]:
+    if _PIPLITE_DEFAULT_INSTALL_ARGS.get("disable_pypi", False):
         raise PiplitePyPIDisabled(
             f"{name} could not be installed: PyPI fallback is disabled"
         )
