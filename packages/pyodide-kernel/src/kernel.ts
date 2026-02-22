@@ -157,6 +157,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       location: this.location,
       mountDrive: options.mountDrive,
       loadPyodideOptions: options.loadPyodideOptions || {},
+      pipliteInstallDefaultOptions: options.pipliteInstallDefaultOptions,
       browsingContextId: options.browsingContextId,
       kernelId: this.id,
     };
