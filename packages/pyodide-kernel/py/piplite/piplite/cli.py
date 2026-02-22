@@ -169,30 +169,48 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
         if args.force_reinstall:
             kwargs["reinstall"] = True
 
+        collected_index_urls: list[str] = []
         for req_file in args.requirements or []:
-            async for spec in _specs_from_requirements_file(Path(req_file)):
+            async for spec in _specs_from_requirements_file(
+                Path(req_file), collected_index_urls=collected_index_urls
+            ):
                 kwargs["requirements"] += [spec]
 
         for const_file in args.constraints or []:
             async for spec in _specs_from_requirements_file(Path(const_file)):
-                kwargs["constraints"] += [spec]
+                kwargs.setdefault("constraints", []).append(spec)
+
+        # Apply index URLs from requirements files only if --index-url was not
+        # already given on the command line.
+        if collected_index_urls and "index_urls" not in kwargs:
+            kwargs["index_urls"] = collected_index_urls
 
     return action, kwargs
 
 
-async def _specs_from_requirements_file(spec_path: Path) -> AsyncIterator[str]:
+async def _specs_from_requirements_file(
+    spec_path: Path,
+    *,
+    collected_index_urls: list[str] | None = None,
+) -> AsyncIterator[str]:
     """Extract package specs from a ``requirements.txt``-style file."""
     if not spec_path.exists():
         warn(f"piplite could not find requirements file {spec_path}")
         return
 
     for line_no, line in enumerate(spec_path.read_text(encoding="utf-8").splitlines()):
-        async for spec in _specs_from_requirements_line(spec_path, line_no + 1, line):
+        async for spec in _specs_from_requirements_line(
+            spec_path, line_no + 1, line, collected_index_urls=collected_index_urls
+        ):
             yield spec
 
 
 async def _specs_from_requirements_line(
-    spec_path: Path, line_no: int, line: str
+    spec_path: Path,
+    line_no: int,
+    line: str,
+    *,
+    collected_index_urls: list[str] | None = None,
 ) -> AsyncIterator[str]:
     """Get package specs from a line of a ``requirements.txt``-style file.
 
@@ -207,17 +225,23 @@ async def _specs_from_requirements_line(
     if file_match:
         ref = file_match.groupdict()["path_ref"]
         ref_path = Path(ref if ref.startswith("/") else spec_path.parent / ref)
-        async for sub_spec in _specs_from_requirements_file(ref_path):
+        async for sub_spec in _specs_from_requirements_file(
+            ref_path, collected_index_urls=collected_index_urls
+        ):
             yield sub_spec
-    elif re.match(INDEX_URL_SPEC, raw):
-        # --index-url / -i directives in requirements files are recognised but
-        # not yet propagated; use --index-url on the command line instead.
+        return
+
+    index_url_match = re.match(INDEX_URL_SPEC, raw)
+    if index_url_match:
+        # Extract the URL from whichever capture group matched (quoted or bare)
+        # and collect it so the caller can forward it to piplite.install.
+        url = next((g for g in index_url_match.groups()[1:] if g is not None), None)
+        if url and collected_index_urls is not None:
+            collected_index_urls.append(url)
         return
     elif raw.startswith("-"):
         warn(f"{spec_path}:{line_no}: unrecognized spec: {raw}")
         return
-    else:
-        spec = raw
 
-    if spec:
-        yield spec
+    if raw:
+        yield raw
