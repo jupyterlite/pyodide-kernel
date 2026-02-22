@@ -36,8 +36,8 @@ ALL_JSON = "/all.json"
 #: Keys that are optionally written by worker.ts from pipliteInstallDefaultOptions:
 #:   index_urls    – default index URL(s) that get forwarded to micropip.install
 _PIPLITE_DEFAULT_INSTALL_ARGS: dict[str, Any] = {
-    "piplite_urls": [], # a list of Warehouse-like API endpoints or derived multi-package all.json
-    "disable_pypi": False, # don't fall back to pypi.org if package not found in _PIPLITE_URLS
+    "piplite_urls": [],  # a list of Warehouse-like API endpoints or derived multi-package all.json
+    "disable_pypi": False,  # don't fall back to pypi.org if package not found in _PIPLITE_URLS
 }
 
 

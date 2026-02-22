@@ -38,7 +38,9 @@ if TYPE_CHECKING:
 REQ_FILE_SPEC = r"^(?P<flag>-r|--requirements)\s*=?\s*(?P<path_ref>.+)$"
 
 # Matches --index-url or -i directives (with optional = separator and optional quotes)
-INDEX_URL_SPEC = r'^(--index-url|-i)\s*=?\s*(?:"([^"]*)"|\047([^\047]*)\047|([^\s]*))\s*$'
+INDEX_URL_SPEC = (
+    r'^(--index-url|-i)\s*=?\s*(?:"([^"]*)"|\047([^\047]*)\047|([^\s]*))\s*$'
+)
 
 __all__ = ["get_transformed_code"]
 
