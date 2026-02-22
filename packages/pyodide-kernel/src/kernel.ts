@@ -1,22 +1,30 @@
 import coincident from 'coincident';
 
-import { Remote, wrap } from 'comlink';
+import type { Remote } from 'comlink';
+import { wrap } from 'comlink';
 
 import { PromiseDelegate } from '@lumino/coreutils';
 
 import { PageConfig } from '@jupyterlab/coreutils';
-import { Contents, KernelMessage } from '@jupyterlab/services';
 
-import { BaseKernel, IKernel } from '@jupyterlite/kernel';
+import type { ILogPayload } from '@jupyterlab/logconsole';
 
-import { IPyodideWorkerKernel, IRemotePyodideWorkerKernel } from './tokens';
+import type { Contents, KernelMessage } from '@jupyterlab/services';
+
+import type { IKernel } from '@jupyterlite/services';
+import { BaseKernel } from '@jupyterlite/services';
+
+import type {
+  ICoincidentPyodideWorkerKernel,
+  IComlinkPyodideKernel,
+  IPyodideWorkerKernel,
+  IRemotePyodideWorkerKernel,
+} from './tokens';
 
 import { allJSONUrl, pipliteWheelUrl } from './_pypi';
-import {
-  DriveContentsProcessor,
-  TDriveMethod,
-  TDriveRequest,
-} from '@jupyterlite/contents';
+
+import type { TDriveMethod, TDriveRequest } from '@jupyterlite/services';
+import { DriveContentsProcessor } from '@jupyterlite/services';
 
 /**
  * A kernel that executes Python code with Pyodide.
@@ -32,6 +40,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     this._worker = this.initWorker(options);
     this._remoteKernel = this.initRemote(options);
     this._contentsManager = options.contentsManager;
+    this._logger = options.logger || (() => {});
   }
 
   /**
@@ -62,9 +71,10 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    *  - https://github.com/jupyterlite/pyodide-kernel/pull/126
    */
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
-    let remote: IPyodideWorkerKernel;
+    let remote: IComlinkPyodideKernel | ICoincidentPyodideWorkerKernel;
     if (crossOriginIsolated) {
-      remote = coincident(this._worker) as IPyodideWorkerKernel;
+      remote = coincident(this._worker) as ICoincidentPyodideWorkerKernel;
+      remote.processLogMessage = this._processLogMessage.bind(this);
       remote.processWorkerMessage = this._processWorkerMessage.bind(this);
       // The coincident worker uses its own filesystem API:
       (remote.processDriveRequest as any) = async <T extends TDriveMethod>(
@@ -84,18 +94,45 @@ export class PyodideKernel extends BaseKernel implements IKernel {
 
         return await this._contentsProcessor.processDriveRequest(data);
       };
+
+      ((remote as ICoincidentPyodideWorkerKernel).processStdinRequest as any) =
+        async (content: {
+          prompt: string;
+          password: boolean;
+        }): Promise<string | undefined> => {
+          const msg = {
+            type: 'input_request',
+            content,
+          };
+
+          this._processWorkerMessage(msg);
+          this._inputDelegate = new PromiseDelegate<string | undefined>();
+          return await this._inputDelegate.promise;
+        };
     } else {
-      remote = wrap(this._worker) as IPyodideWorkerKernel;
-      // we use the normal postMessage mechanism
+      remote = wrap(this._worker) as IComlinkPyodideKernel;
+      // we use the normal postMessage mechanism in the case of comlink
       this._worker.addEventListener('message', (ev) => {
         if (typeof ev?.data?._kernelMessage !== 'undefined') {
           // only process non comlink messages
           this._processWorkerMessage(ev.data._kernelMessage);
+        } else if (typeof ev?.data?._logMessage !== 'undefined') {
+          this._processLogMessage(ev.data._logMessage);
         }
       });
     }
     const remoteOptions = this.initRemoteOptions(options);
-    remote.initialize(remoteOptions).then(this._ready.resolve.bind(this._ready));
+
+    remote
+      .initialize(remoteOptions)
+      .then(this._ready.resolve.bind(this._ready))
+      .catch((err) => {
+        this._logger({
+          payload: { type: 'text', level: 'critical', data: err.message },
+          kernelId: this.id,
+        });
+        this._ready.reject(err.message);
+      });
     return remote;
   }
 
@@ -120,6 +157,8 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       location: this.location,
       mountDrive: options.mountDrive,
       loadPyodideOptions: options.loadPyodideOptions || {},
+      browsingContextId: options.browsingContextId,
+      kernelId: this.id,
     };
   }
 
@@ -129,6 +168,11 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   dispose(): void {
     if (this.isDisposed) {
       return;
+    }
+    try {
+      this._ready.reject(`${this.id} was disposed`);
+    } catch (err) {
+      // nothing to see here
     }
     this._worker.terminate();
     (this._worker as any) = null;
@@ -140,6 +184,10 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    */
   get ready(): Promise<void> {
     return this._ready.promise;
+  }
+
+  private _processLogMessage(payload: ILogPayload): void {
+    this._logger({ payload, kernelId: this.id });
   }
 
   /**
@@ -336,16 +384,19 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    * @param content - The content of the reply.
    */
   async inputReply(content: KernelMessage.IInputReplyMsg['content']): Promise<void> {
-    return await this._remoteKernel.inputReply(content, this.parent);
+    const value = 'value' in content ? content.value : undefined;
+    this._inputDelegate.resolve(value);
   }
 
   private _contentsManager: Contents.IManager;
+  private _logger: (options: { payload: ILogPayload; kernelId: string }) => void;
   private _contentsProcessor: DriveContentsProcessor | undefined;
   private _worker: Worker;
   private _remoteKernel:
     | IRemotePyodideWorkerKernel
     | Remote<IRemotePyodideWorkerKernel>;
   private _ready = new PromiseDelegate<void>();
+  private _inputDelegate = new PromiseDelegate<string | undefined>();
 }
 
 /**
@@ -399,5 +450,17 @@ export namespace PyodideKernel {
      * The Jupyterlite content manager
      */
     contentsManager: Contents.IManager;
+
+    /**
+     * A unique ID to identify the origin of this request.
+     * This should be provided by `IServiceWorkerManager` and is used to
+     * identify the browsing context from which the request originated.
+     */
+    browsingContextId?: string;
+
+    /**
+     * The logger function to use for logging messages from the kernel.
+     */
+    logger?: (options: { payload: ILogPayload; kernelId: string }) => void;
   }
 }

@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "hatchling >=1.4.0",
-    "jupyterlab >=4.4.0a1,<4.5.0a0",
+    "jupyterlab >=4.6.0a2,<4.7.0",
 ]
 build-backend = "hatchling.build"
 
@@ -22,7 +22,7 @@ keywords = [
     "pyodide",
 ]
 license = { file = "LICENSE" }
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Framework :: Jupyter",
     "Framework :: Jupyter :: JupyterLab",
@@ -30,14 +30,14 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "jupyterlite-core >=0.6.0a0,<0.7.0",
+    "jupyterlite-core >=0.8.0a0,<0.9.0",
     "pkginfo"
 ]
 
@@ -59,7 +59,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:
 dev = [
     "build",
     "hatch",
-    "jupyterlab >=4.4.0a1,<4.5.0a0",
+    "jupyterlab >=4.6.0a2,<4.7.0",
 ]
 
 lint = [
@@ -68,7 +68,7 @@ lint = [
 
 test = [
     "pytest-console-scripts >=1.4.0",
-    "pytest-cov",
+    "pytest-cov <7",
     "pytest-html",
     "pytest",
 ]
@@ -97,11 +97,11 @@ exclude = [
     "/jupyterlite_pyodide_kernel/tests/fixtures/.pyodide"
 ]
 include = [
+    "/*.md",
+    "/install.json",
     "/jupyterlite_pyodide_kernel",
     "/package.json",
-    "/install.json",
     "/ts*.json",
-    "/*.md"
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -113,12 +113,43 @@ include = [
 "jupyterlite_pyodide_kernel/labextension" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension"
 "install.json" = "share/jupyter/labextensions/@jupyterlite/pyodide-kernel-extension/install.json"
 
+[tool.jupyter-releaser.options]
+version_cmd = "python scripts/bump-version.py"
+
+[tool.jupyter-releaser.hooks]
+before-bump-version = [
+    "python -m pip install 'jupyterlab~=4.5.0'",
+    "jlpm"
+]
+before-build-npm = [
+    "python -m pip install 'jupyterlab~=4.5.0' hatch",
+    "python -m pip install -e .[dev]",
+    "jlpm",
+    "jlpm build:prod",
+]
+before-build-python = [
+    "jlpm",
+    "jlpm build:prod",
+]
+
+# non-build tools, sorted by name
+[tool.check-wheel-contents]
+ignore = ["W002"]
+
+[tool.coverage.paths]
+source = [
+    "jupyterlite_pyodide_kernel/",
+    "*/site-packages/jupyterlite_pyodide_kernel/"
+]
+
 [tool.pytest.ini_options]
 addopts = [
     "--pyargs",
     "jupyterlite_pyodide_kernel",
     "-vv",
-    # asyncio
+    "--tb=long",
+    "--color=yes",
+    # pytest-console-scripts
     "--script-launch-mode=subprocess",
     # cov
     "--cov=jupyterlite_pyodide_kernel",
@@ -131,28 +162,6 @@ addopts = [
     "--html=build/reports/pytest.html",
     "--self-contained-html",
 ]
-
-[tool.jupyter-releaser.options]
-version_cmd = "python scripts/bump-version.py"
-
-[tool.jupyter-releaser.hooks]
-before-bump-version = [
-    "python -m pip install 'jupyterlab~=4.3.3'",
-    "jlpm"
-]
-before-build-npm = [
-    "python -m pip install 'jupyterlab~=4.3.3' hatch",
-    "python -m pip install -e .[dev]",
-    "jlpm",
-    "jlpm build:prod",
-]
-before-build-python = [
-    "jlpm",
-    "jlpm build:prod",
-]
-
-[tool.check-wheel-contents]
-ignore = ["W002"]
 
 [tool.ruff]
 cache-dir = "build/.cache/ruff"

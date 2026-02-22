@@ -3,13 +3,15 @@
 
 import type Pyodide from 'pyodide';
 
-import type { DriveFS } from '@jupyterlite/contents';
+import type { ILogPayload } from '@jupyterlab/logconsole';
 
-import { KernelMessage } from '@jupyterlab/services';
+import type { KernelMessage } from '@jupyterlab/services';
+
+import type { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
-export class PyodideRemoteKernel {
+export abstract class PyodideRemoteKernel {
   constructor() {
     this._initialized = new Promise((resolve, reject) => {
       this._initializer = { resolve, reject };
@@ -54,8 +56,34 @@ export class PyodideRemoteKernel {
     }
     this._pyodide = await loadPyodide({
       indexURL: indexUrl,
+      stdout: (text: string) => {
+        console.log(text);
+        this._logMessage({ type: 'text', level: 'info', data: text });
+      },
+      stderr: (text: string) => {
+        console.error(text);
+        this._logMessage({ type: 'text', level: 'critical', data: text });
+      },
       ...options.loadPyodideOptions,
     });
+    // @ts-expect-error: pyodide._api is private
+    this._pyodide._api.on_fatal = async (e: any) => {
+      let error = '';
+      if (e.name === 'Exit') {
+        error = 'Pyodide has exited and can no longer be used.';
+      } else {
+        error = `Pyodide has suffered a fatal error. Please report this to the Pyodide maintainers.
+The cause of the error was: ${e.name}
+${e.message}
+Stack trace:
+${e.stack}`;
+      }
+      this._logMessage({
+        type: 'text',
+        level: 'critical',
+        data: error,
+      });
+    };
   }
 
   protected async initPackageManager(
@@ -117,7 +145,6 @@ export class PyodideRemoteKernel {
     const preloaded = (options.loadPyodideOptions || {}).packages || [];
 
     const toLoad = [
-      'ssl',
       'sqlite3',
       'ipykernel',
       'comm',
@@ -166,7 +193,8 @@ export class PyodideRemoteKernel {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
       const { baseUrl } = options;
-      const { DriveFS } = await import('@jupyterlite/contents');
+      // Use direct submodule import for tree-shaking
+      const { DriveFS } = await import('@jupyterlite/services/lib/contents/drivefs');
 
       const driveFS = new DriveFS({
         FS: FS as any,
@@ -175,6 +203,7 @@ export class PyodideRemoteKernel {
         baseUrl,
         driveName: this._driveName,
         mountpoint,
+        browsingContextId: this._browsingContextId,
       });
       FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
@@ -185,16 +214,17 @@ export class PyodideRemoteKernel {
 
   /**
    * Recursively convert a Map to a JavaScript object
-   * @param obj A Map, Array, or other  object to convert
+   * @param obj A Map, Array, or other object to convert
    */
   mapToObject(obj: any) {
     const out: any = obj instanceof Array ? [] : {};
-    obj.forEach((value: any, key: string) => {
+    const entries = obj instanceof Map ? obj.entries() : Object.entries(obj);
+    for (const [key, value] of entries) {
       out[key] =
         value instanceof Map || value instanceof Array
           ? this.mapToObject(value)
           : value;
-    });
+    }
     return out;
   }
 
@@ -215,10 +245,20 @@ export class PyodideRemoteKernel {
 
   /**
    * Register the callback function to send messages from the worker back to the main thread.
+   *
    * @param callback the callback to register
    */
-  registerCallback(callback: (msg: any) => void): void {
+  registerWorkerMessageCallback(callback: (msg: any) => void): void {
     this._sendWorkerMessage = callback;
+  }
+
+  /**
+   * Register the callback function to log messages from the worker back to the main thread.
+   *
+   * @param callback the callback to register
+   */
+  registerLogMessageCallback(callback: (msg: any) => void): void {
+    this._logMessage = callback;
   }
 
   /**
@@ -472,48 +512,30 @@ export class PyodideRemoteKernel {
    * @param content The incoming message with the reply
    */
   async inputReply(content: any, parent: any) {
-    await this.setup(parent);
-
-    this._resolveInputReply(content);
+    // Should never be called as input_reply messages are returned via service worker
+    // or SharedArrayBuffer.
   }
 
   /**
-   * Send a input request to the front-end.
+   * Send a input request to the front-end and block until the reply is received.
    *
    * @param prompt the text to show at the prompt
    * @param password Is the request for a password?
+   * @returns String value from the input reply message, or undefined if there is none.
    */
-  async sendInputRequest(prompt: string, password: boolean) {
-    const content = {
-      prompt,
-      password,
-    };
+  protected abstract sendInputRequest(
+    prompt: string,
+    password: boolean,
+  ): string | undefined;
 
-    this._sendWorkerMessage({
-      type: 'input_request',
-      parentHeader: this.formatResult(this._kernel._parent_header)['header'],
-      content,
-    });
+  getpass(prompt: string): string | undefined {
+    prompt = typeof prompt === 'undefined' ? '' : prompt;
+    return this.sendInputRequest(prompt, true);
   }
 
-  async getpass(prompt: string) {
+  input(prompt: string): string | undefined {
     prompt = typeof prompt === 'undefined' ? '' : prompt;
-    await this.sendInputRequest(prompt, true);
-    const replyPromise = new Promise((resolve) => {
-      this._resolveInputReply = resolve;
-    });
-    const result: any = await replyPromise;
-    return result['value'];
-  }
-
-  async input(prompt: string) {
-    prompt = typeof prompt === 'undefined' ? '' : prompt;
-    await this.sendInputRequest(prompt, false);
-    const replyPromise = new Promise((resolve) => {
-      this._resolveInputReply = resolve;
-    });
-    const result: any = await replyPromise;
-    return result['value'];
+    return this.sendInputRequest(prompt, false);
   }
 
   /**
@@ -548,15 +570,16 @@ export class PyodideRemoteKernel {
     reject: () => void;
     resolve: () => void;
   } | null = null;
-  protected _pyodide: Pyodide.PyodideInterface = null as any;
+  protected _pyodide: Pyodide.PyodideAPI = null as any;
   /** TODO: real typing */
   protected _localPath = '';
   protected _driveName = '';
+  protected _browsingContextId: string | undefined;
   protected _kernel: any;
   protected _interpreter: any;
   protected _stdout_stream: any;
   protected _stderr_stream: any;
-  protected _resolveInputReply: any;
   protected _driveFS: DriveFS | null = null;
   protected _sendWorkerMessage: (msg: any) => void = () => {};
+  protected _logMessage: (msg: ILogPayload) => void = () => {};
 }

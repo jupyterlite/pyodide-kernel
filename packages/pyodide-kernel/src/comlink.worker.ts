@@ -7,33 +7,25 @@
 
 import { expose } from 'comlink';
 
-import { ContentsAPI, DriveFS, ServiceWorkerContentsAPI } from '@jupyterlite/contents';
+import { URLExt } from '@jupyterlab/coreutils';
 
-import { IPyodideWorkerKernel } from './tokens';
+import { KernelMessage } from '@jupyterlab/services';
+
+import { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
+
+import type { IPyodideWorkerKernel } from './tokens';
 
 import { PyodideRemoteKernel } from './worker';
-
-/**
- * A custom drive implementation which uses the service worker
- */
-class PyodideDriveFS extends DriveFS {
-  createAPI(options: DriveFS.IOptions): ContentsAPI {
-    return new ServiceWorkerContentsAPI(
-      options.baseUrl,
-      options.driveName,
-      options.mountpoint,
-      options.FS,
-      options.ERRNO_CODES,
-    );
-  }
-}
 
 export class PyodideComlinkKernel extends PyodideRemoteKernel {
   constructor() {
     super();
+    // use postMessage, but in a format, that comlink would not process.
     this._sendWorkerMessage = (msg: any) => {
-      // use postMessage, but in a format, that comlink would not process.
       postMessage({ _kernelMessage: msg });
+    };
+    this._logMessage = (msg: any) => {
+      postMessage({ _logMessage: msg });
     };
   }
 
@@ -46,20 +38,72 @@ export class PyodideComlinkKernel extends PyodideRemoteKernel {
     if (options.mountDrive) {
       const mountpoint = '/drive';
       const { FS, PATH, ERRNO_CODES } = this._pyodide;
-      const { baseUrl } = options;
+      const { baseUrl, browsingContextId } = options;
 
-      const driveFS = new PyodideDriveFS({
+      const driveFS = new DriveFS({
         FS: FS as any,
         PATH,
         ERRNO_CODES,
         baseUrl,
         driveName: this._driveName,
         mountpoint,
+        browsingContextId,
       });
       FS.mkdirTree(mountpoint);
       FS.mount(driveFS, {}, mountpoint);
       FS.chdir(mountpoint);
       this._driveFS = driveFS;
+    }
+  }
+
+  /**
+   * Send input request and receive input reply via service worker.
+   */
+  protected sendInputRequest(prompt: string, password: boolean): string | undefined {
+    const parentHeader = this.formatResult(this._kernel._parent_header)['header'];
+
+    // Filling out the input_request message fields based on jupyterlite BaseKernet.inputRequest
+    const inputRequest = KernelMessage.createMessage<KernelMessage.IInputRequestMsg>({
+      channel: 'stdin',
+      msgType: 'input_request',
+      session: parentHeader?.session ?? '',
+      parentHeader: parentHeader,
+      content: {
+        prompt,
+        password,
+      },
+    });
+
+    try {
+      if (!this._options) {
+        throw new Error('Kernel options not set');
+      }
+
+      const { baseUrl, browsingContextId } = this._options;
+      if (!browsingContextId) {
+        throw new Error('Kernel browsingContextId not set');
+      }
+
+      const xhr = new XMLHttpRequest();
+      const url = URLExt.join(baseUrl, '/api/stdin/kernel');
+      xhr.open('POST', url, false); // Synchronous XMLHttpRequest
+      const msg = JSON.stringify({
+        browsingContextId,
+        data: inputRequest,
+      });
+      // Send input request, this blocks until the input reply is received.
+      xhr.send(msg);
+      const inputReply = JSON.parse(xhr.response as string);
+
+      if ('error' in inputReply) {
+        // Service worker may return an error instead of an input reply message.
+        throw new Error(inputReply['error']);
+      }
+
+      return inputReply.content?.value;
+    } catch (err) {
+      console.warn(`Failed to request stdin via service worker: ${err}`);
+      return undefined;
     }
   }
 }

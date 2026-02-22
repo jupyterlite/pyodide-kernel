@@ -1,26 +1,28 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
+import type { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
+
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 
-import {
-  IServiceWorkerManager,
-  JupyterLiteServer,
-  JupyterLiteServerPlugin,
-} from '@jupyterlite/server';
+import type { ILogPayload } from '@jupyterlab/logconsole';
+import { ILoggerRegistry } from '@jupyterlab/logconsole';
 
-import { IKernel, IKernelSpecs } from '@jupyterlite/kernel';
-import { IBroadcastChannelWrapper } from '@jupyterlite/contents';
+import { IServiceWorkerManager } from '@jupyterlite/apputils';
+
+import type { IKernel } from '@jupyterlite/services';
+import { IKernelSpecs } from '@jupyterlite/services';
+
+import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
 
 export * as KERNEL_SETTINGS_SCHEMA from '../schema/kernel.v0.schema.json';
-import KERNEL_ICON_SVG_STR from '../style/img/pyodide.svg';
 
 const KERNEL_ICON_URL = `data:image/svg+xml;base64,${btoa(KERNEL_ICON_SVG_STR)}`;
 
 /**
  * The default CDN fallback for Pyodide
  */
-const PYODIDE_CDN_URL = 'https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js';
+const PYODIDE_CDN_URL = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js';
 
 /**
  * The id for the extension, and key in the litePlugins.
@@ -30,18 +32,19 @@ const PLUGIN_ID = '@jupyterlite/pyodide-kernel-extension:kernel';
 /**
  * A plugin to register the Pyodide kernel.
  */
-const kernel: JupyterLiteServerPlugin<void> = {
+const kernel: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
+  description: 'A plugin providing the Pyodide kernel.',
   autoStart: true,
   requires: [IKernelSpecs],
-  optional: [IServiceWorkerManager, IBroadcastChannelWrapper],
+  optional: [IServiceWorkerManager, ILoggerRegistry],
   activate: (
-    app: JupyterLiteServer,
+    app: JupyterFrontEnd,
     kernelspecs: IKernelSpecs,
-    serviceWorker?: IServiceWorkerManager,
-    broadcastChannel?: IBroadcastChannelWrapper,
+    serviceWorkerManager: IServiceWorkerManager | null,
+    loggerRegistry: ILoggerRegistry | null,
   ) => {
-    const contentsManager = app.serviceManager.contents;
+    const { contents: contentsManager, sessions } = app.serviceManager;
 
     const config =
       JSON.parse(PageConfig.getOption('litePluginSettings') || '{}')[PLUGIN_ID] || {};
@@ -60,14 +63,34 @@ const kernel: JupyterLiteServerPlugin<void> = {
     const loadPyodideOptions = config.loadPyodideOptions || {};
     const pipliteInstallDefaultOptions = config.pipliteInstallDefaultOptions || {};
 
-    // Parse any configured index URLs
-    const index_urls = pipliteInstallDefaultOptions.index_urls || [];
-
     for (const [key, value] of Object.entries(loadPyodideOptions)) {
       if (key.endsWith('URL') && typeof value === 'string') {
         loadPyodideOptions[key] = new URL(value, baseUrl).href;
       }
     }
+
+    // The logger will find the notebook associated with the kernel id
+    // and log the payload to the log console for that notebook.
+    const logger = async (options: { payload: ILogPayload; kernelId: string }) => {
+      if (!loggerRegistry) {
+        // nothing to do in this case
+        return;
+      }
+
+      const { payload, kernelId } = options;
+
+      // Find the session path that corresponds to the kernel ID
+      let sessionPath = '';
+      for (const session of sessions.running()) {
+        if (session.kernel?.id === kernelId) {
+          sessionPath = session.path;
+          break;
+        }
+      }
+
+      const logger = loggerRegistry.getLogger(sessionPath);
+      logger.log(payload);
+    };
 
     kernelspecs.register({
       spec: {
@@ -83,18 +106,9 @@ const kernel: JupyterLiteServerPlugin<void> = {
       create: async (options: IKernel.IOptions): Promise<IKernel> => {
         const { PyodideKernel } = await import('@jupyterlite/pyodide-kernel');
 
-        const mountDrive = !!(
-          (serviceWorker?.enabled && broadcastChannel?.enabled) ||
-          crossOriginIsolated
-        );
+        const mountDrive = !!(serviceWorkerManager?.enabled || crossOriginIsolated);
 
-        if (mountDrive) {
-          console.info('Pyodide contents will be synced with Jupyter Contents');
-        } else {
-          console.warn('Pyodide contents will NOT be synced with Jupyter Contents');
-        }
-
-        return new PyodideKernel({
+        const kernel = new PyodideKernel({
           ...options,
           pyodideUrl,
           pipliteWheelUrl,
@@ -103,16 +117,41 @@ const kernel: JupyterLiteServerPlugin<void> = {
           mountDrive,
           loadPyodideOptions,
           contentsManager,
-          pipliteInstallDefaultOptions: {
-            index_urls,
-            ...pipliteInstallDefaultOptions,
-          },
+          pipliteInstallDefaultOptions,
+          browsingContextId: serviceWorkerManager?.browsingContextId,
+          logger,
         });
+
+        if (mountDrive) {
+          console.info('Pyodide contents will be synced with Jupyter Contents');
+        } else {
+          const warningMessage =
+            'Pyodide contents will NOT be synced with Jupyter Contents. ' +
+            'For full functionality, try using a regular browser tab instead of private/incognito mode, ' +
+            'especially in Firefox where this is a known limitation.';
+          console.warn(warningMessage);
+
+          // Wait for kernel to be ready before logging the warning
+          kernel.ready.then(() => {
+            if (loggerRegistry) {
+              void logger({
+                payload: {
+                  type: 'text',
+                  data: warningMessage,
+                  level: 'warning',
+                },
+                kernelId: options.id,
+              });
+            }
+          });
+        }
+
+        return kernel;
       },
     });
   },
 };
 
-const plugins: JupyterLiteServerPlugin<any>[] = [kernel];
+const plugins: JupyterFrontEndPlugin<any>[] = [kernel];
 
 export default plugins;

@@ -5,8 +5,12 @@
  * Definitions for the Pyodide kernel.
  */
 
-import { TDriveMethod, TDriveRequest, TDriveResponse } from '@jupyterlite/contents';
-import { IWorkerKernel } from '@jupyterlite/kernel';
+import type {
+  TDriveMethod,
+  TDriveRequest,
+  TDriveResponse,
+  IWorkerKernel,
+} from '@jupyterlite/services';
 
 /**
  * The schema for a Warehouse-like index, as used by piplite.
@@ -29,17 +33,48 @@ export interface IPyodideWorkerKernel extends IWorkerKernel {
   processDriveRequest<T extends TDriveMethod>(
     data: TDriveRequest<T>,
   ): TDriveResponse<T>;
+}
+
+/**
+ * An interface for Pyodide workers that use comlink.
+ */
+export interface IComlinkPyodideKernel extends IPyodideWorkerKernel {
+  /**
+   * Register a callback for handling messages from the worker.
+   */
+  registerWorkerMessageCallback(callback: (msg: any) => void): void;
+
+  /**
+   * Register a callback for handling log messages from the worker.
+   */
+  registerLogMessageCallback(callback: (msg: any) => void): void;
+}
+
+/**
+ * An interface for Coincident Pyodide workers that include extra SharedArrayBuffer
+ * functionality.
+ */
+export interface ICoincidentPyodideWorkerKernel extends IPyodideWorkerKernel {
+  /**
+   * Process a log message
+   * @param msg
+   */
+  processLogMessage(msg: any): void;
 
   /**
    * Process worker message
    * @param msg
    */
   processWorkerMessage(msg: any): void;
-
   /**
-   * Register a callback for handling messages from the worker.
+   * Process stdin request, blocking until the reply is received.
+   * This is sync for the web worker, async for the UI thread.
+   * @param inputRequest
    */
-  registerCallback(callback: (msg: any) => void): void;
+  processStdinRequest(content: {
+    prompt: string;
+    password: boolean;
+  }): string | undefined;
 }
 
 /**
@@ -56,12 +91,14 @@ export namespace IPyodideWorkerKernel {
    */
   export interface IPipliteInstallOptions {
     /**
-     * Base URLs of extra indices to use
+     * Base URL(s) of extra indices to use, forwarded to micropip.install as
+     * ``index_urls``.  Accepts either a single URL string or a list of URL
+     * strings.
      */
-    index_urls?: string[];
+    index_urls?: string | string[];
 
     /**
-     * Any additional piplite install options
+     * Any additional piplite install options.
      */
     [key: string]: any;
   }
@@ -106,9 +143,16 @@ export namespace IPyodideWorkerKernel {
     mountDrive: boolean;
 
     /**
-     * Default options to pass to piplite.install
+     * Default options to pass to piplite.install (e.g. index_urls).
      */
-    pipliteInstallDefaultOptions?: IPyodideWorkerKernel.IPipliteInstallOptions;
+    pipliteInstallDefaultOptions?: IPipliteInstallOptions;
+
+    /**
+     * A unique ID to identify the origin of this request.
+     * This should be provided by `IServiceWorkerManager` and is used to
+     * identify the browsing context from which the request originated.
+     */
+    browsingContextId?: string;
 
     /**
      * additional options to provide to `loadPyodide`
@@ -118,5 +162,10 @@ export namespace IPyodideWorkerKernel {
       lockFileURL: string;
       packages: string[];
     };
+
+    /**
+     * The kernel id.
+     */
+    kernelId?: string;
   }
 }
