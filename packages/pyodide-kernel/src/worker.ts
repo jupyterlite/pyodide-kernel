@@ -114,21 +114,17 @@ ${e.stack}`;
     `);
     }
 
-    const pythonConfig = [
-      'import piplite.piplite',
-      `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS["piplite_urls"] = ${JSON.stringify(pipliteUrls)}`,
-      `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS["disable_pypi"] = ${disablePyPIFallback ? 'True' : 'False'}`,
-    ];
+    const pyJson = JSON.stringify({
+      piplite_urls: pipliteUrls,
+      disable_pypi: disablePyPIFallback,
+      ...(pipliteInstallDefaultOptions || {}),
+    });
 
-    if (pipliteInstallDefaultOptions) {
-      for (const [key, value] of Object.entries(pipliteInstallDefaultOptions)) {
-        if (value !== undefined) {
-          pythonConfig.push(
-            `piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS[${JSON.stringify(key)}] = ${JSON.stringify(value)}`,
-          );
-        }
-      }
-    }
+    const pythonConfig = [
+      'import piplite.piplite, json',
+      `_from_js = json.loads("""${pyJson}""")`,
+      'piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS.update(_from_js)',
+    ];
 
     // get piplite early enough to impact pyodide-kernel dependencies
     await this._pyodide.runPythonAsync(pythonConfig.join('\n'));
