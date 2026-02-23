@@ -25,13 +25,22 @@
       "default": [],
       "format": "uri"
     },
+    "pipliteIndexUrls": {
+      "description": "URL(s) of package indices to use as a site-wide default, passed as `index_urls` to micropip.install. Relative paths are resolved against the base URL of the JupyterLite deployment. Preferred over `pipliteInstallDefaultOptions.index_urls`.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri-reference"
+      },
+      "default": []
+    },
     "pipliteInstallDefaultOptions": {
       "type": "object",
-      "description": "Default options to pass to piplite.install",
+      "description": "Additional default options to pass to piplite.install (forwarded as kwargs to micropip.install). The `index_urls` key is supported for backwards compatibility; prefer `pipliteIndexUrls` instead.",
       "default": {},
       "properties": {
         "index_urls": {
-          "description": "URL(s) of package indices to use, passed as `index_urls` to micropip.install.",
+          "description": "URL(s) of package indices to use, passed as `index_urls` to micropip.install. Prefer the top-level `pipliteIndexUrls` key instead.",
           "type": "array",
           "items": {
             "type": "string",

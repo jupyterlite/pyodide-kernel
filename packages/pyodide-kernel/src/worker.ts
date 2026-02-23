@@ -98,6 +98,7 @@ ${e.stack}`;
       disablePyPIFallback,
       pipliteUrls,
       loadPyodideOptions,
+      pipliteIndexUrls,
       pipliteInstallDefaultOptions,
     } = this._options;
 
@@ -117,7 +118,10 @@ ${e.stack}`;
     const pyJson = JSON.stringify({
       piplite_urls: pipliteUrls,
       disable_pypi: disablePyPIFallback,
+      // pipliteInstallDefaultOptions.index_urls is supported but
+      // pipliteIndexUrls takes precedence if set
       ...(pipliteInstallDefaultOptions || {}),
+      ...(pipliteIndexUrls?.length ? { index_urls: pipliteIndexUrls } : {}),
     });
 
     const pythonConfig = [

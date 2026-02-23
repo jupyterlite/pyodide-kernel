@@ -142,7 +142,14 @@ export namespace IPyodideWorkerKernel {
     mountDrive: boolean;
 
     /**
-     * Default options to pass to piplite.install (e.g. index_urls).
+     * Default index URLs to pass to piplite.install as `index_urls`. Takes
+     * precedence over `pipliteInstallDefaultOptions.index_urls`.
+     */
+    pipliteIndexUrls?: string[];
+
+    /**
+     * Additional default options to pass to piplite.install. The `index_urls`
+     * key is supported, but prefer `pipliteIndexUrls`.
      */
     pipliteInstallDefaultOptions?: IPipliteInstallOptions;
 

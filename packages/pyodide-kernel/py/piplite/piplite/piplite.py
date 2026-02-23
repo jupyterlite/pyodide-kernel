@@ -33,7 +33,8 @@ ALL_JSON = "/all.json"
 #:   piplite_urls  – list of local all.json warehouse index URLs
 #:   disable_pypi  – whether to block fallback to pypi.org
 #:
-#: Keys that are optionally written by worker.ts from pipliteInstallDefaultOptions:
+#: Keys that are optionally written by worker.ts from pipliteIndexUrls (preferred)
+#: or pipliteInstallDefaultOptions.index_urls.
 #:   index_urls    – default index URL(s) that get forwarded to micropip.install
 _PIPLITE_DEFAULT_INSTALL_ARGS: dict[str, Any] = {
     "piplite_urls": [],  # a list of Warehouse-like API endpoints or derived multi-package all.json

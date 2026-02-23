@@ -157,6 +157,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
       location: this.location,
       mountDrive: options.mountDrive,
       loadPyodideOptions: options.loadPyodideOptions || {},
+      pipliteIndexUrls: options.pipliteIndexUrls,
       pipliteInstallDefaultOptions: options.pipliteInstallDefaultOptions,
       browsingContextId: options.browsingContextId,
       kernelId: this.id,
@@ -434,7 +435,14 @@ export namespace PyodideKernel {
     mountDrive: boolean;
 
     /**
-     * Default options to pass to piplite.install
+     * Default index URLs to pass to piplite.install as `index_urls`. Takes
+     * precedence over `pipliteInstallDefaultOptions.index_urls`.
+     */
+    pipliteIndexUrls?: string[];
+
+    /**
+     * Additional default options to pass to piplite.install. The `index_urls`
+     * key is supported, but prefer `pipliteIndexUrls`.
      */
     pipliteInstallDefaultOptions?: IPyodideWorkerKernel.IPipliteInstallOptions;
 

@@ -59,8 +59,14 @@ const kernel: JupyterFrontEndPlugin<void> = {
       : undefined;
     const rawPipUrls = config.pipliteUrls || [];
     const pipliteUrls = rawPipUrls.map((pipUrl: string) => URLExt.parse(pipUrl).href);
+    // pipliteIndexUrls: config-utils.js in JupyterLite resolves relative paths automatically
+    // for top-level keys ending in `Urls`, so no further resolution is needed here.
+    const pipliteIndexUrls = (config.pipliteIndexUrls as string[] | undefined) || [];
     const disablePyPIFallback = !!config.disablePyPIFallback;
     const loadPyodideOptions = config.loadPyodideOptions || {};
+    // pipliteInstallDefaultOptions;
+    // config-utils.js does not recurse into nested objects, so relative
+    // index_urls are resolved manually here.
     const pipliteInstallDefaultOptions = {
       ...(config.pipliteInstallDefaultOptions || {}),
     };
@@ -121,6 +127,7 @@ const kernel: JupyterFrontEndPlugin<void> = {
           pyodideUrl,
           pipliteWheelUrl,
           pipliteUrls,
+          pipliteIndexUrls,
           disablePyPIFallback,
           mountDrive,
           loadPyodideOptions,
