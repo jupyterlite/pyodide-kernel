@@ -61,7 +61,15 @@ const kernel: JupyterFrontEndPlugin<void> = {
     const pipliteUrls = rawPipUrls.map((pipUrl: string) => URLExt.parse(pipUrl).href);
     const disablePyPIFallback = !!config.disablePyPIFallback;
     const loadPyodideOptions = config.loadPyodideOptions || {};
-    const pipliteInstallDefaultOptions = config.pipliteInstallDefaultOptions || {};
+    const pipliteInstallDefaultOptions = {
+      ...(config.pipliteInstallDefaultOptions || {}),
+    };
+    if (Array.isArray(pipliteInstallDefaultOptions.index_urls)) {
+      pipliteInstallDefaultOptions.index_urls =
+        pipliteInstallDefaultOptions.index_urls.map(
+          (u: string) => new URL(u, baseUrl).href,
+        );
+    }
 
     for (const [key, value] of Object.entries(loadPyodideOptions)) {
       if (key.endsWith('URL') && typeof value === 'string') {
