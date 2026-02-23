@@ -27,6 +27,7 @@ failures should not block execution.
 from __future__ import annotations
 
 import re
+import shlex
 import sys
 from typing import Any, TYPE_CHECKING
 from argparse import ArgumentParser
@@ -37,10 +38,30 @@ if TYPE_CHECKING:
 
 REQ_FILE_SPEC = r"^(?P<flag>-r|--requirements)\s*=?\s*(?P<path_ref>.+)$"
 
-# Matches --index-url or -i directives (with optional = separator and optional quotes)
-INDEX_URL_SPEC = (
-    r'^(--index-url|-i)\s*=?\s*(?:"([^"]*)"|\047([^\047]*)\047|([^\s]*))\s*$'
-)
+
+def _parse_index_url_line(raw: str) -> str | None:
+    """Return the index URL from a ``--index-url``/``-i`` directive line.
+
+    Handles the ``--flag URL``, ``--flag=URL``, and all other quoting forms
+    that ``shlex`` understands. Returns ``None`` if the line is not such a
+    directive.
+    """
+    try:
+        parts = shlex.split(raw)
+    except ValueError:
+        return None
+    if not parts:
+        return None
+    flag = parts[0]
+    # --index-url=URL / -i=URL
+    for prefix in ("--index-url=", "-i="):
+        if flag.startswith(prefix):
+            return flag[len(prefix):] or None
+    # --index-url URL / -i URL
+    if flag in ("--index-url", "-i") and len(parts) >= 2:
+        return parts[1]
+    return None
+
 
 __all__ = ["get_transformed_code"]
 
@@ -233,12 +254,9 @@ async def _specs_from_requirements_line(
             yield sub_spec
         return
 
-    index_url_match = re.match(INDEX_URL_SPEC, raw)
-    if index_url_match:
-        # Extract the URL from whichever capture group matched (quoted or bare)
-        # and collect it so the caller can forward it to piplite.install.
-        url = next((g for g in index_url_match.groups()[1:] if g is not None), None)
-        if url and index_urls is not None:
+    url = _parse_index_url_line(raw)
+    if url is not None:
+        if index_urls is not None:
             index_urls.append(url)
         return
     elif raw.startswith("-"):
