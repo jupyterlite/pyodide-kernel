@@ -56,7 +56,7 @@ def _parse_index_url_line(raw: str) -> str | None:
     # --index-url=URL / -i=URL
     for prefix in ("--index-url=", "-i="):
         if flag.startswith(prefix):
-            return flag[len(prefix):] or None
+            return flag[len(prefix) :] or None
     # --index-url URL / -i URL
     if flag in ("--index-url", "-i") and len(parts) >= 2:
         return parts[1]
