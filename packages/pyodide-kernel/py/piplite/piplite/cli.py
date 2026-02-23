@@ -171,10 +171,10 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
         if args.force_reinstall:
             kwargs["reinstall"] = True
 
-        collected_index_urls: list[str] = []
+        index_urls: list[str] = []
         for req_file in args.requirements or []:
             async for spec in _specs_from_requirements_file(
-                Path(req_file), collected_index_urls=collected_index_urls
+                Path(req_file), index_urls=index_urls
             ):
                 kwargs["requirements"] += [spec]
 
@@ -184,8 +184,8 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
 
         # Apply index URLs from requirements files only if --index-url was not
         # already given on the command line.
-        if collected_index_urls and "index_urls" not in kwargs:
-            kwargs["index_urls"] = collected_index_urls
+        if index_urls and "index_urls" not in kwargs:
+            kwargs["index_urls"] = index_urls
 
     return action, kwargs
 
@@ -193,7 +193,7 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
 async def _specs_from_requirements_file(
     spec_path: Path,
     *,
-    collected_index_urls: list[str] | None = None,
+    index_urls: list[str] | None = None,
 ) -> AsyncIterator[str]:
     """Extract package specs from a ``requirements.txt``-style file."""
     if not spec_path.exists():
@@ -202,7 +202,7 @@ async def _specs_from_requirements_file(
 
     for line_no, line in enumerate(spec_path.read_text(encoding="utf-8").splitlines()):
         async for spec in _specs_from_requirements_line(
-            spec_path, line_no + 1, line, collected_index_urls=collected_index_urls
+            spec_path, line_no + 1, line, index_urls=index_urls
         ):
             yield spec
 
@@ -212,7 +212,7 @@ async def _specs_from_requirements_line(
     line_no: int,
     line: str,
     *,
-    collected_index_urls: list[str] | None = None,
+    index_urls: list[str] | None = None,
 ) -> AsyncIterator[str]:
     """Get package specs from a line of a ``requirements.txt``-style file.
 
@@ -228,7 +228,7 @@ async def _specs_from_requirements_line(
         ref = file_match.groupdict()["path_ref"]
         ref_path = Path(ref if ref.startswith("/") else spec_path.parent / ref)
         async for sub_spec in _specs_from_requirements_file(
-            ref_path, collected_index_urls=collected_index_urls
+            ref_path, index_urls=index_urls
         ):
             yield sub_spec
         return
@@ -238,8 +238,8 @@ async def _specs_from_requirements_line(
         # Extract the URL from whichever capture group matched (quoted or bare)
         # and collect it so the caller can forward it to piplite.install.
         url = next((g for g in index_url_match.groups()[1:] if g is not None), None)
-        if url and collected_index_urls is not None:
-            collected_index_urls.append(url)
+        if url and index_urls is not None:
+            index_urls.append(url)
         return
     elif raw.startswith("-"):
         warn(f"{spec_path}:{line_no}: unrecognized spec: {raw}")
