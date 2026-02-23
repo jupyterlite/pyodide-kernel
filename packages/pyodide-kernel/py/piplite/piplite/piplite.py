@@ -40,6 +40,16 @@ _PIPLITE_DEFAULT_INSTALL_ARGS: dict[str, Any] = {
     "disable_pypi": False,  # don't fall back to pypi.org if package not found in _PIPLITE_URLS
 }
 
+#: a list of Warehouse-like API endpoints or derived multi-package all.json
+#: N.B. this is kept as a live alias to ``_PIPLITE_DEFAULT_INSTALL_ARGS["piplite_urls"]``
+#: right now but should be deprecated later
+_PIPLITE_URLS: list[str] = _PIPLITE_DEFAULT_INSTALL_ARGS["piplite_urls"]
+
+#: don't fall back to pypi.org if a package is not found in ``_PIPLITE_URLS``.
+#: N.B. this reflects the initial value of ``_PIPLITE_DEFAULT_INSTALL_ARGS["disable_pypi"]`` at
+#: module load time, but is not kept in sync with it and should be deprecated later
+_PIPLITE_DISABLE_PYPI: bool = _PIPLITE_DEFAULT_INSTALL_ARGS["disable_pypi"]
+
 
 class PiplitePyPIDisabled(ValueError):
     """An error for when PyPI is disabled at the site level, but a download was
