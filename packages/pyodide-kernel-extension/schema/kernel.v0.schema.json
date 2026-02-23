@@ -31,20 +31,12 @@
       "default": {},
       "properties": {
         "index_urls": {
-          "description": "Base URL(s) of extra indices to use, passed as `index_urls` to micropip.install. Accepts a single URL string or a list of URL strings.",
-          "oneOf": [
-            {
-              "type": "string",
-              "format": "uri"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "uri"
-              }
-            }
-          ]
+          "description": "URL(s) of package indices to use, passed as `index_urls` to micropip.install.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri-reference"
+          }
         }
       }
     },

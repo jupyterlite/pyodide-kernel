@@ -138,15 +138,15 @@ def a_lite_config_file(request, an_empty_lite_dir):
 @pytest.mark.parametrize(
     "index_urls",
     [
-        "https://example.com/simple",
+        ["https://example.com/simple"],
         ["https://example.com/simple", "https://pypi.org/simple"],
     ],
-    ids=["string", "list"],
+    ids=["single", "multiple"],
 )
 def test_validate_piplite_install_default_options_valid(
     script_runner, a_lite_config_file, index_urls
 ):
-    """valid index_urls (string or list) in pipliteInstallDefaultOptions passes check"""
+    """valid index_urls (list of URLs) in pipliteInstallDefaultOptions passes check"""
     lite_dir = a_lite_config_file.parent
     output = lite_dir / "_output"
 

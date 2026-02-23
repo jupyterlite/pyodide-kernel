@@ -91,11 +91,10 @@ export namespace IPyodideWorkerKernel {
    */
   export interface IPipliteInstallOptions {
     /**
-     * Base URL(s) of extra indices to use, forwarded to micropip.install as
-     * ``index_urls``.  Accepts either a single URL string or a list of URL
-     * strings.
+     * URL(s) of package indices to use, forwarded to micropip.install as
+     * ``index_urls``.
      */
-    index_urls?: string | string[];
+    index_urls?: string[];
 
     /**
      * Any additional piplite install options.
