@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: &action_checkout actions/checkout@v6
 
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
@@ -65,14 +65,14 @@ jobs:
           cat *.txt
 
       - name: Upload extension packages
-        uses: actions/upload-artifact@v5
+        uses: &action_upload actions/upload-artifact@v7
         with:
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
           path: dist
           if-no-files-found: error
 
       - name: Upload test config
-        uses: actions/upload-artifact@v5
+        uses: *action_upload
         with:
           name: pyproject-toml
           path: pyproject.toml
@@ -93,7 +93,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/download-artifact@v5
+      - uses: &action_download actions/download-artifact@v8
         with:
           path: dist
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
@@ -147,7 +147,7 @@ jobs:
           cd tmp
           jupyter lite check || exit 1
 
-      - uses: actions/download-artifact@v5
+      - uses: *action_download
         with:
           name: pyproject-toml
 
@@ -165,7 +165,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: |-
             jupyterlite-pyodide-kernel-pytest-${{ github.run_number }}-${{ matrix.os }}-${{ matrix.python-version}}
@@ -183,12 +183,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: *action_checkout
 
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
-      - uses: actions/download-artifact@v5
+      - uses: *action_download
         with:
           path: dist
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
@@ -196,7 +196,7 @@ jobs:
       - name: Install the extension
         run: |
           set -eux
-          python -m pip install "jupyterlab>=4.5.0,<4.6.0" dist/jupyterlite_pyodide_kernel*.whl
+          python -m pip install "jupyterlab>=4.5.5,<4.6.0" dist/jupyterlite_pyodide_kernel*.whl
 
       - name: Install dependencies
         working-directory: ui-tests
@@ -218,7 +218,7 @@ jobs:
 
       - name: Upload Playwright Test report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: *action_upload
         with:
           name: |-
             jupyterlite-pyodide-kernel-playwright-tests-${{ github.run_number }}-${{ matrix.project }}
