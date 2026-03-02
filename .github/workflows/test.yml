@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: &action_checkout actions/checkout@v6
+        uses: actions/checkout@v6
 
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
@@ -65,14 +65,14 @@ jobs:
           cat *.txt
 
       - name: Upload extension packages
-        uses: &action_upload actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7
         with:
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
           path: dist
           if-no-files-found: error
 
       - name: Upload test config
-        uses: *action_upload
+        uses: actions/checkout@v6
         with:
           name: pyproject-toml
           path: pyproject.toml
@@ -93,7 +93,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: &action_download actions/download-artifact@v8
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
@@ -147,7 +147,7 @@ jobs:
           cd tmp
           jupyter lite check || exit 1
 
-      - uses: *action_download
+      - uses: actions/download-artifact@v8
         with:
           name: pyproject-toml
 
@@ -183,12 +183,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: *action_checkout
+        uses: actions/checkout@v6
 
       - name: Base Setup
         uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
-      - uses: *action_download
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           name: jupyterlite-pyodide-kernel-dist-${{ github.run_number }}
@@ -218,7 +218,7 @@ jobs:
 
       - name: Upload Playwright Test report
         if: always()
-        uses: *action_upload
+        uses: actions/upload-artifact@v7
         with:
           name: |-
             jupyterlite-pyodide-kernel-playwright-tests-${{ github.run_number }}-${{ matrix.project }}
