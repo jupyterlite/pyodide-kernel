@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "hatchling >=1.4.0",
+    "hatchling >=1.28.0",
     "jupyterlab >=4.6.0a2,<4.7.0",
 ]
 build-backend = "hatchling.build"
@@ -21,13 +21,13 @@ keywords = [
     "browser",
     "pyodide",
 ]
-license = { file = "LICENSE" }
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 classifiers = [
     "Framework :: Jupyter",
     "Framework :: Jupyter :: JupyterLab",
     "Framework :: Jupyter :: JupyterLab :: 4",
-    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
