@@ -25,7 +25,8 @@ PYODIDE_URL = "pyodideUrl"
 #: where we put pyodide, for now
 PYODIDE = "pyodide"
 PYODIDE_JS = "pyodide.js"
-PYODIDE_LOCK = "pyodide-lock.json"
+PYODIDE_LOCK_STEM = "pyodide-lock.json"
+PYODIDE_LOCK = f"{PYODIDE_LOCK_STEM}.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 
 #: probably only compatible with this version of pyodide
@@ -49,3 +50,12 @@ WASM_WHL = EMSCRIPTEN_ABI_WHL
 PYODIDE_ABI_WHL = "pyodide_*_wasm32.whl"
 
 ALL_WHL = [NOARCH_WHL, WASM_WHL, PYODIDE_ABI_WHL]
+
+#: the URL for the pyodide project
+PYODIDE_GH = "https://github.com/pyodide/pyodide"
+
+#: the default URL for a viable pyodide distribution
+PYODIDE_CORE_URL = (
+    f"{PYODIDE_GH}/releases/download/{PYODIDE_VERSION}/"
+    f"pyodide-core-{PYODIDE_VERSION}.tar.bz2"
+)

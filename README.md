@@ -37,17 +37,17 @@ yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Noteboo
 
 #### With Pyodide
 
-| `jupyterlite-pyodide-kernel` | `pyodide` | `python` | `emscripten` |
-| :--------------------------: | :-------: | :------: | :----------: |
-|      `>=0.1.0,<=0.1.1`       | `0.23.*`  | `3.10.*` |   `3.1.29`   |
-|      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |
-|      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
-|      `>=0.3.*,<=0.4.0`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |
-|      `>=0.4.*,<=0.4.6`       | `0.26.*`  | `3.12.*` |   `3.1.58`   |
-|      `>=0.4.7,<=0.5.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |
-|      `>=0.5.0,<=0.6.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |
-|      `>=0.6.0,<=0.7.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |
-|      `>=0.7.0,<=0.8.0`       | `0.29.*`  | `3.13.*` |   `4.0.9`    |
+| `jupyterlite-pyodide-kernel` | `pyodide` | `python` | `emscripten` | `pyodide-lock` |
+| :--------------------------: | :-------: | :------: | :----------: | :------------: |
+|      `>=0.1.0,<=0.1.1`       | `0.23.*`  | `3.10.*` |   `3.1.29`   |                |
+|      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |                |
+|      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |                |
+|      `>=0.3.*,<=0.4.0`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |                |
+|      `>=0.4.*,<=0.4.6`       | `0.26.*`  | `3.12.*` |   `3.1.58`   |                |
+|      `>=0.4.7,<=0.5.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |
+|      `>=0.5.0,<=0.6.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |
+|      `>=0.6.0,<=0.7.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |
+|      `>=0.7.0,<=0.8.0`       | `0.29.*`  | `3.13.*` |   `4.0.9`    | `>=0.1.2,<0.2` |
 
 Note that the Emscripten version is strict down to the bugfix version.
 
@@ -67,6 +67,14 @@ conda install -c conda-forge jupyterlite-pyodide-kernel
 
 > For more options see the [development install](#development-install) or [contributing
 > guide][contrib].
+
+### Optional Features
+
+For build-time customization of `pyodide-lock.json` with `PyodideLockAddon`, install the
+`[lock]` extra:
+
+- from PyPI: `jupyterlite-pyodide-kernel[lock]`
+- from `conda-forge`: `jupyterlite-pyodide-kernel-with-lock`
 
 ## Usage
 

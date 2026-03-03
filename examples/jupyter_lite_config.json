@@ -8,5 +8,8 @@
       "../jupyterlite_pyodide_kernel/labextension"
     ],
     "cache_dir": "../build/.lite-cache"
+  },
+  "PyodideLockAddon": {
+    "enabled": true
   }
 }
