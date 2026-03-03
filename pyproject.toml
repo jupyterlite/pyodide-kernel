@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "hatchling >=1.4.0",
-    "jupyterlab >=4.5.0,<4.6.0",
+    "hatchling >=1.28.0",
+    "jupyterlab >=4.5.5,<4.6.0",
 ]
 build-backend = "hatchling.build"
 
@@ -21,13 +21,13 @@ keywords = [
     "browser",
     "pyodide",
 ]
-license = { file = "LICENSE" }
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 classifiers = [
     "Framework :: Jupyter",
     "Framework :: Jupyter :: JupyterLab",
     "Framework :: Jupyter :: JupyterLab :: 4",
-    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -37,7 +37,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "jupyterlite-core >=0.7.0,<0.8.0",
+    "jupyterlite-core >=0.7.3,<0.8.0",
     "pkginfo"
 ]
 
@@ -59,7 +59,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:
 dev = [
     "build",
     "hatch",
-    "jupyterlab >=4.5.0,<4.6.0",
+    "jupyterlab >=4.5.5,<4.6.0",
 ]
 
 lint = [
@@ -118,11 +118,11 @@ version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
 before-bump-version = [
-    "python -m pip install 'jupyterlab~=4.5.0'",
+    "python -m pip install 'jupyterlab~=4.5.5'",
     "jlpm"
 ]
 before-build-npm = [
-    "python -m pip install 'jupyterlab~=4.5.0' hatch",
+    "python -m pip install 'jupyterlab~=4.5.5' hatch",
     "python -m pip install -e .[dev]",
     "jlpm",
     "jlpm build:prod",

@@ -151,7 +151,7 @@ Below is an short overview of getting up and running quickly. Please see the
 Ensure the local development environment has:
 
 - `git`
-- `nodejs 20`
+- `nodejs 22`
 - `python >=3.8`
 
 ### Development Quick Start
