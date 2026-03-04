@@ -25,7 +25,7 @@ PYODIDE_URL = "pyodideUrl"
 #: where we put pyodide, for now
 PYODIDE = "pyodide"
 PYODIDE_JS = "pyodide.js"
-PYODIDE_LOCK_STEM = "pyodide-lock.json"
+PYODIDE_LOCK_STEM = "pyodide-lock"
 PYODIDE_LOCK = f"{PYODIDE_LOCK_STEM}.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 
@@ -59,3 +59,18 @@ PYODIDE_CORE_URL = (
     f"{PYODIDE_GH}/releases/download/{PYODIDE_VERSION}/"
     f"pyodide-core-{PYODIDE_VERSION}.tar.bz2"
 )
+
+#: the default fallback URL prefix for pyodide packages
+PYODIDE_CDN_URL = f"https://cdn.jsdelivr.net/pyodide/v{PYODIDE_VERSION}/full"
+
+#: the path to ``pyodide-lock``-downloaded wheels
+PYODIDE_UV_WHEELS = "_uv_wheels"
+
+#: configuration key for the loadPyodide options
+LOAD_PYODIDE_OPTIONS = "loadPyodideOptions"
+
+#: configuration key for the lockfile URL
+OPTION_LOCK_FILE_URL = "lockFileURL"
+
+#: configuration key for preloaded packages
+OPTION_PACKAGES = "packages"

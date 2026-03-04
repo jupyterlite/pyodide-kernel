@@ -1,11 +1,9 @@
 """a JupyterLite addon for supporting piplite wheels"""
 
-import datetime
 import json
 import re
 import urllib.parse
-from hashlib import md5, sha256
-from pathlib import Path
+from hashlib import sha256
 from typing import List as _List
 
 import doit.tools
@@ -13,7 +11,6 @@ from jupyterlite_core.constants import (
     ALL_JSON,
     JSON_FMT,
     JUPYTERLITE_JSON,
-    LAB_EXTENSIONS,
     UTF8,
 )
 from traitlets import List
@@ -21,15 +18,14 @@ from traitlets import List
 from ._base import _BaseAddon
 
 from ..constants import (
-    ALL_WHL,
     PIPLITE_INDEX_SCHEMA,
     PIPLITE_URLS,
     PKG_JSON_PIPLITE,
     PKG_JSON_WHEELDIR,
-    PYODIDE_KERNEL_NPM_NAME,
     PYPI_WHEELS,
     KERNEL_SETTINGS_SCHEMA,
 )
+from ..utils import list_wheels, write_wheel_index, get_wheel_fileinfo
 
 
 class PipliteAddon(_BaseAddon):
@@ -38,7 +34,7 @@ class PipliteAddon(_BaseAddon):
     # traits
     piplite_urls: _List[str] = List(
         help="Local paths or URLs of piplite-compatible wheels to copy and index",
-    ).tag(config=True)
+    ).tag(config=True)  # type: ignore[assignment]
 
     # CLI
     aliases = {
@@ -54,16 +50,6 @@ class PipliteAddon(_BaseAddon):
     def wheel_cache(self):
         """where wheels will go in the cache folder"""
         return self.manager.cache_dir / "wheels"
-
-    @property
-    def output_extensions(self):
-        """where labextensions will go in the output folder"""
-        return self.manager.output_dir / LAB_EXTENSIONS
-
-    @property
-    def output_kernel_extension(self):
-        """the location of the Pyodide kernel labextension static assets"""
-        return self.output_extensions / PYODIDE_KERNEL_NPM_NAME
 
     @property
     def schemas(self):
@@ -128,7 +114,7 @@ class PipliteAddon(_BaseAddon):
             )
 
         if whl_metas or pkg_jsons:
-            whl_index = self.manager.output_dir / PYPI_WHEELS / ALL_JSON
+            whl_index = self.output_piplite_index
 
             yield self.task(
                 name="patch",
@@ -300,74 +286,3 @@ class PipliteAddon(_BaseAddon):
             **UTF8,
         )
         self.maybe_timestamp(whl_meta)
-
-
-def list_wheels(wheel_dir):
-    """get all wheels we know how to handle in a directory"""
-    return sorted(sum([[*wheel_dir.glob(f"*{whl}")] for whl in ALL_WHL], []))
-
-
-def get_wheel_fileinfo(whl_path):
-    """Generate a minimal Warehouse-like JSON API entry from a wheel"""
-    import pkginfo
-
-    metadata = pkginfo.get_metadata(str(whl_path))
-    whl_stat = whl_path.stat()
-    whl_isodate = (
-        datetime.datetime.fromtimestamp(whl_stat.st_mtime, tz=datetime.timezone.utc)
-        .isoformat()
-        .split("+")[0]
-        + "Z"
-    )
-    whl_bytes = whl_path.read_bytes()
-    whl_sha256 = sha256(whl_bytes).hexdigest()
-    whl_md5 = md5(whl_bytes).hexdigest()
-
-    release = {
-        "comment_text": "",
-        "digests": {"sha256": whl_sha256, "md5": whl_md5},
-        "downloads": -1,
-        "filename": whl_path.name,
-        "has_sig": False,
-        "md5_digest": whl_md5,
-        "packagetype": "bdist_wheel",
-        "python_version": "py3",
-        "requires_python": metadata.requires_python,
-        "size": whl_stat.st_size,
-        "upload_time": whl_isodate,
-        "upload_time_iso_8601": whl_isodate,
-        "url": f"./{whl_path.name}",
-        "yanked": False,
-        "yanked_reason": None,
-    }
-
-    return metadata.name, metadata.version, release
-
-
-def get_wheel_index(wheels, metadata=None):
-    """Get the raw python object representing a wheel index for a bunch of wheels
-
-    If given, metadata should be a dictionary of the form:
-
-        {Path: (name, version, metadata)}
-    """
-    metadata = metadata or {}
-    all_json = {}
-
-    for whl_path in sorted(wheels):
-        name, version, release = metadata.get(whl_path, get_wheel_fileinfo(whl_path))
-        # https://peps.python.org/pep-0503/#normalized-names
-        normalized_name = re.sub(r"[-_.]+", "-", name).lower()
-        if normalized_name not in all_json:
-            all_json[normalized_name] = {"releases": {}}
-        all_json[normalized_name]["releases"][version] = [release]
-
-    return all_json
-
-
-def write_wheel_index(whl_dir, metadata=None):
-    """Write out an all.json for a directory of wheels"""
-    wheel_index = Path(whl_dir) / ALL_JSON
-    index_data = get_wheel_index(list_wheels(whl_dir), metadata)
-    wheel_index.write_text(json.dumps(index_data, **JSON_FMT), **UTF8)
-    return wheel_index

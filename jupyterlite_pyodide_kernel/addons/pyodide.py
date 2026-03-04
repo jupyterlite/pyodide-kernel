@@ -44,7 +44,7 @@ class PyodideAddon(_BaseAddon):
 
     @property
     def output_pyodide(self):
-        """where labextensions will go in the output folder"""
+        """where pyodide will go in the output folder"""
         return self.manager.output_dir / "static" / PYODIDE
 
     @property

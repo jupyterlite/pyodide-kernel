@@ -3,16 +3,30 @@
 from __future__ import annotations
 
 import importlib.metadata
+import shutil
+import doit.tools
 
 from jupyterlite_core.manager import LiteManager
-from traitlets import Unicode, Bool
+from jupyterlite_core.constants import JUPYTERLITE_JSON
+from jupyterlite_core.trait_types import TypedTuple
+from traitlets import Unicode, Bool, Dict
+from typing import TYPE_CHECKING, Any
 
 from ._base import _BaseAddon
+from ..utils import list_wheels
 from ..constants import (
     PYODIDE_LOCK_STEM,
     PYODIDE_CORE_URL,
+    PYODIDE_LOCK,
+    PYODIDE_CDN_URL,
+    PYODIDE_URL,
+    PYPI_WHEELS,
+    PYODIDE_JS,
+    LOAD_PYODIDE_OPTIONS,
+    PYODIDE_UV_WHEELS,
+    OPTION_PACKAGES,
+    OPTION_LOCK_FILE_URL,
 )
-from typing import TYPE_CHECKING, Any
 
 PYODIDE_LOCK_VERSION: str | None
 
@@ -23,17 +37,21 @@ except ImportError:
 
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from collections.abc import Iterator
+    from pyodide_lock.uv_pip_compile import UvPipCompile
+    from pyodide_lock.spec import PackageSpec
 
     TTaskGenerator = Iterator[dict[str, Any]]
 
 
 class PyodideLockAddon(_BaseAddon):
     __all__ = [
+        "pre_status",
         "status",
         # "post_init",
         # "build",
-        # "post_build",
+        "post_build",
         # "check",
     ]
 
@@ -49,11 +67,61 @@ class PyodideLockAddon(_BaseAddon):
             "a URL, folder, or path to a ``pyodide`` distribution, if not configured"
             " in ``PyodideAddon.pyodide_url``"
         ),
-    )  # type: ignore[assignment]
+    ).tag(config=True)  # type: ignore[assignment]
+
+    input_base_url: str = Unicode(
+        default_value=PYODIDE_CDN_URL,
+        help="the logical CDN URL for partial Pyodide distribution",
+        allow_none=True,
+    ).tag(config=True)  # type: ignore[assignment]
+
+    base_url_for_missing: str = Unicode(
+        default_value=PYODIDE_CDN_URL,
+        help="a CDN URL for partial Pyodide distribution",
+        allow_none=True,
+    ).tag(config=True)  # type: ignore[assignment]
+
+    pyodide_lock_options: dict[str, Any] = Dict(
+        kwargs=[],
+        help="options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
+    ).tag(config=True)  # type: ignore[assignment]
+
+    preload_packages: list[str] = TypedTuple(
+        Unicode(),
+        default_value=[
+            "ssl",
+            "sqlite3",
+            "ipykernel",
+            "comm",
+            "pyodide-kernel",
+            "ipython",
+        ],
+        help=(
+            "``pyodide-kernel`` dependencies to add to"
+            " ``PyodideAddon.loadPyodideOptions.packages``."
+            " These will be downloaded and installed, but _not_ imported to"
+            " ``sys.modules``"
+        ),
+    ).tag(config=True)  # type: ignore[assignment]
+
+    extra_preload_packages: tuple[str] = TypedTuple(
+        Unicode(),
+        help=(
+            "extra packages to add to ``PyodideAddon.loadPyodideOptions.packages``."
+            " These will be downloaded at kernel startup, and installed, but _not_"
+            " imported to ``sys.modules``"
+        ),
+    ).tag(config=True)  # type: ignore[assignment]
+
+    # properties
+    @property
+    def output_pyodide_lock(self) -> Path:
+        return self.manager.output_dir / "static" / PYODIDE_LOCK_STEM / PYODIDE_LOCK
 
     @property
-    def pyodide_addon(self):
-        return self.addons["jupyterlite-pyodide-kernel-pyodide"]
+    def pyodide_lock_cache(self):
+        """where ``pyodide-lock`` and ``uv`` stuff will go in the cache folder"""
+        return self.manager.cache_dir / PYODIDE_LOCK_STEM
 
     # JupyterLite API methods
     def pre_status(self, manager: LiteManager) -> TTaskGenerator:
@@ -75,10 +143,187 @@ class PyodideLockAddon(_BaseAddon):
             from textwrap import indent
 
             lines = [
-                f"""enabled:      {self.enabled}""",
-                f"""pyodide-lock: {PYODIDE_LOCK_VERSION}""",
+                f"""enabled:        {self.enabled}""",
+                f"""pyodide-lock:   {PYODIDE_LOCK_VERSION or "not installed"}""",
+                f"""pyodide CDN:    {self.input_base_url}""",
             ]
 
             print(indent("\n".join(lines), "    "), flush=True)
 
         yield self.task(name="lock", actions=[_status])
+
+    def post_build(self, manager: LiteManager) -> TTaskGenerator:
+        """Build a customized ``pyodide-lock.json``."""
+        if not self.enabled:
+            return
+        out = self.manager.output_dir
+        wheels = self.find_wheels_by_name()
+        cfg_str = f"""
+            {self.base_url_for_missing}
+            {self.input_base_url}
+            {self.preload_packages}{self.extra_preload_packages}
+            {self.pyodide_addon.pyodide_url}
+            {self.pyodide_lock_options}
+            {self.pyodide_url}
+        """
+
+        yield self.task(
+            name="lock",
+            doc=f"ensure {PYODIDE_LOCK} contains wheels from piplite and all extensions",
+            actions=[(self.build_lock, [wheels])],
+            file_dep=[
+                *wheels.values(),
+                self.pyodide_addon.output_pyodide / PYODIDE_LOCK,
+            ],
+            targets=[self.output_pyodide_lock],
+            uptodate=[doit.tools.config_changed(cfg_str)],
+        )
+
+        jupyterlite_json = out / JUPYTERLITE_JSON
+
+        yield self.task(
+            name="patch",
+            doc=f"configure runtime pyodide settings in {JUPYTERLITE_JSON}",
+            actions=[(self.patch_config, [jupyterlite_json, self.output_pyodide_lock])],
+            file_dep=[jupyterlite_json, self.output_pyodide_lock],
+            uptodate=[doit.tools.config_changed(cfg_str)],
+        )
+
+    def find_wheels_by_name(self) -> dict[str, Path]:
+        """Gather all wheels, with a single wheel per canonical name."""
+        from packaging.utils import canonicalize_name
+        import pkginfo
+
+        out = self.manager.output_dir
+        wheel_dirs = [self.output_extensions, out / PYPI_WHEELS]
+        exclude_names = {
+            canonicalize_name(e) for e in self.pyodide_lock_options.get("excludes", [])
+        }
+        wheels: dict[str, Path] = {}
+        for wheel in list_wheels(*wheel_dirs, recursive=True):
+            info = pkginfo.get_metadata(f"{wheel}")
+            if not (info and info.name):
+                self.log.warning("Couldn't recover package name from %s", wheel)
+                continue
+            c_name = canonicalize_name(info.name)
+            if c_name in exclude_names:
+                self.log.warning("Local wheel for %s excluded %s", c_name, wheel)
+                continue
+            if c_name in wheels:
+                self.log.warning(
+                    "Local wheel for %s already collected from %s, discarding %s",
+                    c_name,
+                    wheels[c_name],
+                    wheel,
+                )
+                continue
+            wheels[c_name] = wheel
+        return wheels
+
+    def build_lock(self, wheels_by_name: dict[str, Path]) -> bool:
+        """Build a ``pyodide-lock.json`` with all local and user-requested wheels."""
+        # raise Exception(wheels_by_name)
+
+        upc = self.init_uv_pip_compile(wheels_by_name)
+        if upc is None:
+            return False
+        spec = upc.update()
+
+        shutil.rmtree(self.output_pyodide_lock.parent, ignore_errors=True)
+        self.output_pyodide_lock.parent.mkdir(parents=True)
+
+        for pkg in spec.packages.values():
+            if pkg.file_name.startswith(PYODIDE_UV_WHEELS):
+                self.ensure_local_spec(pkg, wheels_by_name)
+        spec.to_json(path=self.output_pyodide_lock, indent=2)
+        return True
+
+    def init_uv_pip_compile(
+        self, wheels_by_name: dict[str, Path]
+    ) -> UvPipCompile | None:
+        """Create a ``UvPipCompile`` runner."""
+        from pyodide_lock.uv_pip_compile import UvPipCompile
+
+        cache_dir = self.pyodide_lock_cache
+        work_dir = cache_dir / "_work"
+        tmp_lock = cache_dir / PYODIDE_LOCK
+        tmp_lock.parent.mkdir(parents=True, exist_ok=True)
+        patched_lock = tmp_lock.parent / f"patched-{tmp_lock.name}"
+        in_lock = self.pyodide_addon.output_pyodide / PYODIDE_LOCK
+        self.copy_one(in_lock, tmp_lock)
+
+        upc = UvPipCompile(
+            input_path=tmp_lock,
+            output_path=patched_lock,
+            input_base_url=self.input_base_url,
+            wheels=[*wheels_by_name.values()],
+            work_dir=work_dir,
+            wheel_dir=cache_dir / PYODIDE_UV_WHEELS,
+            base_url_for_missing=self.base_url_for_missing,
+        )
+
+        for key, value in sorted(self.pyodide_lock_options.items()):
+            if not hasattr(upc, key):
+                self.log.error("Unrecognized option: UvPipCompile.%s", key)
+                return None
+            setattr(upc, key, value)
+
+        return upc
+
+    def ensure_local_spec(
+        self,
+        pkg: PackageSpec,
+        wheels_by_name: dict[str, Path],
+    ):
+        """Ensure a ``PackageSpec`` points at a wheel in ``output_dir``."""
+        fname = pkg.file_name
+        out = self.manager.output_dir
+        just_name = fname.replace(f"{PYODIDE_UV_WHEELS}/", "")
+        output_wheels = [w for w in wheels_by_name.values() if w.name == just_name]
+        rel_url: str | None = None
+        out_wheel: Path | None = None
+
+        if output_wheels:
+            out_wheel = output_wheels[0]
+            rel_url = out_wheel.relative_to(out).as_posix()
+        else:
+            uv_wheel = self.pyodide_lock_cache / PYODIDE_UV_WHEELS / just_name
+            out_wheel = self.output_pyodide_lock.parent / just_name
+            self.copy_one(uv_wheel, out_wheel)
+            rel_url = f"static/{PYODIDE_LOCK_STEM}/{just_name}"
+
+        if not (rel_url and out_wheel and out_wheel.exists()):
+            msg = f"Don't know what to do with {just_name} from {pkg}: {out_wheel}"
+            raise NotImplementedError(msg)
+
+        pkg.file_name = f"../../{rel_url}"
+
+    def patch_config(self, jupyterlite_json: Path, lockfile: Path) -> None:
+        """Update the runtime ``jupyter-lite-config.json``."""
+        self.log.debug("[lock] patching %s for pyodide-lock", jupyterlite_json)
+        out = self.manager.output_dir
+
+        settings = self.get_pyodide_settings(jupyterlite_json)
+
+        output_js = self.pyodide_addon.output_pyodide / PYODIDE_JS
+        url = f"./{output_js.relative_to(out).as_posix()}"
+
+        settings[PYODIDE_URL] = url
+
+        rel = lockfile.relative_to(out).as_posix()
+        load_pyodide_options = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
+
+        load_pyodide_options.update(
+            {
+                OPTION_LOCK_FILE_URL: f"./{rel}",
+                OPTION_PACKAGES: sorted(
+                    {
+                        *load_pyodide_options.get(OPTION_PACKAGES, []),
+                        *self.preload_packages,
+                        *self.extra_preload_packages,
+                    }
+                ),
+            }
+        )
+
+        self.set_pyodide_settings(jupyterlite_json, settings)

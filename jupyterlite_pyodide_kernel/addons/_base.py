@@ -6,9 +6,11 @@ when these features are added upstream:
     https://github.com/jupyterlite/jupyterlite/issues/996
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import Generator, Dict, Any
+from typing import Generator, Dict, Any, TYPE_CHECKING
 from jupyterlite_core.addons.base import BaseAddon
 from jupyterlite_core.constants import (
     JUPYTERLITE_IPYNB,
@@ -17,15 +19,39 @@ from jupyterlite_core.constants import (
     JUPYTERLITE_METADATA,
     JUPYTER_CONFIG_DATA,
     LITE_PLUGIN_SETTINGS,
+    ALL_JSON,
     JSON_FMT,
+    LAB_EXTENSIONS,
 )
 
-from ..constants import PYODIDE_KERNEL_PLUGIN_ID
+from ..constants import PYODIDE_KERNEL_PLUGIN_ID, PYPI_WHEELS, PYODIDE_KERNEL_NPM_NAME
+
+if TYPE_CHECKING:
+    from .pyodide import PyodideAddon
 
 __all__ = ["_BaseAddon"]
 
 
 class _BaseAddon(BaseAddon):
+    @property
+    def pyodide_addon(self) -> PyodideAddon:
+        """Get a reference to the manager's ``PyodideAddon``."""
+        return self.manager._addons["jupyterlite-pyodide-kernel-pyodide"]
+
+    @property
+    def output_piplite_index(self) -> Path:
+        return self.manager.output_dir / PYPI_WHEELS / ALL_JSON
+
+    @property
+    def output_extensions(self):
+        """where labextensions will go in the output folder"""
+        return self.manager.output_dir / LAB_EXTENSIONS
+
+    @property
+    def output_kernel_extension(self):
+        """the location of the Pyodide kernel labextension static assets"""
+        return self.output_extensions / PYODIDE_KERNEL_NPM_NAME
+
     def get_pyodide_settings(self, config_path: Path):
         """Get the settings for the client-side Pyodide kernel."""
         return self.get_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID)

@@ -124,7 +124,7 @@ ${e.stack}`;
       'sqlite3',
       'ipykernel',
       'comm',
-      'pyodide_kernel',
+      'pyodide-kernel',
       'jedi',
       'ipython',
     ];

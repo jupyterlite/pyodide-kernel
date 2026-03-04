@@ -7,9 +7,19 @@
       "https://files.pythonhosted.org/packages/65/f6/659ca44182c86f57977e946047c339c717745fda9f43b7ac47f274e86553/jupyterlab_widgets-3.0.11-py3-none-any.whl",
       "../jupyterlite_pyodide_kernel/labextension"
     ],
-    "cache_dir": "../build/.lite-cache"
+    "cache_dir": "../build/.lite_cache"
   },
   "PyodideLockAddon": {
-    "enabled": true
+    "enabled": true,
+    "pyodide_lock_options": {
+      "specs": [
+        "ipywidgets",
+        "IPython >=9.10.0"
+      ],
+      "constraints": [
+          "matplotlib-inline @ https://files.pythonhosted.org/packages/py3/m/matplotlib-inline/matplotlib_inline-0.2.1-py3-none-any.whl"
+      ],
+      "excludes": ["widgetsnbextension", "jupyterlab-widgets"]
+    }
   }
 }
