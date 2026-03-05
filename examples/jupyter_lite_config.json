@@ -13,11 +13,11 @@
     "enabled": true,
     "pyodide_lock_options": {
       "specs": [
+        "IPython >=9.11.0",
         "ipywidgets",
-        "IPython >=9.10.0"
-      ],
-      "constraints": [
-          "matplotlib-inline @ https://files.pythonhosted.org/packages/py3/m/matplotlib-inline/matplotlib_inline-0.2.1-py3-none-any.whl"
+        "jedi >=0.18.2",
+        "matplotlib-inline >=0.1.6",
+        "pygments >=2.14.0"
       ],
       "excludes": ["widgetsnbextension", "jupyterlab-widgets"]
     }

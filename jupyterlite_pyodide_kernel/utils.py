@@ -24,10 +24,10 @@ def list_wheels(
         if not wheel_dir.is_dir():
             continue
         for pattern in patterns:
-            wheels += [
-                *(wheel_dir.rglob if recursive else wheel_dir.glob)(f"*{pattern}")
-            ]
-    return sorted(wheels)
+            wheels += sorted(
+                (wheel_dir.rglob if recursive else wheel_dir.glob)(f"*{pattern}")
+            )
+    return wheels
 
 
 def get_wheel_fileinfo(whl_path: Path) -> tuple[str, str, dict[str, Any]]:

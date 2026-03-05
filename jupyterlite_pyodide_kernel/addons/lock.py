@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.metadata
 import shutil
 import doit.tools
+from hashlib import sha256
 
 from jupyterlite_core.manager import LiteManager
 from jupyterlite_core.constants import JUPYTERLITE_JSON
@@ -37,23 +38,17 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from collections.abc import Iterator
     from pyodide_lock.uv_pip_compile import UvPipCompile
-    from pyodide_lock.spec import PackageSpec
+    from pyodide_lock.spec import PackageSpec, PyodideLockSpec
+    from pkginfo import Distribution
+    from pathlib import Path
 
     TTaskGenerator = Iterator[dict[str, Any]]
 
 
 class PyodideLockAddon(_BaseAddon):
-    __all__ = [
-        "pre_status",
-        "status",
-        # "post_init",
-        # "build",
-        "post_build",
-        # "check",
-    ]
+    __all__ = ["pre_status", "status", "post_build", "check"]
 
     # traits
     enabled: bool = Bool(
@@ -81,12 +76,16 @@ class PyodideLockAddon(_BaseAddon):
         allow_none=True,
     ).tag(config=True)  # type: ignore[assignment]
 
+    wheels: tuple[str, ...] = TypedTuple(
+        Unicode(), help="paths to local wheels or folders"
+    ).tag(config=True)
+
     pyodide_lock_options: dict[str, Any] = Dict(
         kwargs=[],
         help="options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
     ).tag(config=True)  # type: ignore[assignment]
 
-    preload_packages: list[str] = TypedTuple(
+    preload_packages: tuple[str, ...] = TypedTuple(
         Unicode(),
         default_value=[
             "ssl",
@@ -156,7 +155,7 @@ class PyodideLockAddon(_BaseAddon):
         """Build a customized ``pyodide-lock.json``."""
         if not self.enabled:
             return
-        out = self.manager.output_dir
+        out = manager.output_dir
         wheels = self.find_wheels_by_name()
         cfg_str = f"""
             {self.base_url_for_missing}
@@ -189,43 +188,21 @@ class PyodideLockAddon(_BaseAddon):
             uptodate=[doit.tools.config_changed(cfg_str)],
         )
 
-    def find_wheels_by_name(self) -> dict[str, Path]:
-        """Gather all wheels, with a single wheel per canonical name."""
-        from packaging.utils import canonicalize_name
-        import pkginfo
+    def check(self, manager: LiteManager) -> TTaskGenerator:
+        if not self.enabled:
+            return
+        yield self.task(
+            name="lock",
+            doc=f"ensure {PYODIDE_LOCK} is consistent",
+            actions=[self.check_lock],
+        )
 
-        out = self.manager.output_dir
-        wheel_dirs = [self.output_extensions, out / PYPI_WHEELS]
-        exclude_names = {
-            canonicalize_name(e) for e in self.pyodide_lock_options.get("excludes", [])
-        }
-        wheels: dict[str, Path] = {}
-        for wheel in list_wheels(*wheel_dirs, recursive=True):
-            info = pkginfo.get_metadata(f"{wheel}")
-            if not (info and info.name):
-                self.log.warning("Couldn't recover package name from %s", wheel)
-                continue
-            c_name = canonicalize_name(info.name)
-            if c_name in exclude_names:
-                self.log.warning("Local wheel for %s excluded %s", c_name, wheel)
-                continue
-            if c_name in wheels:
-                self.log.warning(
-                    "Local wheel for %s already collected from %s, discarding %s",
-                    c_name,
-                    wheels[c_name],
-                    wheel,
-                )
-                continue
-            wheels[c_name] = wheel
-        return wheels
-
+    # task implementations
     def build_lock(self, wheels_by_name: dict[str, Path]) -> bool:
         """Build a ``pyodide-lock.json`` with all local and user-requested wheels."""
-        # raise Exception(wheels_by_name)
 
         upc = self.init_uv_pip_compile(wheels_by_name)
-        if upc is None:
+        if upc is None:  # pragma: no cover
             return False
         spec = upc.update()
 
@@ -237,6 +214,100 @@ class PyodideLockAddon(_BaseAddon):
                 self.ensure_local_spec(pkg, wheels_by_name)
         spec.to_json(path=self.output_pyodide_lock, indent=2)
         return True
+
+    def check_lock(self) -> bool:
+        """Check the lock."""
+        ok = True
+        spec: PyodideLockSpec | None = None
+        try:
+            from pyodide_lock.spec import PyodideLockSpec
+            from packaging.utils import canonicalize_name
+
+            spec = PyodideLockSpec.from_json(self.output_pyodide_lock)
+        except Exception as err:  # pragma: no cover
+            self.log.error(
+                "%s\n%s\n!!! Failed to parse lock with pyodide-lock v%s",
+                err,
+                self.output_pyodide_lock,
+                PYODIDE_LOCK_VERSION,
+            )
+            ok = False
+        if spec:
+            c_names = {canonicalize_name(n) for n in spec.packages}
+            for pkg in spec.packages.values():
+                ok = self.check_package_spec(pkg, c_names)
+        return ok
+
+    def check_package_spec(self, pkg: PackageSpec, c_names: list[str]):
+        """Verify a single package."""
+        ok = True
+        if pkg.file_name.startswith("."):
+            path = self.output_pyodide_lock.parent / pkg.file_name
+            if not path.is_file():
+                self.log.error("Missing wheel for %s: %s", pkg.name, path)
+                ok = False
+            if ok:
+                sha = sha256(path.read_bytes()).hexdigest()
+                if sha != pkg.sha256:  # pragma: no cover
+                    self.log.error(
+                        "SHA256 mismatch for %s:\n\texpected: %s\n\tobserved: %s",
+                        pkg.name,
+                        pkg.sha256,
+                        sha,
+                    )
+                    ok = False
+        return ok
+
+    # helpers
+    def find_wheels_by_name(self) -> dict[str, Path]:
+        """Gather a wheel per canonical name from ``output_dir``."""
+        from packaging.utils import canonicalize_name
+
+        out = self.manager.output_dir
+        wheel_dirs = [self.output_extensions, out / PYPI_WHEELS]
+        exclude_names = {
+            canonicalize_name(e) for e in self.pyodide_lock_options.get("excludes", [])
+        }
+        wheels: dict[str, Path] = {}
+
+        for wheel_str in self.wheels:
+            wheel = self.manager.lite_dir / wheel_str
+            if wheel.is_dir():
+                wheel_dirs += [wheel]
+            elif wheel.is_file():
+                c_name = self.get_wheel_meta(wheel)[0]
+                if c_name:
+                    wheels[c_name] = wheel
+            else:  # pragma: no cover
+                self.log.warning("Wheel %s was requested, but not found", wheel)
+
+        for wheel in list_wheels(*wheel_dirs, recursive=True):
+            c_name = self.get_wheel_meta(wheel)[0]
+            if c_name is None:  # pragma: no cover
+                continue
+            if c_name in exclude_names:
+                self.log.warning("Local wheel for %s excluded %s", c_name, wheel)
+                continue
+            if c_name in wheels:  # pragma: no cover
+                self.log.warning(
+                    "Local wheel for %s already collected from %s, discarding %s",
+                    c_name,
+                    wheels[c_name],
+                    wheel,
+                )
+                continue
+            wheels[c_name] = wheel
+        return wheels
+
+    def get_wheel_meta(self, wheel: Path) -> tuple[str | None, Distribution | None]:
+        import pkginfo
+        from packaging.utils import canonicalize_name
+
+        info = pkginfo.get_metadata(f"{wheel}")
+        if not (info and info.name):  # pragma: no cover
+            self.log.warning("Couldn't recover package name from %s", wheel)
+            return (None, None)
+        return canonicalize_name(info.name), info
 
     def init_uv_pip_compile(
         self, wheels_by_name: dict[str, Path]
