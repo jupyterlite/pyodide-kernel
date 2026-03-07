@@ -17,6 +17,7 @@ from jupyterlite_core.constants import ALL_JSON, JSON_FMT, UTF8
 
 if TYPE_CHECKING:
     from packaging.utils import NormalizedName
+    from pkginfo import Distribution
 
 
 @lru_cache(100)
@@ -27,12 +28,18 @@ def normalize_names(*names: str) -> list[NormalizedName]:
     return sorted({*map(canonicalize_name, names)})
 
 
+@lru_cache(1000)
+def get_wheel_metadata(filename: str) -> Distribution:
+    import pkginfo
+
+    return pkginfo.get_metadata(filename)
+
+
 def get_wheel_name(wheel: Path) -> NormalizedName | None:
     """Get the normalized package name contained in a wheel"""
-    import pkginfo
     from packaging.utils import canonicalize_name
 
-    info = pkginfo.get_metadata(f"{wheel}")
+    info = get_wheel_metadata(f"{wheel}")
     if not (info and info.name):  # pragma: no cover
         return None
     return canonicalize_name(info.name)
@@ -58,9 +65,7 @@ def list_wheels(
 
 def get_wheel_fileinfo(whl_path: Path) -> tuple[str, str, dict[str, Any]]:
     """Generate a minimal Warehouse-like JSON API entry from a wheel"""
-    import pkginfo
-
-    metadata = pkginfo.get_metadata(str(whl_path))
+    metadata = get_wheel_metadata(str(whl_path))
     if not (metadata and metadata.name and metadata.version):
         msg = f"Could not get metadata for {whl_path}"
         raise ValueError(msg)

@@ -1,4 +1,4 @@
-"""a JupyterLite addon for building custom ``pyodide-lock.json``"""
+"""a JupyterLite addon for building custom Pyodide lockfiles."""
 
 from __future__ import annotations
 
@@ -72,33 +72,34 @@ class PyodideLockConfig(LoggingConfigurable):
 
     input_base_url: str = Unicode(
         default_value=PYODIDE_CDN_URL,
-        help="the logical CDN URL for partial Pyodide distribution",
+        help="the logical URL for a partial Pyodide distribution",
         allow_none=True,
     ).tag(config=True)  # type: ignore[assignment]
 
     base_url_for_missing: str = Unicode(
         default_value=PYODIDE_CDN_URL,
-        help="a CDN URL for partial Pyodide distribution",
+        help="URL for packages missing from a partial Pyodide distribution",
         allow_none=True,
     ).tag(config=True)  # type: ignore[assignment]
 
     wheels: tuple[str, ...] = TypedTuple(
-        Unicode(), help="paths to local wheels or folders"
+        Unicode(), help=f"paths to local wheels or folders to include in {PYODIDE_LOCK}"
     ).tag(config=True)  # type: ignore[assignment]
 
     specs: tuple[str, ...] = TypedTuple(
-        Unicode(), help="PEP-508 specs for Python packages to include in the lock"
+        Unicode(),
+        help=f"PEP-508 specs for Python packages to include in {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
     excludes: tuple[str, ...] = TypedTuple(
         Unicode(),
-        help="Python package names to exclude from the lock",
+        help=f"Python package names to exclude from {PYODIDE_LOCK}",
         default_value=["widgetsnbextension", "jupyterlab-widgets"],
     ).tag(config=True)  # type: ignore[assignment]
 
     extra_excludes: tuple[str, ...] = TypedTuple(
         Unicode(),
-        help="extra Python package names to exclude from the lock",
+        help=f"extra Python package names to exclude from {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
     pyodide_lock_options: dict[str, Any] = Dict(
@@ -115,17 +116,17 @@ class PyodideLockConfig(LoggingConfigurable):
             "pyodide-kernel",
             "ipython",
         ],
-        help="Python package names to prefetch while initializing Pyodide",
+        help=f"Python package names from {PYODIDE_LOCK} to prefetch while initializing Pyodide",
     ).tag(config=True)  # type: ignore[assignment]
 
     extra_prefetch: tuple[str] = TypedTuple(
         Unicode(),
-        help="extra Python package names to prefetch while initializing Pyodide",
+        help=f"extra Python package names from {PYODIDE_LOCK} to prefetch while initializing Pyodide",
     ).tag(config=True)  # type: ignore[assignment]
 
 
 class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
-    """JupyterLite addon which builds a custom ``pyodide-lock.json``."""
+    """JupyterLite addon which builds a custom Pyodide lockfile."""
 
     __all__ = ["pre_status", "status", "post_build", "check"]
 
@@ -139,7 +140,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
     flags = {
         "pyodide-lock": (
             {"PyodideLockConfig": {"enabled": True}},
-            "Use pyodide-lock and uv to customize pyodide-lock.json",
+            f"Use pyodide-lock and uv to customize {PYODIDE_LOCK}",
         ),
     }
 
@@ -164,21 +165,34 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
         return normalize_names(*self.excludes, *self.extra_excludes)
 
     @property
+    def all_extra_uv_args(self) -> list[str]:
+        """All arguments to inject for ``uv pip compile``."""
+        args: list[str] = []
+        if self.manager.source_date_epoch:
+            iso = datetime.fromtimestamp(self.manager.source_date_epoch).isoformat()
+            args += ["--exclude-newer", iso]
+        return args
+
+    @property
     def status_info(self) -> str:
         """The status string, also used for task up-to-date checks."""
         lines = [
-            f"""enabled:              {self.enabled}""",
-            f"""pyodide-lock:         {PYODIDE_LOCK_VERSION or "not installed"}""",
-            f"""pyodide base URL:     {self.input_base_url}""",
-            f"""missing package URL:  {self.base_url_for_missing}""",
-            f"""pyodide-lock options: {self.pyodide_lock_options}""",
-            """packages:""",
-            f""" - PEP-508 specs:       {self.specs}""",
-            f""" - excludes:            {self.all_excludes}""",
-            f""" - wheels:              {self.wheels}""",
-            """runtime:""",
-            f""" - prefetch packages:   {self.all_prefetch}""",
+            f"enabled:              {self.enabled}",
+            f"pyodide-lock:         {PYODIDE_LOCK_VERSION or 'not installed'}",
         ]
+        if self.enabled:
+            lines += [
+                f"pyodide base URL:     {self.input_base_url}",
+                f"missing package URL:  {self.base_url_for_missing}",
+                f"pyodide-lock options: {self.pyodide_lock_options}",
+                "solver:",
+                f" - specs:               {self.specs}",
+                f" - excludes:            {self.all_excludes}",
+                f" - wheels:              {self.wheels}",
+                f" - uv args:             {self.all_extra_uv_args}",
+                "runtime:",
+                f" - prefetch packages:   {self.all_prefetch}",
+            ]
         return "\n".join(lines)
 
     # JupyterLite API methods
@@ -204,7 +218,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
         )
 
     def post_build(self, manager: LiteManager) -> TTaskGenerator:
-        """Build tasks to customize ``pyodide-lock.json``."""
+        """Build tasks to customize a Pyodide lockfile."""
         if not self.enabled:
             return
         out = manager.output_dir
@@ -232,7 +246,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
         )
 
     def check(self, manager: LiteManager) -> TTaskGenerator:
-        """Build a task to check ``pyodide-lock.json`` and wheels."""
+        """Build a task to check a Pyodide lockfile and wheels."""
         if not self.enabled:
             return
         yield self.task(
@@ -243,7 +257,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
 
     # task actions
     def build_lock(self, wheels_by_name: TWheels) -> bool:
-        """Build a ``pyodide-lock.json`` with all kernel and user-requested wheels."""
+        """Build a Pyodide lockfile with all kernel and user-requested wheels."""
 
         upc = self.init_uv_pip_compile(wheels_by_name)
         if upc is None:  # pragma: no cover
@@ -292,7 +306,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
         return False not in ok.values()
 
     def patch_config(self, jupyterlite_json: Path, lockfile: Path) -> None:
-        """Update the runtime ``jupyter-lite-config.json`` for ``pyodide-lock.json`."""
+        """Update the runtime ``jupyter-lite-config.json`` for Pyodide lockfile."""
         self.log.debug("patching %s for pyodide-lock", jupyterlite_json)
         out = self.manager.output_dir
 
@@ -368,9 +382,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
         self.copy_one(in_lock, tmp_lock)
 
         kwargs = deepcopy(self.pyodide_lock_options)
-        if self.manager.source_date_epoch:
-            iso = datetime.fromtimestamp(self.manager.source_date_epoch).isoformat()
-            kwargs.setdefault("extra_uv_args", []).extend(["--exclude-newer", iso])
+        kwargs.setdefault("extra_uv_args", []).extend(self.all_extra_uv_args)
 
         upc = UvPipCompile(
             input_path=tmp_lock,

@@ -6,6 +6,8 @@ import urllib.parse
 from pathlib import Path
 
 import doit.tools
+
+from jupyterlite_core.trait_types import TypedTuple
 from jupyterlite_core.constants import (
     JUPYTERLITE_JSON,
 )
@@ -26,6 +28,12 @@ class PyodideAddon(_BaseAddon):
     # traits
     pyodide_url: str = Unicode(
         allow_none=True, help="Local path or URL of a pyodide distribution tarball"
+    ).tag(config=True)
+
+    pyodide_ignore: str = TypedTuple(
+        Unicode(),
+        default_value=["python", "python.bat", "python.exe"],
+        help="names of files to exclude from a pyodide distribution",
     ).tag(config=True)
 
     # CLI
@@ -91,19 +99,21 @@ class PyodideAddon(_BaseAddon):
         if not the_pyodide:
             return
 
-        file_dep = [
-            p
+        file_dep_targets = {
+            p: self.output_pyodide / p.relative_to(the_pyodide)
             for p in the_pyodide.rglob("*")
-            if not (p.is_dir() or self.is_ignored_sourcemap(p.name))
-        ]
+            if not (
+                p.is_dir()
+                or self.is_ignored_sourcemap(p.name)
+                or p.name in self.pyodide_ignore
+            )
+        }
 
         yield self.task(
             name="copy:pyodide",
-            file_dep=file_dep,
-            targets=[
-                self.output_pyodide / p.relative_to(the_pyodide) for p in file_dep
-            ],
-            actions=[(self.copy_one, [the_pyodide, self.output_pyodide])],
+            file_dep=sorted(file_dep_targets),
+            targets=sorted(file_dep_targets.values()),
+            actions=[(self.copy_one, [p, op]) for p, op in file_dep_targets.items()],
         )
 
     def post_build(self, manager):
@@ -117,14 +127,9 @@ class PyodideAddon(_BaseAddon):
 
         yield self.task(
             name=f"patch:{JUPYTERLITE_JSON}",
-            doc=f"ensure {JUPYTERLITE_JSON} includes any piplite wheels",
+            doc=f"ensure {JUPYTERLITE_JSON} includes Pyodide customizations",
             file_dep=[output_js],
-            actions=[
-                (
-                    self.patch_jupyterlite_json,
-                    [jupyterlite_json, output_js],
-                )
-            ],
+            actions=[(self.patch_jupyterlite_json, [jupyterlite_json, output_js])],
         )
 
     def check(self, manager):

@@ -18,6 +18,13 @@ if TYPE_CHECKING:
     TLockRunner = Callable[[list[str], int], RunResult]
     TPostRun = Callable[[Path, str, TLockRunner], None]
 
+# paths
+PL = "pyodide-lock"
+PLJ = "pyodide-lock.json"
+SPLJ = f"_output/static/{PL}/{PLJ}"
+SPJS = "_output/static/pyodide/pyodide.js"
+JLCJ = "jupyter_lite_config.json"
+
 #: a valid timestamp for IPython 9.11.0
 IPY911_EPOCH = 1_772_814_229
 #: a set of de-normalized specs for IPython 9.11.0 to override the pyodide defaults
@@ -69,7 +76,7 @@ def test_pyodide_lock(
     run_with_lock: TLockRunner,
     a_lock_config: str,
 ) -> None:
-    """can we generate a custom pyodide-lock.json?"""
+    """can we generate a custom Pyodide lockfile?"""
     run_with_lock(["status"], 0)
     run_with_lock(["build"], 0)
     run_with_lock(["check"], 0)
@@ -99,11 +106,10 @@ def run_with_lock(
     script_runner: ScriptRunner,
 ) -> TLockRunner:
     """Provide a pre-configured runner."""
-    conf_path = an_empty_lite_dir / "jupyter_lite_config.json"
     conf = deepcopy(CONFIGS[a_lock_config])
     conf.setdefault(PLA, {}).update(enabled=True)
     conf.setdefault("PyodideAddon", {}).update(pyodide_url=f"{a_pyodide_tarball}")
-    conf_path.write_text(json.dumps(conf), encoding="utf-8")
+    (an_empty_lite_dir / JLCJ).write_text(json.dumps(conf), encoding="utf-8")
 
     def run(args: list[str], expect_rc: int = 0) -> RunResult:
         res = script_runner.run(["jupyter", "lite", *args], cwd=an_empty_lite_dir)
@@ -117,11 +123,10 @@ def run_with_lock(
 # post-run checks
 def check_paths(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -> None:
     """Check whether key paths exist."""
-    static = an_empty_lite_dir / "_output/static"
-    pyodide_path = static / "pyodide/pyodide.js"
-    lock_path = static / "pyodide-lock/pyodide-lock.json"
-    assert pyodide_path.exists(), "pyodide.js does not exist"
-    assert lock_path.exists(), "pyodide-lock.json does not exist"
+    pyodide_path = an_empty_lite_dir / SPJS
+    lock_path = an_empty_lite_dir / SPLJ
+    assert pyodide_path.exists(), f"{SPLJ} does not exist"
+    assert lock_path.exists(), f"{SPJS} does not exist"
     expect_wheels = {*CONFIG_EXPECT_WHEEL_STEMS.get(a_lock_config, []), *DEFAULT_WHEELS}
     wheels = sorted(lock_path.parent.glob("*.whl"))
     wheel_names = {w.name.split("-")[0] for w in wheels}
@@ -133,9 +138,7 @@ def check_paths(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -
 
 def check_lock(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -> None:
     """Check some properties of the lock."""
-    static = an_empty_lite_dir / "_output/static"
-    lock_path = static / "pyodide-lock/pyodide-lock.json"
-    lock = json.loads(lock_path.read_text(encoding="utf-8"))
+    lock = json.loads((an_empty_lite_dir / SPLJ).read_text(encoding="utf-8"))
     assert "widgetsnbextension" not in lock["packages"]
     assert "jupyterlab-widgets" not in lock["packages"]
 
@@ -144,8 +147,7 @@ def break_ipython_lock(
     an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner
 ) -> None:
     """Break a bunch of things."""
-    static = an_empty_lite_dir / "_output/static"
-    lock_path = static / "pyodide-lock/pyodide-lock.json"
+    lock_path = an_empty_lite_dir / SPLJ
     lock = json.loads(lock_path.read_text(encoding="utf-8"))
     lock["packages"][IPY]["sha256"] = "not-a-sha"
     lock["packages"].pop("jedi")
