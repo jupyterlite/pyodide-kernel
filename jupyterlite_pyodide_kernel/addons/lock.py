@@ -17,6 +17,7 @@ from jupyterlite_core.manager import LiteManager
 from jupyterlite_core.constants import JUPYTERLITE_JSON
 from jupyterlite_core.trait_types import TypedTuple
 from traitlets import Unicode, Bool, Dict
+from traitlets.config import LoggingConfigurable
 from typing import TYPE_CHECKING, Any
 
 from ._base import _BaseAddon
@@ -52,8 +53,8 @@ if TYPE_CHECKING:
     TWheels = dict[NormalizedName, Path]
 
 
-class PyodideLockAddon(_BaseAddon):
-    __all__ = ["pre_status", "status", "post_build", "check"]
+class PyodideLockConfig(LoggingConfigurable):
+    """Base configuration for ``pyodide-lock`` customization."""
 
     # traits
     enabled: bool = Bool(
@@ -89,22 +90,22 @@ class PyodideLockAddon(_BaseAddon):
         Unicode(), help="PEP-508 specs for Python packages to include in the lock"
     ).tag(config=True)  # type: ignore[assignment]
 
-    exclude: tuple[str, ...] = TypedTuple(
+    excludes: tuple[str, ...] = TypedTuple(
         Unicode(),
         help="Python package names to exclude from the lock",
         default_value=["widgetsnbextension", "jupyterlab-widgets"],
-    )  # type: ignore[assignment]
+    ).tag(config=True)  # type: ignore[assignment]
 
-    extra_exclude: tuple[str, ...] = TypedTuple(
+    extra_excludes: tuple[str, ...] = TypedTuple(
         Unicode(),
         help="extra Python package names to exclude from the lock",
-    )  # type: ignore[assignment]
+    ).tag(config=True)  # type: ignore[assignment]
 
     pyodide_lock_options: dict[str, Any] = Dict(
         help="extra options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
     ).tag(config=True)  # type: ignore[assignment]
 
-    prefetch_packages: tuple[str, ...] = TypedTuple(
+    prefetch: tuple[str, ...] = TypedTuple(
         Unicode(),
         default_value=[
             "ssl",
@@ -114,22 +115,33 @@ class PyodideLockAddon(_BaseAddon):
             "pyodide-kernel",
             "ipython",
         ],
-        help=(
-            "``pyodide-kernel`` dependencies to add to"
-            " ``PyodideAddon.loadPyodideOptions.packages``."
-            " These will be downloaded and installed, but _not_ imported to"
-            " ``sys.modules``"
-        ),
+        help="Python package names to prefetch while initializing Pyodide",
     ).tag(config=True)  # type: ignore[assignment]
 
-    extra_prefetch_packages: tuple[str] = TypedTuple(
+    extra_prefetch: tuple[str] = TypedTuple(
         Unicode(),
-        help=(
-            "extra packages to add to ``PyodideAddon.loadPyodideOptions.packages``."
-            " These will be downloaded at kernel startup, and installed, but _not_"
-            " imported to ``sys.modules``"
-        ),
+        help="extra Python package names to prefetch while initializing Pyodide",
     ).tag(config=True)  # type: ignore[assignment]
+
+
+class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
+    """JupyterLite addon which builds a custom ``pyodide-lock.json``."""
+
+    __all__ = ["pre_status", "status", "post_build", "check"]
+
+    # CLI
+    aliases = {
+        "pyodide-lock-wheels": "PyodideLockConfig.wheels",
+        "pyodide-lock-specs": "PyodideLockConfig.specs",
+        "pyodide-lock-excludes": "PyodideLockConfig.extra_excludes",
+        "pyodide-lock-prefetch": "PyodideLockConfig.extra_prefetch",
+    }
+    flags = {
+        "pyodide-lock": (
+            {"PyodideLockConfig": {"enabled": True}},
+            "Use pyodide-lock and uv to customize pyodide-lock.json",
+        ),
+    }
 
     # properties
     @property
@@ -142,14 +154,14 @@ class PyodideLockAddon(_BaseAddon):
         return self.manager.cache_dir / PYODIDE_LOCK_STEM
 
     @property
-    def all_prefetch_packages(self) -> list[NormalizedName]:
+    def all_prefetch(self) -> list[NormalizedName]:
         """All packages to fetch while ``pyodide`` is initializing."""
-        return normalize_names(*self.prefetch_packages, *self.extra_prefetch_packages)
+        return normalize_names(*self.prefetch, *self.extra_prefetch)
 
     @property
-    def all_exclude(self) -> list[NormalizedName]:
+    def all_excludes(self) -> list[NormalizedName]:
         """All packages to be excluded from the ``uv`` solve, and removed from the lock."""
-        return normalize_names(*self.exclude, *self.extra_exclude)
+        return normalize_names(*self.excludes, *self.extra_excludes)
 
     @property
     def status_info(self) -> str:
@@ -162,10 +174,10 @@ class PyodideLockAddon(_BaseAddon):
             f"""pyodide-lock options: {self.pyodide_lock_options}""",
             """packages:""",
             f""" - PEP-508 specs:       {self.specs}""",
-            f""" - excludes:            {self.all_exclude}""",
+            f""" - excludes:            {self.all_excludes}""",
             f""" - wheels:              {self.wheels}""",
             """runtime:""",
-            f""" - prefetch packages:   {self.all_prefetch_packages}""",
+            f""" - prefetch packages:   {self.all_prefetch}""",
         ]
         return "\n".join(lines)
 
@@ -290,11 +302,9 @@ class PyodideLockAddon(_BaseAddon):
         lock_sha = sha256(lockfile.read_bytes()).hexdigest()
         lock_url = f"./{lockfile.relative_to(out).as_posix()}?sha256={lock_sha}"
 
-        # add preloads
+        # add prefetched packages
         lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
-        packages = normalize_names(
-            *lpo.get(OPTION_PACKAGES, []), *self.all_prefetch_packages
-        )
+        packages = normalize_names(*lpo.get(OPTION_PACKAGES, []), *self.all_prefetch)
         lpo.update({OPTION_LOCK_FILE_URL: lock_url, OPTION_PACKAGES: packages})
 
         self.set_pyodide_settings(jupyterlite_json, settings)
@@ -332,7 +342,7 @@ class PyodideLockAddon(_BaseAddon):
         c_name = get_wheel_name(wheel)
         if c_name is None:  # pragma: no cover
             return
-        if c_name in self.all_exclude:
+        if c_name in self.all_excludes:
             self.log.warning("[%s] local wheel excluded by name: %s", c_name, wheel)
             return
         if c_name in wheels_by_name:  # pragma: no cover
