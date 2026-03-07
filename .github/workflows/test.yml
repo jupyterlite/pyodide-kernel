@@ -87,12 +87,14 @@ jobs:
         os: [ubuntu, windows, macos]
         python-version: ['3.10', '3.14']
         include:
-          - python-version: "3.10"
+          - python-version: '3.10'
             use-dist: sdist
             test-extra: test
-          - python-version: "3.14"
+            pytest-args: --cov-fail-under=75
+          - python-version: '3.14'
             use-dist: wheel
             test-extra: test,lock
+            pytest-args: --cov-fail-under=95
 
     steps:
       - name: Install Python
@@ -162,7 +164,7 @@ jobs:
           jupyter labextension list 2>&1 | grep -ie "@jupyterlite/pyodide-kernel.*OK"
 
       - name: Run the tests
-        run: pytest
+        run: pytest ${{ matrix.pytest-args }}
 
       - name: Upload reports
         if: always()
