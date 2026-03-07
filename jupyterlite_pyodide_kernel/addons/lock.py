@@ -292,7 +292,9 @@ class PyodideLockAddon(_BaseAddon):
 
         # add preloads
         lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
-        packages = normalize_names(*lpo.get(OPTION_PACKAGES, []), *self.all_prefetch_packages)
+        packages = normalize_names(
+            *lpo.get(OPTION_PACKAGES, []), *self.all_prefetch_packages
+        )
         lpo.update({OPTION_LOCK_FILE_URL: lock_url, OPTION_PACKAGES: packages})
 
         self.set_pyodide_settings(jupyterlite_json, settings)
