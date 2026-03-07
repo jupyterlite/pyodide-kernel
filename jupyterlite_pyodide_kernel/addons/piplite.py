@@ -178,7 +178,6 @@ class PipliteAddon(_BaseAddon):
 
     def resolve_one_wheel(self, path_or_url):
         """download a single wheel, and copy to the cache"""
-        local_path = None
         will_fetch = False
 
         if re.findall(r"^https?://", path_or_url):

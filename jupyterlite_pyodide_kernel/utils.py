@@ -1,15 +1,41 @@
 """Utilities used by multiple addons and tools."""
 
 from __future__ import annotations
+
 import datetime
 import re
 from typing import Any
 from hashlib import md5, sha256
 from pathlib import Path
 import json
+from typing import TYPE_CHECKING
+from functools import lru_cache
 
 from .constants import ALL_WHL
 from jupyterlite_core.constants import ALL_JSON, JSON_FMT, UTF8
+
+
+if TYPE_CHECKING:
+    from packaging.utils import NormalizedName
+
+
+@lru_cache(100)
+def normalize_names(*names: str) -> list[NormalizedName]:
+    """Return a normalized set of Python package names."""
+    from packaging.utils import canonicalize_name
+
+    return sorted({*map(canonicalize_name, names)})
+
+
+def get_wheel_name(wheel: Path) -> NormalizedName | None:
+    """Get the normalized package name contained in a wheel"""
+    import pkginfo
+    from packaging.utils import canonicalize_name
+
+    info = pkginfo.get_metadata(f"{wheel}")
+    if not (info and info.name):  # pragma: no cover
+        return None
+    return canonicalize_name(info.name)
 
 
 def list_wheels(

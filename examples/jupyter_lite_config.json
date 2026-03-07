@@ -11,15 +11,12 @@
   },
   "PyodideLockAddon": {
     "enabled": true,
-    "pyodide_lock_options": {
-      "specs": [
-        "IPython >=9.11.0",
-        "ipywidgets",
-        "jedi >=0.18.2",
-        "matplotlib-inline >=0.1.6",
-        "pygments >=2.14.0"
-      ],
-      "excludes": ["widgetsnbextension", "jupyterlab-widgets"]
-    }
+    "specs": [
+      "IPython >=9.11.0",
+      "ipywidgets",
+      "jedi >=0.18.2",
+      "matplotlib-inline >=0.1.6",
+      "pygments >=2.14.0"
+    ]
   }
 }

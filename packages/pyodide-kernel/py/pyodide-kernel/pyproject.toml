@@ -15,6 +15,10 @@ license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.13"
 dynamic = ["version", "description"]
+dependencies = [
+    "ipython",
+    "comm",
+]
 
 [project.urls]
 Source = "https://github.com/jupyterlite/pyodide-kernel"
