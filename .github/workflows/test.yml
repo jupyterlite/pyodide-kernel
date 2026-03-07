@@ -89,8 +89,10 @@ jobs:
         include:
           - python-version: "3.10"
             use-dist: sdist
+            test-extra: test
           - python-version: "3.14"
-            use-dist: dist/requirements-wheel.txt
+            use-dist: wheel
+            test-extra: test,lock
 
     steps:
       - name: Install Python
@@ -152,7 +154,7 @@ jobs:
 
       - name: Install test deps
         run: |-
-          python -m pip install jupyterlite-pyodide-kernel[test,lock] jupyterlite-core[lab] --upgrade-strategy only-if-needed
+          python -m pip install jupyterlite-pyodide-kernel[${{ matrix.test-extra }}] jupyterlite-core[lab] --upgrade-strategy only-if-needed
 
       - name: Check extension
         run: |-
