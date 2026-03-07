@@ -381,6 +381,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
             work_dir=work_dir,
             wheel_dir=cache_dir / PYODIDE_UV_WHEELS,
             base_url_for_missing=self.base_url_for_missing,
+            excludes=self.all_excludes,
             **kwargs,
         )
 

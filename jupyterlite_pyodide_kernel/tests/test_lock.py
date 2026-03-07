@@ -32,6 +32,7 @@ LBC = "LiteBuildConfig"
 PLO = "pyodide_lock_options"
 TSE = "the_smallest_extension"
 IPY = "ipython"
+IPW = "ipywidgets"
 
 CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
     defaults={},
@@ -42,6 +43,7 @@ CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
         LBC: {"source_date_epoch": IPY911_EPOCH},
     },
     ipy911_constraints={PLA: {PLO: {"constraints": IPY911_SPECS}}},
+    widgets={PLA: {"specs": [IPW]}},
 )
 
 
@@ -53,6 +55,7 @@ CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
     wheels={TSE},
     ipy911_specs=IPY911_WHEELS,
     ipy911_constraints=IPY911_WHEELS,
+    widgets={IPW},
 )
 
 CONFIG_POST: dict[str, Callable[[], list[TPostRun]]] = dict(
@@ -85,7 +88,7 @@ def a_lock_config(request: pytest.FixtureRequest, has_pyodide_lock_uv: bool) -> 
 @pytest.fixture
 def some_post_run_checks(a_lock_config: str) -> list[TPostRun]:
     get_custom = CONFIG_POST.get(a_lock_config)
-    return [check_paths, *(get_custom() if get_custom else [])]
+    return [check_paths, check_lock, *(get_custom() if get_custom else [])]
 
 
 @pytest.fixture
@@ -126,6 +129,15 @@ def check_paths(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -
     missing_wheels = expect_wheels - wheel_names
     assert not missing_wheels, "not enough wheels after build"
     assert not extra_wheels, "too many wheels after build"
+
+
+def check_lock(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -> None:
+    """Check some properties of the lock."""
+    static = an_empty_lite_dir / "_output/static"
+    lock_path = static / "pyodide-lock/pyodide-lock.json"
+    lock = json.loads(lock_path.read_text(encoding="utf-8"))
+    assert "widgetsnbextension" not in lock["packages"]
+    assert "jupyterlab-widgets" not in lock["packages"]
 
 
 def break_ipython_lock(
