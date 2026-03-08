@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Generator, Dict, Any, TYPE_CHECKING
+from typing import Generator, Dict, Any
 from jupyterlite_core.addons.base import BaseAddon
 from jupyterlite_core.constants import (
     JUPYTERLITE_IPYNB,
@@ -26,18 +26,10 @@ from jupyterlite_core.constants import (
 
 from ..constants import PYODIDE_KERNEL_PLUGIN_ID, PYPI_WHEELS, PYODIDE_KERNEL_NPM_NAME
 
-if TYPE_CHECKING:
-    from .pyodide import PyodideAddon
-
 __all__ = ["_BaseAddon"]
 
 
 class _BaseAddon(BaseAddon):
-    @property
-    def pyodide_addon(self) -> PyodideAddon:
-        """Get a reference to the manager's ``PyodideAddon``."""
-        return self.manager._addons["jupyterlite-pyodide-kernel-pyodide"]
-
     @property
     def output_piplite_index(self) -> Path:
         return self.manager.output_dir / PYPI_WHEELS / ALL_JSON

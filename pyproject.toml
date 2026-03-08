@@ -52,7 +52,6 @@ PyPI = "https://pypi.org/project/jupyterlite-pyodide-kernel"
 jupyter-piplite = "jupyterlite_pyodide_kernel.app:main"
 
 [project.entry-points."jupyterlite.addon.v0"]
-jupyterlite-pyodide-kernel-lock = "jupyterlite_pyodide_kernel.addons.lock:PyodideLockAddon"
 jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.addons.piplite:PipliteAddon"
 jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:PyodideAddon"
 

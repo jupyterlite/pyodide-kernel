@@ -70,11 +70,18 @@ conda install -c conda-forge jupyterlite-pyodide-kernel
 
 ### Optional Features
 
-For build-time customization of `pyodide-lock.json` with `PyodideLockAddon`, install the
-`[lock]` extra:
+#### Lock
+
+To add local and PyPI packages to the Pyodide lockfile, install the `[lock]` extra:
 
 - from PyPI: `jupyterlite-pyodide-kernel[lock]`
 - from `conda-forge`: `jupyterlite-pyodide-kernel-with-lock`
+
+This will ensure compatible versions of [`pyodide-lock`][pyodide-lock] and [`uv`][uv]
+are installed.
+
+[pyodide-lock]: https://pypi.org/project/pyodide-lock
+[uv]: https://pypi.org/project/uv
 
 ## Usage
 
@@ -84,23 +91,37 @@ Build a JupyterLite site:
 jupyter lite build
 ```
 
-Some new CLI options are also available:
+Some new CLI options are also available, all which can be configured in
+`jupyter_lite_config.json`.
 
 ```bash
 jupyter lite --help
 ```
 
-This should show something like this:
+This should show something like the following for configuring the Pyodide
+distribution:
+
+```bash
+  --pyodide=<Unicode>
+      Local path or URL of a pyodide distribution tarball
+      Default: ''
+      Equivalent to: [--PyodideAddon.pyodide_url]
+```
+
+... adding extra wheels, installable at runtime with `%pip`:
 
 ```bash
   --piplite-wheels=<typedtuple-item-1>...
       Local paths or URLs of piplite-compatible wheels to copy and index
       Default: ()
       Equivalent to: [--PipliteAddon.piplite_urls]
-  --pyodide=<Unicode>
-      Local path or URL of a pyodide distribution tarball
-      Default: ''
-      Equivalent to: [--PyodideAddon.pyodide_url]
+```
+
+... or patching the Pyodide lockfile for automatically imported packages with
+the [`[lock]`][lock] feature installed:
+
+```bash
+# TODO: finish lock CLI options
 ```
 
 ## Learn more

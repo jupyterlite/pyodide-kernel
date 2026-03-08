@@ -142,3 +142,10 @@ def patch_dict(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
         else:
             old[key] = value
     return old
+
+
+def patch_json_path(old_path: Path, patch: Path | dict[str, Any]) -> None:
+    if isinstance(patch, Path):
+        patch = json.loads(patch.read_text(**UTF8))
+    old = patch_dict(json.loads(old_path.read_text(**UTF8)), patch)
+    old_path.write_text(json.dumps(old, **JSON_FMT), **UTF8)

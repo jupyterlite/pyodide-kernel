@@ -34,7 +34,7 @@ IPY911_SPECS = [
     "matplotlib_inline >=0.1.6",
     "Pygments >=2.14.0",
 ]
-PLA = "PyodideLockAddon"
+PA = "PyodideAddon"
 LBC = "LiteBuildConfig"
 PLO = "pyodide_lock_options"
 TSE = "the_smallest_extension"
@@ -43,14 +43,14 @@ IPW = "ipywidgets"
 
 CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
     defaults={},
-    wheel={PLA: {"wheels": [f"{WHEELS[0]}"]}},
-    wheels={PLA: {"wheels": [f"{WHEELS[0].parent}"]}},
+    wheel={PA: {"lock_wheels": [f"{WHEELS[0]}"]}},
+    wheels={PA: {"lock_wheels": [f"{WHEELS[0].parent}"]}},
     ipy911_specs={
-        PLA: {"specs": IPY911_SPECS},
+        PA: {"lock_specs": IPY911_SPECS},
         LBC: {"source_date_epoch": IPY911_EPOCH},
     },
-    ipy911_constraints={PLA: {"constraints": IPY911_SPECS}},
-    widgets={PLA: {"specs": [IPW]}},
+    ipy911_constraints={PA: {"lock_constraints": IPY911_SPECS}},
+    widgets={PA: {"lock_specs": [IPW]}},
 )
 
 
@@ -107,7 +107,7 @@ def run_with_lock(
 ) -> TLockRunner:
     """Provide a pre-configured runner."""
     conf = deepcopy(CONFIGS[a_lock_config])
-    conf.setdefault(PLA, {}).update(enabled=True)
+    conf.setdefault(PA, {}).update(lock_enabled=True)
     conf.setdefault("PyodideAddon", {}).update(pyodide_url=f"{a_pyodide_tarball}")
     (an_empty_lite_dir / JLCJ).write_text(json.dumps(conf), encoding="utf-8")
 

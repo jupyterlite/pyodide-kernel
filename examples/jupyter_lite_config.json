@@ -9,15 +9,15 @@
     ],
     "cache_dir": "../build/.lite_cache"
   },
-  "PyodideLockAddon": {
-    "enabled": true,
-    "specs": [
+  "PyodideAddon": {
+    "lock_enabled": true,
+    "lock_specs": [
       "IPython >=9.11.0",
       "ipywidgets",
       "jedi >=0.18.2",
       "matplotlib-inline >=0.1.6",
       "pygments >=2.14.0"
     ],
-    "extra_prefetch": ["ipywidgets"]
+    "lock_extra_prefetch": ["ipywidgets"]
   }
 }
