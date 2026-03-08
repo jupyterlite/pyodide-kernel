@@ -17,6 +17,7 @@
       "jedi >=0.18.2",
       "matplotlib-inline >=0.1.6",
       "pygments >=2.14.0"
-    ]
+    ],
+    "extra_prefetch": ["ipywidgets"]
   }
 }
