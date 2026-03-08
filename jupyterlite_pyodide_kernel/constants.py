@@ -51,15 +51,6 @@ PYODIDE_ABI_WHL = "pyodide_*_wasm32.whl"
 
 ALL_WHL = [NOARCH_WHL, WASM_WHL, PYODIDE_ABI_WHL]
 
-#: the URL for the pyodide project
-PYODIDE_GH = "https://github.com/pyodide/pyodide"
-
-#: the default URL for a viable pyodide distribution
-PYODIDE_CORE_URL = (
-    f"{PYODIDE_GH}/releases/download/{PYODIDE_VERSION}/"
-    f"pyodide-core-{PYODIDE_VERSION}.tar.bz2"
-)
-
 #: the default fallback URL prefix for pyodide packages
 PYODIDE_CDN_URL = f"https://cdn.jsdelivr.net/pyodide/v{PYODIDE_VERSION}/full"
 

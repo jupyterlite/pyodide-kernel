@@ -30,9 +30,8 @@ from ..constants import (
     PYODIDE_LOCK,
     PYODIDE_URL,
     PYODIDE_LOCK_STEM,
-    PYODIDE_CDN_URL,
     PYODIDE_URL_ENV_VAR,
-    PYODIDE_CORE_URL,
+    PYODIDE_CDN_URL,
     PYODIDE_UV_WHEELS,
     LOAD_PYODIDE_OPTIONS,
     OPTION_LOCK_FILE_URL,
@@ -64,6 +63,7 @@ class PyodideAddon(_BaseAddon):
     # CLI
     aliases = {
         "pyodide": "PyodideAddon.pyodide_url",
+        "pyodide-lock-url": "PyodideAddon.lock_url",
         "pyodide-lock-wheels": "PyodideAddon.lock_wheels",
         "pyodide-lock-constraints": "PyodideAddon.lock_constraints",
         "pyodide-lock-specs": "PyodideAddon.lock_specs",
@@ -80,7 +80,8 @@ class PyodideAddon(_BaseAddon):
 
     # traits
     pyodide_url: str = Unicode(
-        allow_none=True, help="Local path or URL of a Pyodide distribution tarball"
+        allow_none=True,
+        help="Local path or URL of a Pyodide distribution tarball",
     ).tag(config=True)
 
     pyodide_ignore: str = TypedTuple(
@@ -95,16 +96,9 @@ class PyodideAddon(_BaseAddon):
         help="whether Pyodide lockfile customization is enabled",
     ).tag(config=True)  # type: ignore[assignment]
 
-    lock_input_base_url: str = Unicode(
-        default_value=PYODIDE_CDN_URL,
-        help="the logical URL for a partial Pyodide distribution",
-        allow_none=True,
-    ).tag(config=True)  # type: ignore[assignment]
-
-    lock_base_url_for_missing: str = Unicode(
-        default_value=PYODIDE_CDN_URL,
-        help="URL for packages missing from a partial Pyodide distribution",
-        allow_none=True,
+    lock_url: str = Unicode(
+        help=f"URL of a remote {PYODIDE_LOCK}",
+        default_value=f"{PYODIDE_CDN_URL}/{PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
     lock_wheels: tuple[str, ...] = TypedTuple(
@@ -132,7 +126,7 @@ class PyodideAddon(_BaseAddon):
         help=f"extra Python package names to exclude from {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
-    lock_pyodide_lock_options: dict[str, Any] = Dict(
+    lock_compile_options: dict[str, Any] = Dict(
         help="extra options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
     ).tag(config=True)  # type: ignore[assignment]
 
@@ -162,9 +156,7 @@ class PyodideAddon(_BaseAddon):
     @default("pyodide_url")
     def _default_pyodide_url(self):
         """Provide a default Pyodide distribution; pyodide-lock requires a local distribution."""
-        return os.environ.get(
-            PYODIDE_URL_ENV_VAR, PYODIDE_CORE_URL if self.lock_enabled else None
-        )
+        return os.environ.get(PYODIDE_URL_ENV_VAR)
 
     # properties
     @property
@@ -203,6 +195,11 @@ class PyodideAddon(_BaseAddon):
         return self.manager.cache_dir / PYODIDE_LOCK_STEM
 
     @property
+    def lock_remote_cache(self) -> Path:
+        """where ``pyodide-lock`` and ``uv`` stuff will go in the cache folder"""
+        return self.lock_cache / f"remote-{PYODIDE_LOCK}"
+
+    @property
     def lock_all_prefetch(self) -> list[NormalizedName]:
         """All packages to fetch while ``pyodide`` is initializing."""
         return normalize_names(*self.lock_prefetch, *self.lock_extra_prefetch)
@@ -225,17 +222,16 @@ class PyodideAddon(_BaseAddon):
     def lock_status_info(self) -> str:
         """The status string, also used for task up-to-date checks."""
         lines = [
-            f"pyodide-lock:         {PYODIDE_LOCK_VERSION or 'not installed'}",
-            f"pyodide base URL:     {self.lock_input_base_url}",
-            f"missing package URL:  {self.lock_base_url_for_missing}",
-            f"pyodide-lock options: {self.lock_pyodide_lock_options}",
+            f"pyodide-lock version:  {PYODIDE_LOCK_VERSION or 'not installed'}",
+            f"pyodide-lock URL:      {self.lock_url}",
+            f"pyodide-lock options:  {self.lock_compile_options}",
             "lock:",
-            f" - wheels:              {self.lock_wheels}",
-            f" - specs:               {self.lock_specs}",
-            f" - constraints:         {self.lock_constraints}",
-            f" - excludes:            {self.lock_all_excludes}",
-            f" - uv args:             {self.lock_all_extra_uv_args}",
-            f" - patches:             {self.lock_patches}",
+            f" - wheels:       {self.lock_wheels}",
+            f" - specs:        {self.lock_specs}",
+            f" - constraints:  {self.lock_constraints}",
+            f" - excludes:     {self.lock_all_excludes}",
+            f" - uv args:      {self.lock_all_extra_uv_args}",
+            f" - patches:      {self.lock_patches}",
             "runtime:",
             f" - prefetch packages:   {self.lock_all_prefetch}",
         ]
@@ -259,69 +255,77 @@ class PyodideAddon(_BaseAddon):
 
     def post_init(self, manager: LiteManager) -> TTaskGenerator:
         """handle downloading of pyodide"""
-        if self.pyodide_url is None:
-            return
-
-        yield from self.cache_pyodide(self.pyodide_url)
+        if self.pyodide_url is not None:
+            yield from self.cache_pyodide(self.pyodide_url)
+        elif self.lock_enabled and self.lock_url:
+            yield from self.cache_pyodide_lock(self.lock_url)
 
     def build(self, manager: LiteManager) -> TTaskGenerator:
         """copy a local (cached or well-known) pyodide into the output_dir"""
-        cached_pyodide = self.pyodide_cache / PYODIDE / PYODIDE
 
-        the_pyodide = None
+        the_pyodide: Path | None = None
 
         if self.well_known_pyodide.exists():
             the_pyodide = self.well_known_pyodide
         elif self.pyodide_url is not None:
-            the_pyodide = cached_pyodide
+            the_pyodide = self.pyodide_cache / PYODIDE / PYODIDE
 
-        if not the_pyodide:
-            return
+        if the_pyodide:
+            file_dep_targets = {
+                p: self.output_pyodide / p.relative_to(the_pyodide)
+                for p in the_pyodide.rglob("*")
+                if not (
+                    p.is_dir()
+                    or self.is_ignored_sourcemap(p.name)
+                    or p.name in self.pyodide_ignore
+                )
+            }
 
-        file_dep_targets = {
-            p: self.output_pyodide / p.relative_to(the_pyodide)
-            for p in the_pyodide.rglob("*")
-            if not (
-                p.is_dir()
-                or self.is_ignored_sourcemap(p.name)
-                or p.name in self.pyodide_ignore
+            yield self.task(
+                name="copy:pyodide",
+                file_dep=sorted(file_dep_targets),
+                targets=sorted(file_dep_targets.values()),
+                actions=[
+                    (self.copy_one, [p, op]) for p, op in file_dep_targets.items()
+                ],
             )
-        }
-
-        yield self.task(
-            name="copy:pyodide",
-            file_dep=sorted(file_dep_targets),
-            targets=sorted(file_dep_targets.values()),
-            actions=[(self.copy_one, [p, op]) for p, op in file_dep_targets.items()],
-        )
 
     def post_build(self, manager: LiteManager) -> TTaskGenerator:
-        """configure jupyter-lite.json for Pyodide"""
-        if not self.well_known_pyodide.exists() and self.pyodide_url is None:
-            return
-
+        """configure jupyter-lite.json for Pyodide, potentially after updating a lockfile."""
         out = manager.output_dir
         jupyterlite_json = out / JUPYTERLITE_JSON
         output_js = self.output_pyodide / PYODIDE_JS
 
-        yield self.task(
-            name=f"patch:{JUPYTERLITE_JSON}",
-            doc=f"ensure {JUPYTERLITE_JSON} includes Pyodide customizations",
-            file_dep=[output_js],
-            actions=[(self.patch_jupyterlite_json, [jupyterlite_json, output_js])],
-        )
+        if self.well_known_pyodide.exists() or self.pyodide_url:
+            yield self.task(
+                name=f"patch:{JUPYTERLITE_JSON}",
+                doc=f"ensure {JUPYTERLITE_JSON} includes Pyodide distribution customizations",
+                file_dep=[output_js, jupyterlite_json],
+                actions=[(self.patch_jupyterlite_json, [jupyterlite_json, output_js])],
+            )
 
         if self.lock_enabled:
-            lock_wheels = self.find_wheels_by_name()
+            wheels_by_name = self.find_wheels_by_name()
+            in_lock: Path | None = None
+
+            candidates = [self.output_pyodide / PYODIDE_LOCK, self.lock_remote_cache]
+            for candidate in candidates:
+                if candidate.is_file():
+                    in_lock = candidate
+
+            if not (in_lock and in_lock.is_file()):
+                self.log.error(
+                    "A custom %s was requested, but no input lock found in: %s",
+                    PYODIDE_LOCK,
+                    candidates,
+                )
+                return
 
             yield self.task(
                 name="lock:build",
                 doc=f"build {PYODIDE_LOCK} with kernel, extension, and user-requested wheels",
-                actions=[(self.build_lock, [lock_wheels])],
-                file_dep=[
-                    *lock_wheels.values(),
-                    self.output_pyodide / PYODIDE_LOCK,
-                ],
+                actions=[(self.post_build_lock, [in_lock, wheels_by_name])],
+                file_dep=[in_lock, *wheels_by_name.values()],
                 targets=[self.lock_output],
                 uptodate=[doit.tools.config_changed(self.lock_status_info)],
             )
@@ -335,7 +339,7 @@ class PyodideAddon(_BaseAddon):
                         [jupyterlite_json, self.lock_output],
                     )
                 ],
-                file_dep=[jupyterlite_json, self.lock_output],
+                file_dep=[self.lock_output, jupyterlite_json],
                 uptodate=[doit.tools.config_changed(self.status_info)],
             )
 
@@ -422,6 +426,15 @@ class PyodideAddon(_BaseAddon):
         else:  # pragma: no cover
             raise FileNotFoundError(path_or_url)
 
+    def cache_pyodide_lock(self, url: str) -> TTaskGenerator:
+        """Cache a remote ``pyodide-lock.json`` if requested."""
+        yield self.task(
+            name=f"fetch:{PYODIDE_LOCK}",
+            doc="fetch the pyodide lockfile",
+            actions=[(self.fetch_one, [url, self.lock_remote_cache])],
+            targets=[self.lock_remote_cache],
+        )
+
     def extract_pyodide(self, local_path, dest) -> TTaskGenerator:
         """extract a local pyodide tarball to the cache"""
 
@@ -441,26 +454,31 @@ class PyodideAddon(_BaseAddon):
             actions=[(self.extract_one, [local_path, dest])],
         )
 
-    def build_lock(self, wheels_by_name: TWheels) -> bool:
+    def post_build_lock(self, input_lock: Path, wheels_by_name: TWheels) -> bool:
         """Build a Pyodide lockfile with all kernel and user-requested wheels."""
         from pyodide_lock.uv_pip_compile import UvPipCompile
 
         tmp_lock = self.lock_cache / PYODIDE_LOCK
-        self.copy_one(self.output_pyodide / PYODIDE_LOCK, tmp_lock)
-        kwargs = deepcopy(self.lock_pyodide_lock_options)
-        kwargs.setdefault("extra_uv_args", []).extend(self.lock_all_extra_uv_args)
+        self.copy_one(input_lock, tmp_lock)
+
+        kwargs = deepcopy(self.lock_compile_options)
+        url_base: str | None = None
+        if self.lock_url:
+            url_base = self.lock_url.rsplit("/", 1)[0]
+        extra_uv_args = [*kwargs.pop("extra_uv_args", []), *self.lock_all_extra_uv_args]
 
         upc = UvPipCompile(
             input_path=tmp_lock,
             output_path=tmp_lock.parent / f"patched-{tmp_lock.name}",
-            input_base_url=self.lock_input_base_url,
+            input_base_url=url_base,
             wheels=[*wheels_by_name.values()],
             specs=[*self.lock_specs],
             constraints=[*self.lock_constraints],
             work_dir=self.lock_cache / "_work",
             wheel_dir=self.lock_cache / PYODIDE_UV_WHEELS,
-            base_url_for_missing=self.lock_base_url_for_missing,
+            base_url_for_missing=url_base,
             excludes=self.lock_all_excludes,
+            extra_uv_args=extra_uv_args,
             **kwargs,
         )
         spec = upc.update()

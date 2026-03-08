@@ -18,6 +18,9 @@
       "matplotlib-inline >=0.1.6",
       "pygments >=2.14.0"
     ],
-    "lock_extra_prefetch": ["ipywidgets"]
+    "lock_extra_prefetch": ["ipywidgets"],
+    "lock_compile_options": {
+      "preserve_url_prefixes": ["https://"]
+    }
   }
 }

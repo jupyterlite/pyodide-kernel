@@ -13,44 +13,6 @@
   https://readthedocs.org/projects/jupyterlite-pyodide-kernel/badge/?version=latest
 [docs]: https://jupyterlite-pyodide-kernel.readthedocs.io/en/latest/?badge=latest
 
-## Requirements
-
-- `python >=3.10`
-
-### Compatibility
-
-#### With Jupyter
-
-| status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` |  `jupyterlab`  |   `notebook`   |  `retrolab`  |
-| :----: | :--------------------------: | :----------------: | :------------: | :------------: | :----------: |
-| stable |           `0.7.*`            |    `>=0.7,<0.8`    | `>=4.5.0,<4.6` | `>=7.5.0,<7.6` |      -       |
-| stable |           `0.6.*`            |    `>=0.6,<0.7`    | `>=4.4.3,<4.5` | `>=7.4.3,<7.5` |      -       |
-| stable |           `0.5.*`            |    `>=0.5,<0.6`    | `>=4.3.0,<4.4` | `>=7.3.0,<7.4` |      -       |
-| stable |           `0.4.*`            |    `>=0.4,<0.5`    | `>=4.2.0,<4.3` | `>=7.2.0,<7.3` |      -       |
-| stable |           `0.3.*`            |    `>=0.3,<0.4`    | `>=4.1.1,<4.2` | `>=7.1.0,<7.2` |      -       |
-| stable |           `0.2.*`            |    `>=0.2,<0.3`    | `>=4.0.7,<4.1` |  `>=7.0.5,<8`  |      -       |
-| stable |           `0.1.*`            |    `>=0.1,<0.2`    |  `>=3.5,<3.6`  |       -        | `>=0.3,<0.4` |
-
-Installing the matching version of JupyterLab with your package manager can help ensure
-matching labextension assets and kernel dependencies, even though this kernel does not
-yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Notebook.
-
-#### With Pyodide
-
-| `jupyterlite-pyodide-kernel` | `pyodide` | `python` | `emscripten` | `pyodide-lock` |
-| :--------------------------: | :-------: | :------: | :----------: | :------------: |
-|      `>=0.1.0,<=0.1.1`       | `0.23.*`  | `3.10.*` |   `3.1.29`   |                |
-|      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |                |
-|      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |                |
-|      `>=0.3.*,<=0.4.0`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |                |
-|      `>=0.4.*,<=0.4.6`       | `0.26.*`  | `3.12.*` |   `3.1.58`   |                |
-|      `>=0.4.7,<=0.5.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |
-|      `>=0.5.0,<=0.6.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |
-|      `>=0.6.0,<=0.7.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |
-|      `>=0.7.0,<=0.8.0`       | `0.29.*`  | `3.13.*` |   `4.0.9`    | `>=0.1.2,<0.2` |
-
-Note that the Emscripten version is strict down to the bugfix version.
-
 ## Install
 
 To install the Pyodide kernel labextension and the CLI addons for `jupyter lite`, run:
@@ -72,34 +34,72 @@ conda install -c conda-forge jupyterlite-pyodide-kernel
 
 #### Lock
 
-To add local and PyPI packages to the Pyodide lockfile, install the `[lock]` extra:
+Install the `[lock]` extra for compatible versions of [`pyodide-lock`][pyodide-lock]
+and [`uv`][uv], needed to add local or PyPI packages and their import name and
+dependency information to the Pyodide lockfile:
 
 - from PyPI: `jupyterlite-pyodide-kernel[lock]`
 - from `conda-forge`: `jupyterlite-pyodide-kernel-with-lock`
 
-This will ensure compatible versions of [`pyodide-lock`][pyodide-lock] and [`uv`][uv]
-are installed.
-
 [pyodide-lock]: https://pypi.org/project/pyodide-lock
 [uv]: https://pypi.org/project/uv
 
+### Compatibility
+
+#### With Jupyter
+
+| status | `jupyterlite-pyodide-kernel` | `jupyterlite-core` |  `jupyterlab`  |   `notebook`   |  `retrolab`  |
+| :----: | :--------------------------: | :----------------: | :------------: | :------------: | :----------: |
+| stable |           `0.7.*`            |    `>=0.7,<0.8`    | `>=4.5.0,<4.6` | `>=7.5.0,<7.6` |      -       |
+| stable |           `0.6.*`            |    `>=0.6,<0.7`    | `>=4.4.3,<4.5` | `>=7.4.3,<7.5` |      -       |
+| stable |           `0.5.*`            |    `>=0.5,<0.6`    | `>=4.3.0,<4.4` | `>=7.3.0,<7.4` |      -       |
+| stable |           `0.4.*`            |    `>=0.4,<0.5`    | `>=4.2.0,<4.3` | `>=7.2.0,<7.3` |      -       |
+| stable |           `0.3.*`            |    `>=0.3,<0.4`    | `>=4.1.1,<4.2` | `>=7.1.0,<7.2` |      -       |
+| stable |           `0.2.*`            |    `>=0.2,<0.3`    | `>=4.0.7,<4.1` |  `>=7.0.5,<8`  |      -       |
+| stable |           `0.1.*`            |    `>=0.1,<0.2`    |  `>=3.5,<3.6`  |       -        | `>=0.3,<0.4` |
+
+Installing the matching version of JupyterLab with your package manager can help ensure
+matching labextension assets and kernel dependencies, even though this kernel does not
+yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Notebook.
+
+#### With Pyodide
+
+| `jupyterlite-pyodide-kernel` | `pyodide` | `python` | `emscripten` | `pyodide-lock` |    `uv`    |
+| :--------------------------: | :-------: | :------: | :----------: | :------------: | :--------: |
+|      `>=0.1.0,<=0.1.1`       | `0.23.*`  | `3.10.*` |   `3.1.29`   |                |            |
+|      `>=0.1.2,<=0.2.1`       | `0.24.*`  | `3.10.*` |   `3.1.45`   |                |            |
+|      `>=0.2.2,<=0.2.3`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |                |            |
+|      `>=0.3.*,<=0.4.0`       | `0.25.*`  | `3.11.*` |   `3.1.46`   |                |            |
+|      `>=0.4.*,<=0.4.6`       | `0.26.*`  | `3.12.*` |   `3.1.58`   |                |            |
+|      `>=0.4.7,<=0.5.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |            |
+|      `>=0.5.0,<=0.6.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |            |
+|      `>=0.6.0,<=0.7.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |            |
+|      `>=0.7.0,<=0.8.0`       | `0.29.*`  | `3.13.*` |   `4.0.9`    | `>=0.1.2,<0.2` | `>=0.9.27` |
+
+> **Note**: the Emscripten version is strict down to the patch version.
+
 ## Usage
 
-Build a JupyterLite site:
+Once installed, building a JupyterLite site will include a kernel which uses the full
+Pyodide CDN distribution:
 
 ```bash
 jupyter lite build
 ```
 
-Some new CLI options are also available, all which can be configured in
-`jupyter_lite_config.json`.
+The build configuration of the Pyodide distribution, the kernel, and
+package import behavior can be configured in `jupyter_lite_config.json`.
+Some features can be configured with CLI aliases and flags. See the full current
+list by running:
 
 ```bash
 jupyter lite --help
 ```
 
-This should show something like the following for configuring the Pyodide
-distribution:
+This should show something like the following:
+
+<details><summary>... for configuring the Pyodide distribution</summary>
+
 
 ```bash
   --pyodide=<Unicode>
@@ -108,7 +108,9 @@ distribution:
       Equivalent to: [--PyodideAddon.pyodide_url]
 ```
 
-... adding extra wheels, installable at runtime with `%pip`:
+</details>
+
+<details><summary>... adding extra wheels, installable at runtime with <code>%pip</code></summary>
 
 ```bash
   --piplite-wheels=<typedtuple-item-1>...
@@ -117,12 +119,43 @@ distribution:
       Equivalent to: [--PipliteAddon.piplite_urls]
 ```
 
-... or patching the Pyodide lockfile for automatically imported packages with
-the [`[lock]`][lock] feature installed:
+</details>
+
+<details><summary>.... patching the Pyodide lockfile for automatically imported packages</summary>
 
 ```bash
-# TODO: finish lock CLI options
+--pyodide-lock
+    Use pyodide-lock and uv to customize pyodide-lock.json
+    Equivalent to: [--PyodideAddon.lock_enabled=True]
+--pyodide-lock-url=<Unicode>
+    URL of a remote pyodide-lock.json
+    Default: 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide-lock.json'
+    Equivalent to: [--PyodideAddon.lock_url]
+--pyodide-lock-wheels=<typedtuple-item-1>...
+    paths to local wheels or folders to include in pyodide-lock.json
+    Default: ()
+    Equivalent to: [--PyodideAddon.lock_wheels]
+--pyodide-lock-constraints=<typedtuple-item-1>...
+    PEP-508 specs for Python packages to use only if required in pyodide-
+    lock.json
+    Default: ()
+    Equivalent to: [--PyodideAddon.lock_constraints]
+--pyodide-lock-specs=<typedtuple-item-1>...
+    PEP-508 specs for Python packages to include in pyodide-lock.json
+    Default: ()
+    Equivalent to: [--PyodideAddon.lock_specs]
+--pyodide-lock-excludes=<typedtuple-item-1>...
+    extra Python package names to exclude from pyodide-lock.json
+    Default: ()
+    Equivalent to: [--PyodideAddon.lock_extra_excludes]
+--pyodide-lock-prefetch=<typedtuple-item-1>...
+    extra Python package names from pyodide-lock.json to prefetch while
+    initializing Pyodide
+    Default: ()
+    Equivalent to: [--PyodideAddon.lock_extra_prefetch]
 ```
+
+</details>
 
 ## Learn more
 

@@ -36,35 +36,51 @@ IPY911_SPECS = [
 ]
 PA = "PyodideAddon"
 LBC = "LiteBuildConfig"
-PLO = "pyodide_lock_options"
+LCO = "lock_compile_options"
 TSE = "the_smallest_extension"
 IPY = "ipython"
 IPW = "ipywidgets"
 
 CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
+    #: enabled, no other configuration
     defaults={},
+    #: a single local wheel with no dependencies
     wheel={PA: {"lock_wheels": [f"{WHEELS[0]}"]}},
+    #: a single folder containing a wheel
     wheels={PA: {"lock_wheels": [f"{WHEELS[0].parent}"]}},
+    #: specs for a specific version of IPython, not inlcuded in any Pyodide distribution
     ipy911_specs={
         PA: {"lock_specs": IPY911_SPECS},
         LBC: {"source_date_epoch": IPY911_EPOCH},
     },
+    #: constraints for a specific version of IPython, not inlcuded in any Pyodide distribution
     ipy911_constraints={PA: {"lock_constraints": IPY911_SPECS}},
+    #: ipywidgets
     widgets={PA: {"lock_specs": [IPW]}},
+    #: wherever possible, use any publicly-available URL instead of locally-cached copies
+    all_remote={PA: {LCO: {"preserve_url_prefixes": ["https://"]}}},
 )
 
+#: keys of CONFIGS that should not use the test fixture tarball
+CONFIG_NO_TARBALL: set[str] = {"all_remote"}
 
+#: the PyPI dependencies of ``pyodide_kernel`` not included in the current Pyodide distribution
 DEFAULT_WHEELS = {"comm", "ipython_pygments_lexers"}
+#: additional wheels expected for a specific version of IPython
 IPY911_WHEELS = {"ipython", "pygments", "jedi", "matplotlib_inline"}
 
+#: wheels to expect in the ``static/pyodide-lock`` folder after a build
 CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
-    wheel={TSE},
-    wheels={TSE},
-    ipy911_specs=IPY911_WHEELS,
-    ipy911_constraints=IPY911_WHEELS,
-    widgets={IPW},
+    defaults=DEFAULT_WHEELS,
+    wheel={TSE, *DEFAULT_WHEELS},
+    wheels={TSE, *DEFAULT_WHEELS},
+    ipy911_specs={*IPY911_WHEELS, *DEFAULT_WHEELS},
+    ipy911_constraints={*IPY911_WHEELS, *DEFAULT_WHEELS},
+    widgets={IPW, *DEFAULT_WHEELS},
+    all_remote=set(),
 )
 
+#: extra checks to perform
 CONFIG_POST: dict[str, Callable[[], list[TPostRun]]] = dict(
     ipy911_specs=lambda: [break_ipython_lock],
 )
@@ -88,7 +104,7 @@ def test_pyodide_lock(
 # fixtures
 @pytest.fixture(params=sorted(CONFIGS))
 def a_lock_config(request: pytest.FixtureRequest, has_pyodide_lock_uv: bool) -> str:
-    """Provide a key from CONFIG."""
+    """Provide a key from ``CONFIGS`` above."""
     return f"{request.param}"
 
 
@@ -105,10 +121,15 @@ def run_with_lock(
     a_pyodide_tarball: str,
     script_runner: ScriptRunner,
 ) -> TLockRunner:
-    """Provide a pre-configured runner."""
+    """Provide a pre-configured script runner."""
     conf = deepcopy(CONFIGS[a_lock_config])
-    conf.setdefault(PA, {}).update(lock_enabled=True)
-    conf.setdefault("PyodideAddon", {}).update(pyodide_url=f"{a_pyodide_tarball}")
+    pyodide_config = conf.setdefault(PA, {})
+    pyodide_config.update(
+        lock_enabled=True,
+        pyodide_url=None
+        if a_lock_config in CONFIG_NO_TARBALL
+        else f"{a_pyodide_tarball}",
+    )
     (an_empty_lite_dir / JLCJ).write_text(json.dumps(conf), encoding="utf-8")
 
     def run(args: list[str], expect_rc: int = 0) -> RunResult:
@@ -124,10 +145,15 @@ def run_with_lock(
 def check_paths(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -> None:
     """Check whether key paths exist."""
     pyodide_path = an_empty_lite_dir / SPJS
+    if a_lock_config in CONFIG_NO_TARBALL:
+        assert not pyodide_path.exists(), f"{SPJS} should NOT exist"
+    else:
+        assert pyodide_path.exists(), f"{SPJS} should exist"
+
     lock_path = an_empty_lite_dir / SPLJ
-    assert pyodide_path.exists(), f"{SPLJ} does not exist"
-    assert lock_path.exists(), f"{SPJS} does not exist"
-    expect_wheels = {*CONFIG_EXPECT_WHEEL_STEMS.get(a_lock_config, []), *DEFAULT_WHEELS}
+    assert lock_path.exists(), f"{SPLJ} should exist"
+
+    expect_wheels = CONFIG_EXPECT_WHEEL_STEMS[a_lock_config]
     wheels = sorted(lock_path.parent.glob("*.whl"))
     wheel_names = {w.name.split("-")[0] for w in wheels}
     extra_wheels = wheel_names - expect_wheels
