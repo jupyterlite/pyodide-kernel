@@ -90,6 +90,11 @@ class PyodideLockConfig(LoggingConfigurable):
         help=f"PEP-508 specs for Python packages to include in {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
+    constraints: tuple[str, ...] = TypedTuple(
+        Unicode(),
+        help=f"PEP-508 specs for Python packages to use only if required in {PYODIDE_LOCK}",
+    ).tag(config=True)  # type: ignore[assignment]
+
     excludes: tuple[str, ...] = TypedTuple(
         Unicode(),
         help=f"Python package names to exclude from {PYODIDE_LOCK}",
@@ -189,9 +194,10 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
                 f"missing package URL:  {self.base_url_for_missing}",
                 f"pyodide-lock options: {self.pyodide_lock_options}",
                 "lock:",
-                f" - specs:               {self.specs}",
-                f" - excludes:            {self.all_excludes}",
                 f" - wheels:              {self.wheels}",
+                f" - specs:               {self.specs}",
+                f" - constraints:         {self.constraints}",
+                f" - excludes:            {self.all_excludes}",
                 f" - uv args:             {self.all_extra_uv_args}",
                 f" - patches:             {self.lock_patches}",
                 "runtime:",
@@ -275,6 +281,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
             input_base_url=self.input_base_url,
             wheels=[*wheels_by_name.values()],
             specs=[*self.specs],
+            constraints=[*self.constraints],
             work_dir=self.pyodide_lock_cache / "_work",
             wheel_dir=self.pyodide_lock_cache / PYODIDE_UV_WHEELS,
             base_url_for_missing=self.base_url_for_missing,

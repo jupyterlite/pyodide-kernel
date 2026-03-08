@@ -49,7 +49,7 @@ CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
         PLA: {"specs": IPY911_SPECS},
         LBC: {"source_date_epoch": IPY911_EPOCH},
     },
-    ipy911_constraints={PLA: {PLO: {"constraints": IPY911_SPECS}}},
+    ipy911_constraints={PLA: {"constraints": IPY911_SPECS}},
     widgets={PLA: {"specs": [IPW]}},
 )
 
