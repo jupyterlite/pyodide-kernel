@@ -3,25 +3,25 @@
 from __future__ import annotations
 
 import shutil
+import json
 import importlib.metadata
 from datetime import datetime
 from copy import deepcopy
 
 from textwrap import indent
 from urllib.parse import urlparse
-from hashlib import sha256
 
 import doit.tools
 
 from jupyterlite_core.manager import LiteManager
-from jupyterlite_core.constants import JUPYTERLITE_JSON
+from jupyterlite_core.constants import JUPYTERLITE_JSON, UTF8, JSON_FMT
 from jupyterlite_core.trait_types import TypedTuple
 from traitlets import Unicode, Bool, Dict
 from traitlets.config import LoggingConfigurable
 from typing import TYPE_CHECKING, Any
 
 from ._base import _BaseAddon
-from ..utils import list_wheels, normalize_names, get_wheel_name
+from ..utils import list_wheels, normalize_names, get_wheel_name, patch_dict
 from ..constants import (
     PYODIDE_LOCK_STEM,
     PYODIDE_CORE_URL,
@@ -44,7 +44,6 @@ except ImportError:  # pragma: no cover
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pyodide_lock.uv_pip_compile import UvPipCompile
     from pyodide_lock.spec import PackageSpec, PyodideLockSpec
     from pathlib import Path
     from packaging.utils import NormalizedName
@@ -104,6 +103,10 @@ class PyodideLockConfig(LoggingConfigurable):
 
     pyodide_lock_options: dict[str, Any] = Dict(
         help="extra options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
+    ).tag(config=True)  # type: ignore[assignment]
+
+    lock_patches: dict[str, Any] = Dict(
+        help="partial Pyodide lockfile to merge after the ``uv`` solve and URL rewrites",
     ).tag(config=True)  # type: ignore[assignment]
 
     prefetch: tuple[str, ...] = TypedTuple(
@@ -185,11 +188,12 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
                 f"pyodide base URL:     {self.input_base_url}",
                 f"missing package URL:  {self.base_url_for_missing}",
                 f"pyodide-lock options: {self.pyodide_lock_options}",
-                "solver:",
+                "lock:",
                 f" - specs:               {self.specs}",
                 f" - excludes:            {self.all_excludes}",
                 f" - wheels:              {self.wheels}",
                 f" - uv args:             {self.all_extra_uv_args}",
+                f" - patches:             {self.lock_patches}",
                 "runtime:",
                 f" - prefetch packages:   {self.all_prefetch}",
             ]
@@ -258,10 +262,25 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
     # task actions
     def build_lock(self, wheels_by_name: TWheels) -> bool:
         """Build a Pyodide lockfile with all kernel and user-requested wheels."""
+        from pyodide_lock.uv_pip_compile import UvPipCompile
 
-        upc = self.init_uv_pip_compile(wheels_by_name)
-        if upc is None:  # pragma: no cover
-            return False
+        tmp_lock = self.pyodide_lock_cache / PYODIDE_LOCK
+        self.copy_one(self.pyodide_addon.output_pyodide / PYODIDE_LOCK, tmp_lock)
+        kwargs = deepcopy(self.pyodide_lock_options)
+        kwargs.setdefault("extra_uv_args", []).extend(self.all_extra_uv_args)
+
+        upc = UvPipCompile(
+            input_path=tmp_lock,
+            output_path=tmp_lock.parent / f"patched-{tmp_lock.name}",
+            input_base_url=self.input_base_url,
+            wheels=[*wheels_by_name.values()],
+            specs=[*self.specs],
+            work_dir=self.pyodide_lock_cache / "_work",
+            wheel_dir=self.pyodide_lock_cache / PYODIDE_UV_WHEELS,
+            base_url_for_missing=self.base_url_for_missing,
+            excludes=self.all_excludes,
+            **kwargs,
+        )
         spec = upc.update()
 
         # start with a clean folder
@@ -270,15 +289,16 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
 
         # ensure wheels not already included in the output
         for pkg in spec.packages.values():
-            url = urlparse(pkg.file_name)
-            if not url.scheme and url.path.startswith(PYODIDE_UV_WHEELS):
-                self.ensure_local_spec(pkg, wheels_by_name)
+            self.ensure_local_spec(pkg, wheels_by_name)
 
         spec.to_json(path=self.output_pyodide_lock, indent=2)
 
-        self.maybe_timestamp(self.output_pyodide_lock)
+        lock = patch_dict(
+            json.loads(self.output_pyodide_lock.read_text(**UTF8)), self.lock_patches
+        )
+        self.output_pyodide_lock.write_text(json.dumps(lock, **JSON_FMT), **UTF8)
 
-        return self.output_pyodide_lock.is_file()
+        self.maybe_timestamp(self.output_pyodide_lock)
 
     def check_lock(self) -> bool:
         """Check the lock."""
@@ -303,7 +323,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
             for pkg in spec.packages.values():
                 ok.update(self.check_package_spec(pkg, c_names))
         self.log.debug("Lock OK: %s", ok)
-        return False not in ok.values()
+        return all(ok.values())
 
     def patch_config(self, jupyterlite_json: Path, lockfile: Path) -> None:
         """Update the runtime ``jupyter-lite-config.json`` for Pyodide lockfile."""
@@ -312,14 +332,15 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
 
         settings = self.get_pyodide_settings(jupyterlite_json)
 
-        # URL with cache-busting suffix of the lockfile SHA256
-        lock_sha = sha256(lockfile.read_bytes()).hexdigest()
-        lock_url = f"./{lockfile.relative_to(out).as_posix()}?sha256={lock_sha}"
-
         # add prefetched packages
         lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
         packages = normalize_names(*lpo.get(OPTION_PACKAGES, []), *self.all_prefetch)
-        lpo.update({OPTION_LOCK_FILE_URL: lock_url, OPTION_PACKAGES: packages})
+        lpo.update(
+            {
+                OPTION_LOCK_FILE_URL: f"./{lockfile.relative_to(out).as_posix()}",
+                OPTION_PACKAGES: packages,
+            }
+        )
 
         self.set_pyodide_settings(jupyterlite_json, settings)
 
@@ -369,39 +390,13 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
             return
         wheels_by_name[c_name] = wheel
 
-    def init_uv_pip_compile(self, wheels_by_name: TWheels) -> UvPipCompile | None:
-        """Create a ``UvPipCompile`` runner."""
-        from pyodide_lock.uv_pip_compile import UvPipCompile
-
-        cache_dir = self.pyodide_lock_cache
-        work_dir = cache_dir / "_work"
-        tmp_lock = cache_dir / PYODIDE_LOCK
-        tmp_lock.parent.mkdir(parents=True, exist_ok=True)
-        patched_lock = tmp_lock.parent / f"patched-{tmp_lock.name}"
-        in_lock = self.pyodide_addon.output_pyodide / PYODIDE_LOCK
-        self.copy_one(in_lock, tmp_lock)
-
-        kwargs = deepcopy(self.pyodide_lock_options)
-        kwargs.setdefault("extra_uv_args", []).extend(self.all_extra_uv_args)
-
-        upc = UvPipCompile(
-            input_path=tmp_lock,
-            output_path=patched_lock,
-            input_base_url=self.input_base_url,
-            wheels=[*wheels_by_name.values()],
-            specs=[*self.specs],
-            work_dir=work_dir,
-            wheel_dir=cache_dir / PYODIDE_UV_WHEELS,
-            base_url_for_missing=self.base_url_for_missing,
-            excludes=self.all_excludes,
-            **kwargs,
-        )
-
-        return upc
-
     def ensure_local_spec(self, pkg: PackageSpec, wheels_by_name: TWheels):
         """Ensure a ``PackageSpec`` points at a wheel in ``output_dir``."""
         url = urlparse(pkg.file_name)
+
+        if url.scheme or not url.path.startswith(PYODIDE_UV_WHEELS):
+            return
+
         out = self.manager.output_dir
         just_name = url.path.removeprefix(f"{PYODIDE_UV_WHEELS}/")
         rel_url: str | None = None
@@ -422,7 +417,7 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
             raise NotImplementedError(msg)
 
         # build a relative path from root for `pyodide.js`
-        pkg.file_name = f"../../{rel_url}?sha256={pkg.sha256}"
+        pkg.file_name = f"../../{rel_url}"
 
     def check_package_spec(
         self, pkg: PackageSpec, c_names: set[NormalizedName]
@@ -434,27 +429,18 @@ class PyodideLockAddon(PyodideLockConfig, _BaseAddon):
         url = urlparse(pkg.file_name)
 
         is_ok: dict[str, bool] = {}
-        if not url.scheme:
-            path = self.output_pyodide_lock.parent / url.path
-            file_ok = is_ok[name] = path.is_file()
-
-            if not file_ok:
-                self.log.error("[%s] missing wheel: %s", name, path)
-            else:
-                sha = sha256(path.read_bytes()).hexdigest()
-                sha_ok = is_ok[f"{pkg.name}:sha"] = sha == pkg.sha256
-                if not sha_ok:
-                    self.log.error(
-                        "[%s] SHA256 mismatch:\n\texpected: %s\n\tobserved: %s",
-                        name,
-                        pkg.sha256,
-                        sha,
-                    )
 
         for dep_name in pkg.depends:
             c_dep = canonicalize_name(dep_name)
             dep_ok = is_ok[f"{pkg.name}:depends:{c_dep}"] = c_dep in c_names
             if not dep_ok:
                 self.log.error("[%s] missing dependency: %s", name, dep_name)
+
+        if not url.scheme:
+            path = self.output_pyodide_lock.parent / url.path
+            file_ok = is_ok[name] = path.is_file()
+
+            if not file_ok:
+                self.log.error("[%s] missing wheel: %s", name, path)
 
         return is_ok

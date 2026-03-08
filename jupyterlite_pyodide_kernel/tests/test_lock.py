@@ -149,12 +149,10 @@ def break_ipython_lock(
     """Break a bunch of things."""
     lock_path = an_empty_lite_dir / SPLJ
     lock = json.loads(lock_path.read_text(encoding="utf-8"))
-    lock["packages"][IPY]["sha256"] = "not-a-sha"
     lock["packages"].pop("jedi")
     next(lock_path.parent.glob("matplotlib*.whl")).unlink()
     lock_path.write_text(json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8")
     res = run(["doit", "--", "-s", "check"], 1)
-    assert f"[{IPY}] SHA256 mismatch" in res.stderr
     assert f"[{IPY}] missing dependency: jedi" in res.stderr
     assert "[matplotlib-inline] missing wheel" in res.stderr
     lock_path.unlink()

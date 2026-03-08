@@ -29,7 +29,8 @@ def normalize_names(*names: str) -> list[NormalizedName]:
 
 
 @lru_cache(1000)
-def get_wheel_metadata(filename: str) -> Distribution:
+def get_wheel_metadata(filename: str) -> Distribution | None:
+    """Try to get cached metadata for a Python distribution."""
     import pkginfo
 
     return pkginfo.get_metadata(filename)
@@ -129,3 +130,15 @@ def write_wheel_index(whl_dir, metadata=None):
     index_data = get_wheel_index(list_wheels(whl_dir), metadata)
     wheel_index.write_text(json.dumps(index_data, **JSON_FMT), **UTF8)
     return wheel_index
+
+
+def patch_dict(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
+    """Recursively update a dict in-place with new values."""
+    for key, value in new.items():
+        if value is None:
+            old.pop(key, None)
+        elif isinstance(value, dict):
+            old[key] = patch_dict(old.get(key, {}), value)
+        else:
+            old[key] = value
+    return old
