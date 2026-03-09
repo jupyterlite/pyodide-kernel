@@ -34,9 +34,9 @@ conda install -c conda-forge jupyterlite-pyodide-kernel
 
 #### Lock
 
-Install the `[lock]` extra for compatible versions of [`pyodide-lock`][pyodide-lock]
-and [`uv`][uv], needed to add local or PyPI packages and their import name and
-dependency information to the Pyodide lockfile:
+Install the `[lock]` extra for compatible versions of [`pyodide-lock`][pyodide-lock] and
+[`uv`][uv], needed to add local or PyPI packages and their import name and dependency
+information to the Pyodide lockfile:
 
 - from PyPI: `jupyterlite-pyodide-kernel[lock]`
 - from `conda-forge`: `jupyterlite-pyodide-kernel-with-lock`
@@ -87,10 +87,9 @@ Pyodide CDN distribution:
 jupyter lite build
 ```
 
-The build configuration of the Pyodide distribution, the kernel, and
-package import behavior can be configured in `jupyter_lite_config.json`.
-Some features can be configured with CLI aliases and flags. See the full current
-list by running:
+The build configuration of the Pyodide distribution, the kernel, and package import
+behavior can be configured in `jupyter_lite_config.json`. Some features can be
+configured with CLI aliases and flags. See the full current list by running:
 
 ```bash
 jupyter lite --help
@@ -99,7 +98,6 @@ jupyter lite --help
 This should show something like the following:
 
 <details><summary>... for configuring the Pyodide distribution</summary>
-
 
 ```bash
   --pyodide=<Unicode>
