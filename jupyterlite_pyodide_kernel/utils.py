@@ -128,7 +128,7 @@ def write_wheel_index(whl_dir, metadata=None):
     """Write out an all.json for a directory of wheels"""
     wheel_index = Path(whl_dir) / ALL_JSON
     index_data = get_wheel_index(list_wheels(whl_dir), metadata)
-    wheel_index.write_text(json.dumps(index_data, **JSON_FMT), **UTF8)
+    wheel_index.write_text(json.dumps(index_data, **JSON_FMT) + "\n", **UTF8)
     return wheel_index
 
 
@@ -145,7 +145,8 @@ def patch_dict(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
 
 
 def patch_json_path(old_path: Path, patch: Path | dict[str, Any]) -> None:
+    """Update an on-disk JSON file with a patch."""
     if isinstance(patch, Path):
         patch = json.loads(patch.read_text(**UTF8))
     old = patch_dict(json.loads(old_path.read_text(**UTF8)), patch)
-    old_path.write_text(json.dumps(old, **JSON_FMT), **UTF8)
+    old_path.write_text(json.dumps(old, **JSON_FMT) + "\n", **UTF8)
