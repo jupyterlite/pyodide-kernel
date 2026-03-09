@@ -596,7 +596,7 @@ class PyodideAddon(_BaseAddon):
             return
 
         out = self.manager.output_dir
-        just_name = url.path.removeprefix(f"{PYODIDE_UV_WHEELS}/")
+        just_name = Path(url.path).name
         rel_url: str | None = None
         in_wheel = wheels_by_name.get(normalize_names(pkg.name)[0])
         out_wheel: Path | None = None
