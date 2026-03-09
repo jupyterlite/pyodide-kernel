@@ -175,6 +175,11 @@ class PyodideAddon(_BaseAddon):
         return self.manager.lite_dir / "static" / PYODIDE
 
     @property
+    def well_known_lock(self) -> Path:
+        """a well-known path where pyodide-lock might be stored"""
+        return self.manager.lite_dir / "static" / PYODIDE_LOCK_STEM
+
+    @property
     def status_info(self) -> str:
         lines = [
             f"URL:     {self.pyodide_url}",
@@ -539,7 +544,7 @@ class PyodideAddon(_BaseAddon):
 
     # helpers
     def find_wheels_by_name(self) -> TWheels:
-        """Gather a wheel per canonical name."""
+        """Gather a wheel per canonical name, first-in wins."""
 
         wheels_by_name: TWheels = {}
 
@@ -554,12 +559,13 @@ class PyodideAddon(_BaseAddon):
             else:  # pragma: no cover
                 self.log.warning("Wheel requested, but not found: %s", wheel_or_dir)
 
-        well_known = self.manager.lite_dir / "static" / PYODIDE_LOCK_STEM
+        # add wheels from well-known location
+        for wheel in list_wheels(self.well_known_lock):
+            self.add_wheel_by_name(wheel, wheels_by_name)
 
-        # add wheels already in well-known and output
-        for wheel_dir in [well_known, self.output_extensions]:
-            for wheel in list_wheels(wheel_dir, recursive=True):
-                self.add_wheel_by_name(wheel, wheels_by_name)
+        # add all wheels already in output
+        for wheel in list_wheels(self.output_extensions, recursive=True):
+            self.add_wheel_by_name(wheel, wheels_by_name)
 
         return wheels_by_name
 
