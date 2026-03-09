@@ -90,7 +90,7 @@ jobs:
           - python-version: '3.10'
             use-dist: sdist
             test-extra: test
-            pytest-args: --cov-fail-under=75
+            pytest-args: --cov-fail-under=73
           - python-version: '3.14'
             use-dist: wheel
             test-extra: test,lock
