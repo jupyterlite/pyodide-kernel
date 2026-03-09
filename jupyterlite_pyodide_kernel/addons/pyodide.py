@@ -296,13 +296,11 @@ class PyodideAddon(_BaseAddon):
         jupyterlite_json = out / JUPYTERLITE_JSON
         output_js = self.output_pyodide / PYODIDE_JS
 
+        patch_kwargs: dict[str, Path] = {}
+        patch_uptodate = ""
+
         if self.well_known_pyodide.exists() or self.pyodide_url:
-            yield self.task(
-                name=f"patch:{JUPYTERLITE_JSON}",
-                doc=f"ensure {JUPYTERLITE_JSON} includes Pyodide distribution customizations",
-                file_dep=[output_js, jupyterlite_json],
-                actions=[(self.patch_jupyterlite_json, [jupyterlite_json, output_js])],
-            )
+            patch_kwargs["output_js"] = output_js
 
         if self.lock_enabled:
             wheels_by_name = self.find_wheels_by_name()
@@ -330,17 +328,18 @@ class PyodideAddon(_BaseAddon):
                 uptodate=[doit.tools.config_changed(self.lock_status_info)],
             )
 
+            patch_kwargs["lockfile"] = self.lock_output
+            patch_uptodate += self.lock_status_info
+
+        if patch_kwargs:
             yield self.task(
-                name=f"lock:patch:{JUPYTERLITE_JSON}",
-                doc=f"configure runtime {PYODIDE_LOCK} settings in {JUPYTERLITE_JSON}",
+                name=f"patch:{JUPYTERLITE_JSON}",
+                doc=f"ensure {JUPYTERLITE_JSON} includes Pyodide distribution customizations",
+                file_dep=[jupyterlite_json, *patch_kwargs.values()],
                 actions=[
-                    (
-                        self.lock_patch_jupyterlite_json,
-                        [jupyterlite_json, self.lock_output],
-                    )
+                    (self.patch_jupyterlite_json, [jupyterlite_json], patch_kwargs)
                 ],
-                file_dep=[self.lock_output, jupyterlite_json],
-                uptodate=[doit.tools.config_changed(self.status_info)],
+                uptodate=[doit.tools.config_changed(patch_uptodate)],
             )
 
     def check(self, manager: LiteManager) -> TTaskGenerator:
@@ -364,28 +363,46 @@ class PyodideAddon(_BaseAddon):
 
     # task actions
     def check_config_paths(self, jupyterlite_json: Path) -> None:
+        out = self.manager.output_dir
         config = self.get_pyodide_settings(jupyterlite_json)
-
         pyodide_url = config.get(PYODIDE_URL)
 
         if not pyodide_url or not pyodide_url.startswith("./"):
             return
 
-        pyodide_path = Path(self.manager.output_dir / pyodide_url).parent
+        pyodide_path = (out / pyodide_url).parent
         assert pyodide_path.exists(), f"{pyodide_path} not found"
         pyodide_js = pyodide_path / PYODIDE_JS
         assert pyodide_js.exists(), f"{pyodide_js} not found"
         pyodide_lock = pyodide_path / PYODIDE_LOCK
         assert pyodide_lock.exists(), f"{pyodide_lock} not found"
 
-    def patch_jupyterlite_json(self, config_path: Path, output_js: Path) -> None:
-        """update jupyter-lite.json to use the local pyodide"""
+    def patch_jupyterlite_json(
+        self,
+        config_path: Path,
+        output_js: Path | None = None,
+        lockfile: Path | None = None,
+    ) -> None:
+        """update jupyter-lite.json to use the custom Pyodide files"""
+        out = self.manager.output_dir
         settings = self.get_pyodide_settings(config_path)
 
-        url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
-        if settings.get(PYODIDE_URL) != url:
-            settings[PYODIDE_URL] = url
-            self.set_pyodide_settings(config_path, settings)
+        if output_js:
+            settings[PYODIDE_URL] = "./{}".format(output_js.relative_to(out).as_posix())
+
+        if lockfile:
+            lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
+            packages = normalize_names(
+                *lpo.get(OPTION_PACKAGES, []), *self.lock_all_prefetch
+            )
+            lpo.update(
+                {
+                    OPTION_LOCK_FILE_URL: f"./{lockfile.relative_to(out).as_posix()}",
+                    OPTION_PACKAGES: packages,
+                }
+            )
+
+        self.set_pyodide_settings(config_path, settings)
 
     def cache_pyodide(self, path_or_url: str) -> TTaskGenerator:
         """copy pyodide to the cache"""
@@ -520,29 +537,6 @@ class PyodideAddon(_BaseAddon):
         self.log.debug("Lock OK: %s", ok)
         return all(ok.values())
 
-    def lock_patch_jupyterlite_json(
-        self, jupyterlite_json: Path, lockfile: Path
-    ) -> None:
-        """Update the runtime ``jupyter-lite-config.json`` for Pyodide lockfile."""
-        self.log.debug("patching %s for pyodide-lock", jupyterlite_json)
-        out = self.manager.output_dir
-
-        settings = self.get_pyodide_settings(jupyterlite_json)
-
-        # add prefetched packages
-        lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
-        packages = normalize_names(
-            *lpo.get(OPTION_PACKAGES, []), *self.lock_all_prefetch
-        )
-        lpo.update(
-            {
-                OPTION_LOCK_FILE_URL: f"./{lockfile.relative_to(out).as_posix()}",
-                OPTION_PACKAGES: packages,
-            }
-        )
-
-        self.set_pyodide_settings(jupyterlite_json, settings)
-
     # helpers
     def find_wheels_by_name(self) -> TWheels:
         """Gather a wheel per canonical name."""
@@ -573,6 +567,7 @@ class PyodideAddon(_BaseAddon):
         """Add a single wheel."""
         c_name = get_wheel_name(wheel)
         if c_name is None:  # pragma: no cover
+            self.log.warning("[???] name cannot be found in wheel: %s", wheel)
             return
         if c_name in self.lock_all_excludes:
             self.log.warning("[%s] local wheel excluded by name: %s", c_name, wheel)
