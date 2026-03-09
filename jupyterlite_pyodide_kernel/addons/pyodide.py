@@ -607,7 +607,7 @@ class PyodideAddon(_BaseAddon):
         else:
             uv_wheel = self.lock_cache / PYODIDE_UV_WHEELS / just_name
             out_wheel = self.lock_output.parent / just_name
-            if uv_wheel.is_file():  # pragma: no cover
+            if not uv_wheel.is_file():  # pragma: no cover
                 self.log.error(
                     "[%s] wheel could not be found from spec: %s", pkg.name, pkg
                 )

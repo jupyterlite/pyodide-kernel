@@ -124,18 +124,20 @@ def run_with_lock(
     """Provide a pre-configured script runner."""
     conf = deepcopy(CONFIGS[a_lock_config])
     pyodide_config = conf.setdefault(PA, {})
-    pyodide_config.update(
-        lock_enabled=True,
-        pyodide_url=None
-        if a_lock_config in CONFIG_NO_TARBALL
-        else f"{a_pyodide_tarball}",
-    )
+    pyodide_url = None if a_lock_config in CONFIG_NO_TARBALL else f"{a_pyodide_tarball}"
+    pyodide_config.update(lock_enabled=True, pyodide_url=pyodide_url)
+    pyodide_config.setdefault(LCO, {}).update(debug=True)
     (an_empty_lite_dir / JLCJ).write_text(json.dumps(conf), encoding="utf-8")
 
     def run(args: list[str], expect_rc: int = 0) -> RunResult:
         res = script_runner.run(["jupyter", "lite", *args], cwd=an_empty_lite_dir)
         rc = res.returncode
-        assert rc == expect_rc, f"did not return {expect_rc} from {args}"
+        ok = rc == expect_rc
+        if not ok:
+            cache_dir = an_empty_lite_dir / ".cache/pyodide-lock"
+            paths = map(str, sorted(cache_dir.rglob("*.*")))
+            print("\n".join(["cached paths", *paths]))
+        assert ok, f"did not return {expect_rc} from {args}"
         return res
 
     return run
