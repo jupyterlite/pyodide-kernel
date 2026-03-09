@@ -133,7 +133,7 @@ def run_with_lock(
         res = script_runner.run(["jupyter", "lite", *args], cwd=an_empty_lite_dir)
         rc = res.returncode
         ok = rc == expect_rc
-        if not ok:
+        if not ok:  # pragma: no cover
             cache_dir = an_empty_lite_dir / ".cache/pyodide-lock"
             paths = map(str, sorted(cache_dir.rglob("*.*")))
             print("\n".join(["cached paths", *paths]))

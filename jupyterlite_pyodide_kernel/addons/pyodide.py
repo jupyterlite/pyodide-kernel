@@ -413,7 +413,7 @@ class PyodideAddon(_BaseAddon):
         """copy pyodide to the cache"""
         if re.findall(r"^https?://", path_or_url):
             url = urllib.parse.urlparse(path_or_url)
-            name = url.path.split("/")[-1]
+            name = Path(url.path).name
             dest = self.pyodide_cache / name
             local_path = dest
             if not dest.exists():

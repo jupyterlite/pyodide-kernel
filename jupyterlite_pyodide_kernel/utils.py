@@ -67,7 +67,7 @@ def list_wheels(
 def get_wheel_fileinfo(whl_path: Path) -> tuple[str, str, dict[str, Any]]:
     """Generate a minimal Warehouse-like JSON API entry from a wheel"""
     metadata = get_wheel_metadata(str(whl_path))
-    if not (metadata and metadata.name and metadata.version):
+    if not (metadata and metadata.name and metadata.version):  # pragma: no cover
         msg = f"Could not get metadata for {whl_path}"
         raise ValueError(msg)
 
@@ -117,7 +117,7 @@ def get_wheel_index(wheels, metadata=None):
         name, version, release = metadata.get(whl_path, get_wheel_fileinfo(whl_path))
         # https://peps.python.org/pep-0503/#normalized-names
         normalized_name = re.sub(r"[-_.]+", "-", name).lower()
-        if normalized_name not in all_json:
+        if normalized_name not in all_json:  # pragma: no cover
             all_json[normalized_name] = {"releases": {}}
         all_json[normalized_name]["releases"][version] = [release]
 
@@ -144,9 +144,7 @@ def patch_dict(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     return old
 
 
-def patch_json_path(old_path: Path, patch: Path | dict[str, Any]) -> None:
+def patch_json_path(old_path: Path, patch: dict[str, Any]) -> None:
     """Update an on-disk JSON file with a patch."""
-    if isinstance(patch, Path):
-        patch = json.loads(patch.read_text(**UTF8))
     old = patch_dict(json.loads(old_path.read_text(**UTF8)), patch)
     old_path.write_text(json.dumps(old, **JSON_FMT) + "\n", **UTF8)
