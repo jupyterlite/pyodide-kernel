@@ -18,12 +18,16 @@ from traitlets import Unicode, default, Bool, Dict
 import doit.tools
 
 from jupyterlite_core.trait_types import TypedTuple
-from jupyterlite_core.constants import (
-    JUPYTERLITE_JSON,
-)
-from ..utils import list_wheels, normalize_names, get_wheel_name, patch_json_path
+from jupyterlite_core.constants import JUPYTERLITE_JSON
 
-from ._base import _BaseAddon
+from ..utils import (
+    list_wheels,
+    normalize_names,
+    get_wheel_name,
+    patch_json_path,
+    is_pyodide_wheel,
+    wheel_to_pep508,
+)
 from ..constants import (
     PYODIDE,
     PYODIDE_JS,
@@ -37,6 +41,8 @@ from ..constants import (
     OPTION_LOCK_FILE_URL,
     OPTION_PACKAGES,
 )
+
+from ._base import _BaseAddon
 
 
 if TYPE_CHECKING:
@@ -76,19 +82,23 @@ class PyodideAddon(_BaseAddon):
             {"PyodideAddon": {"lock_enabled": True}},
             f"Use pyodide-lock and uv to customize {PYODIDE_LOCK}",
         ),
+        "pyodide-lock-no-constrain-extensions": (
+            {"PyodideAddon": {"lock_constrain_extensions": False}},
+            "Add ``LiteBuildConfig.federated_extensions`` to constraints",
+        ),
     }
 
     # traits
     pyodide_url: str = Unicode(
         allow_none=True,
         help="Local path or URL of a Pyodide distribution tarball",
-    ).tag(config=True)
+    ).tag(config=True)  # type: ignore[assignment]
 
-    pyodide_ignore: str = TypedTuple(
+    pyodide_ignore: tuple[str, ...] = TypedTuple(
         Unicode(),
         default_value=["python", "python.bat", "python.exe"],
         help="names of files to exclude from a Pyodide distribution",
-    ).tag(config=True)
+    ).tag(config=True)  # type: ignore[assignment]
 
     ## lock traits
     lock_enabled: bool = Bool(
@@ -112,7 +122,12 @@ class PyodideAddon(_BaseAddon):
 
     lock_constraints: tuple[str, ...] = TypedTuple(
         Unicode(),
-        help=f"PEP-508 specs for Python packages to use only if required in {PYODIDE_LOCK}",
+        help=f"PEP-508 specs for Python packages to lock only if required in {PYODIDE_LOCK}",
+    ).tag(config=True)  # type: ignore[assignment]
+
+    lock_constrain_extensions: bool = Bool(
+        True,
+        help=f"constrain wheels from ``LiteBuildConfig.federated_extensions`` in {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
     lock_excludes: tuple[str, ...] = TypedTuple(
@@ -316,7 +331,7 @@ class PyodideAddon(_BaseAddon):
                 if candidate.is_file():
                     in_lock = candidate
 
-            if not (in_lock and in_lock.is_file()):
+            if not (in_lock and in_lock.is_file()):  # pragma: no cover
                 self.log.error(
                     "A custom %s was requested, but no input lock found in: %s",
                     PYODIDE_LOCK,
@@ -487,7 +502,13 @@ class PyodideAddon(_BaseAddon):
         url_base: str | None = None
         if self.lock_url:
             url_base = self.lock_url.rsplit("/", 1)[0]
-        extra_uv_args = [*kwargs.pop("extra_uv_args", []), *self.lock_all_extra_uv_args]
+        extra_uv_args = [
+            *kwargs.pop("extra_uv_args", []),
+            *self.lock_all_extra_uv_args,
+        ]
+
+        if self.lock_constrain_extensions:
+            extra_uv_args += [*self.lock_uv_extension_args(self.lock_cache)]
 
         upc = UvPipCompile(
             input_path=tmp_lock,
@@ -499,7 +520,7 @@ class PyodideAddon(_BaseAddon):
             work_dir=self.lock_cache / "_work",
             wheel_dir=self.lock_cache / PYODIDE_UV_WHEELS,
             base_url_for_missing=url_base,
-            excludes=self.lock_all_excludes,
+            excludes=[*map(str, self.lock_all_excludes)],
             extra_uv_args=extra_uv_args,
             **kwargs,
         )
@@ -516,6 +537,7 @@ class PyodideAddon(_BaseAddon):
         spec.to_json(path=self.lock_output, indent=2)
         patch_json_path(self.lock_output, self.lock_patches)
         self.maybe_timestamp(self.lock_output)
+        return True
 
     def check_lock(self) -> bool:
         """Check the lock."""
@@ -543,6 +565,35 @@ class PyodideAddon(_BaseAddon):
         return all(ok.values())
 
     # helpers
+    def lock_uv_extension_args(self, cache_dir: Path) -> list[str]:
+        """Get packages from federated extensions to constrain the ``uv`` solve."""
+        raw_wheels = []
+        for ext in self.manager.federated_extensions:
+            url = urllib.parse.urlparse(ext)
+            if url.scheme and url.path.endswith(".whl") and is_pyodide_wheel(url.path):
+                raw_wheels += [ext]
+            elif not url.scheme:
+                path = (self.manager.lite_dir / ext).absolute()
+                if path.is_dir():
+                    raw_wheels += [*map(str, list_wheels(path))]
+                elif path.is_file() and is_pyodide_wheel(ext):
+                    raw_wheels += [path]
+
+        ext_constraints: list[str] = []
+
+        for raw_wheel in raw_wheels:
+            pep508 = wheel_to_pep508(raw_wheel)
+            if pep508:
+                ext_constraints += [pep508]
+
+        if not ext_constraints:
+            return []
+
+        tmp_constraints = cache_dir / "extension-constraints.txt"
+        tmp_constraints.write_text("\n".join(sorted(ext_constraints)))
+
+        return [f"--constraints={tmp_constraints.absolute()}"]
+
     def find_wheels_by_name(self) -> TWheels:
         """Gather a wheel per canonical name, first-in wins."""
 

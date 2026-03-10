@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 import datetime
-import re
-from typing import Any
-from hashlib import md5, sha256
-from pathlib import Path
 import json
-from typing import TYPE_CHECKING
+import re
+from fnmatch import fnmatch
 from functools import lru_cache
+from hashlib import md5, sha256
+from urllib.parse import urlparse
+from pathlib import Path
+from typing import Any
+from typing import TYPE_CHECKING
 
-from .constants import ALL_WHL
 from jupyterlite_core.constants import ALL_JSON, JSON_FMT, UTF8
+
+from .constants import ALL_WHL, RE_WHEEL_DIST_NAME
 
 
 if TYPE_CHECKING:
@@ -46,22 +49,40 @@ def get_wheel_name(wheel: Path) -> NormalizedName | None:
     return canonicalize_name(info.name)
 
 
+def wheel_to_pep508(path_or_url: str) -> str | None:
+    """Get a PEP-508 direct URL from a path or URL."""
+    from packaging.utils import canonicalize_name
+
+    url = urlparse(path_or_url)
+
+    dist_name_match = re.search(RE_WHEEL_DIST_NAME, path_or_url)
+
+    if not dist_name_match:
+        return None
+
+    dist_name = canonicalize_name(dist_name_match.groupdict()["name"])
+    final_url = path_or_url if url.scheme else Path(path_or_url).resolve().as_uri()
+
+    return f"{dist_name} @ {final_url}"
+
+
+def is_pyodide_wheel(filename: str, patterns: list[str] | None = None) -> bool:
+    """get whether a wheel is a known-good pyodide wheel."""
+    return any(fnmatch(filename, f"**/*{p}") for p in patterns or ALL_WHL)
+
+
 def list_wheels(
     *wheel_dirs: Path,
     patterns: list[str] | None = None,
     recursive: bool = False,
 ) -> list[Path]:
     """get all wheels we know how to handle in a directory"""
-    patterns = patterns or ALL_WHL
     wheels = []
     for wheel_dir in wheel_dirs:
         if not wheel_dir.is_dir():
             continue
-        for pattern in patterns:
-            wheels += sorted(
-                (wheel_dir.rglob if recursive else wheel_dir.glob)(f"*{pattern}")
-            )
-    return wheels
+        wheels += sorted((wheel_dir.rglob if recursive else wheel_dir.glob)("*.whl"))
+    return [w for w in wheels if is_pyodide_wheel(w, patterns)]
 
 
 def get_wheel_fileinfo(whl_path: Path) -> tuple[str, str, dict[str, Any]]:

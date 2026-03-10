@@ -7,6 +7,7 @@ import json
 from typing import TYPE_CHECKING, Any
 import pytest
 from copy import deepcopy
+import textwrap
 
 from .conftest import WHEELS
 
@@ -24,6 +25,7 @@ PLJ = "pyodide-lock.json"
 SPLJ = f"_output/static/{PL}/{PLJ}"
 SPJS = "_output/static/pyodide/pyodide.js"
 JLCJ = "jupyter_lite_config.json"
+PLW = ".cache/pyodide-lock/_work"
 
 #: a valid timestamp for IPython 9.11.0
 IPY911_EPOCH = 1_772_814_229
@@ -40,6 +42,10 @@ LCO = "lock_compile_options"
 TSE = "the_smallest_extension"
 IPY = "ipython"
 IPW = "ipywidgets"
+SDE = "source_date_epoch"
+BQ = "bqplot"
+BQ_FN = f"{BQ}-0.12.44-py2.py3-none-any.whl"
+BQ_URL = f"https://pypi.org/packages/py2.py3/b/{BQ}/{BQ_FN}"
 
 CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
     #: enabled, no other configuration
@@ -48,17 +54,16 @@ CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
     wheel={PA: {"lock_wheels": [f"{WHEELS[0]}"]}},
     #: a single folder containing a wheel
     wheels={PA: {"lock_wheels": [f"{WHEELS[0].parent}"]}},
-    #: specs for a specific version of IPython, not inlcuded in any Pyodide distribution
-    ipy911_specs={
-        PA: {"lock_specs": IPY911_SPECS},
-        LBC: {"source_date_epoch": IPY911_EPOCH},
-    },
+    #: specs for a specific IPython, not inlcuded in any Pyodide distribution
+    ipy911_specs={PA: {"lock_specs": IPY911_SPECS}, LBC: {SDE: IPY911_EPOCH}},
     #: constraints for a specific version of IPython, not inlcuded in any Pyodide distribution
     ipy911_constraints={PA: {"lock_constraints": IPY911_SPECS}},
     #: ipywidgets
     widgets={PA: {"lock_specs": [IPW]}},
-    #: wherever possible, use any publicly-available URL instead of locally-cached copies
+    #: use any publicly-available URL instead of locally-cached copies
     all_remote={PA: {LCO: {"preserve_url_prefixes": ["https://"]}}},
+    #: a federated extension wheel that should constrain the solved version
+    fed_ext={LBC: {"federated_extensions": [BQ_URL]}, PA: {"lock_specs": ["bqplot"]}},
 )
 
 #: keys of CONFIGS that should not use the test fixture tarball
@@ -78,11 +83,13 @@ CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
     ipy911_constraints={*IPY911_WHEELS, *DEFAULT_WHEELS},
     widgets={IPW, *DEFAULT_WHEELS},
     all_remote=set(),
+    fed_ext={BQ, IPW, "traittypes", *DEFAULT_WHEELS},
 )
 
 #: extra checks to perform
 CONFIG_POST: dict[str, Callable[[], list[TPostRun]]] = dict(
     ipy911_specs=lambda: [break_ipython_lock],
+    fed_ext=lambda: [check_fed_ext],
 )
 
 
@@ -189,3 +196,13 @@ def break_ipython_lock(
     lock_path.write_text(json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8")
     res = run(["doit", "--", "-s", "check"], 1)
     assert "Failed to parse lock with pyodide-lock" in res.stderr
+
+
+def check_fed_ext(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner):
+    """Check whether a federated extension constrains the solve."""
+    for path in sorted((an_empty_lite_dir / PLW).glob("*")):
+        print(path.name)
+        print(textwrap.indent(path.read_text(encoding="utf-8"), "\t"))
+    lock_path = an_empty_lite_dir / SPLJ
+    wheels = sorted(w.name for w in lock_path.parent.glob("*.whl"))
+    assert BQ_FN in wheels, "federated extension did not constrain solve"
