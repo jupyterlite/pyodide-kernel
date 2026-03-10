@@ -35,7 +35,7 @@
     "lint:py:pip": "python -m pip check",
     "lint:py:ruff:fix": "ruff format && ruff check --fix-only",
     "lint:py:ruff:check": "ruff format --check",
-    "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md,.yml,.yaml}\"",
+    "prettier:base": "prettier --experimental-cli --parallel-workers=4 --cache --cache-location .prettiercache \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md,.yml,.yaml}\"",
     "prettier:check": "jlpm prettier:base --check",
     "prettier": "jlpm prettier:base --write --list-different",
     "quickstart": "npm run setup:py && jlpm && jlpm deduplicate && jlpm clean:all && jlpm lint && jlpm build:prod && jlpm dist && jlpm docs && jlpm test",

@@ -27,7 +27,6 @@ PYODIDE_KERNEL_PACKAGE_JSON = json.loads(
     (PYODIDE_KERNEL_PACKAGE / "package.json").read_text(ENC)
 )
 NOARCH_WHL = "-py3-none-any.whl"
-HATCH = [sys.executable, "-m", "hatch"]
 SOURCE_DATE_EPOCH = (
     subprocess.check_output([which("git"), "log", "-1", "--format=%ct"])
     .decode("utf-8")
@@ -44,7 +43,7 @@ PYODIDE_KERNEL_PACKAGES = {
 def build_wheels():
     for py_pkg in PYODIDE_KERNEL_PACKAGES.keys():
         print(f"[{py_pkg.name}] trying in-tree build...", flush=True)
-        args = [*HATCH, "build"]
+        args = ["pyproject-build"]
         env = os.environ.update(SOURCE_DATE_EPOCH=SOURCE_DATE_EPOCH)
         subprocess.check_call(args, cwd=str(py_pkg), env=env)
 

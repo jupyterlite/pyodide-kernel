@@ -23,7 +23,7 @@
         "type": "string"
       },
       "default": [],
-      "format": "uri"
+      "format": "uri-reference"
     },
     "loadPyodideOptions": {
       "type": "object",
