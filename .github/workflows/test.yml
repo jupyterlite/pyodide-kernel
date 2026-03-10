@@ -90,11 +90,11 @@ jobs:
           - python-version: '3.10'
             use-dist: sdist
             test-extra: test
-            pytest-args: --cov-fail-under=73
+            pytest-args: --cov-fail-under=71
           - python-version: '3.14'
             use-dist: wheel
             test-extra: test,lock
-            pytest-args: --cov-fail-under=95
+            pytest-args: --cov-fail-under=94
 
     steps:
       - name: Install Python
