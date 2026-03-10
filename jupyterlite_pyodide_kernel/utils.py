@@ -44,7 +44,7 @@ def get_wheel_name(wheel: Path) -> NormalizedName | None:
     from packaging.utils import canonicalize_name
 
     info = get_wheel_metadata(f"{wheel}")
-    if not (info and info.name):  # pragma: no cover
+    if not (info and info.name):
         return None
     return canonicalize_name(info.name)
 
