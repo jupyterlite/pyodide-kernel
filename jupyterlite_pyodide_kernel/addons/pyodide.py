@@ -133,7 +133,12 @@ class PyodideAddon(_BaseAddon):
     lock_excludes: tuple[str, ...] = TypedTuple(
         Unicode(),
         help=f"Python package names to exclude from {PYODIDE_LOCK}",
-        default_value=["widgetsnbextension", "jupyterlab-widgets"],
+        default_value=[
+            "jupyter-server",
+            "jupyterlab-widgets",
+            "jupyterlab",
+            "widgetsnbextension",
+        ],
     ).tag(config=True)  # type: ignore[assignment]
 
     lock_extra_excludes: tuple[str, ...] = TypedTuple(
