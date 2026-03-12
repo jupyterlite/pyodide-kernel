@@ -9,7 +9,7 @@ import shutil
 import urllib.parse
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from textwrap import indent
 from typing import Any, TYPE_CHECKING
@@ -35,7 +35,7 @@ from ..constants import (
     PYODIDE_URL,
     PYODIDE_LOCK_STEM,
     PYODIDE_URL_ENV_VAR,
-    PYODIDE_CDN_URL,
+    PYODIDE_LOCK_DEFAULT_URL,
     PYODIDE_UV_WHEELS,
     LOAD_PYODIDE_OPTIONS,
     OPTION_LOCK_FILE_URL,
@@ -106,9 +106,9 @@ class PyodideAddon(_BaseAddon):
         help="whether Pyodide lockfile customization is enabled",
     ).tag(config=True)  # type: ignore[assignment]
 
-    lock_url: str = Unicode(
-        help=f"URL of a remote {PYODIDE_LOCK}",
-        default_value=f"{PYODIDE_CDN_URL}/{PYODIDE_LOCK}",
+    lock_url: str | None = Unicode(
+        help=f"URL of a remote {PYODIDE_LOCK}: {PYODIDE_LOCK_DEFAULT_URL}",
+        allow_none=True,
     ).tag(config=True)  # type: ignore[assignment]
 
     lock_wheels: tuple[str, ...] = TypedTuple(
@@ -239,7 +239,9 @@ class PyodideAddon(_BaseAddon):
         """All arguments to inject for ``uv pip compile``."""
         args: list[str] = []
         if self.manager.source_date_epoch:
-            iso = datetime.fromtimestamp(self.manager.source_date_epoch).isoformat()
+            iso = datetime.fromtimestamp(
+                self.manager.source_date_epoch, tz=timezone.utc
+            ).isoformat()
             args += ["--exclude-newer", iso]
         return args
 
@@ -248,7 +250,7 @@ class PyodideAddon(_BaseAddon):
         """The status string, also used for task up-to-date checks."""
         lines = [
             f"pyodide-lock version:  {PYODIDE_LOCK_VERSION or 'not installed'}",
-            f"pyodide-lock URL:      {self.lock_url}",
+            f"pyodide-lock URL:      {self.lock_effective_url}",
             f"pyodide-lock options:  {self.lock_compile_options}",
             "lock:",
             f" - wheels:       {self.lock_wheels}",
@@ -261,6 +263,17 @@ class PyodideAddon(_BaseAddon):
             f" - prefetch packages:   {self.lock_all_prefetch}",
         ]
         return "\n".join(lines)
+
+    @property
+    def lock_effective_url(self) -> str | None:
+        """Get an effective remote lock; empty for a local pyodide with no remote lock."""
+        if not self.lock_enabled:
+            return None
+        if self.lock_url:
+            return self.lock_url
+        if self.pyodide_url or self.well_known_pyodide.exists():
+            return None
+        return PYODIDE_LOCK_DEFAULT_URL
 
     # JupyterLite API task generators
     def status(self, manager: LiteManager) -> TTaskGenerator:
@@ -280,10 +293,13 @@ class PyodideAddon(_BaseAddon):
 
     def post_init(self, manager: LiteManager) -> TTaskGenerator:
         """handle downloading of pyodide"""
-        if self.pyodide_url is not None:
+        lock_url = self.lock_effective_url
+
+        if self.pyodide_url:
             yield from self.cache_pyodide(self.pyodide_url)
-        elif self.lock_enabled and self.lock_url:
-            yield from self.cache_pyodide_lock(self.lock_url)
+
+        if lock_url:
+            yield from self.cache_pyodide_lock(lock_url)
 
     def build(self, manager: LiteManager) -> TTaskGenerator:
         """copy a local (cached or well-known) pyodide into the output_dir"""
@@ -331,10 +347,13 @@ class PyodideAddon(_BaseAddon):
             wheels_by_name = self.find_wheels_by_name()
             in_lock: Path | None = None
 
-            candidates = [self.output_pyodide / PYODIDE_LOCK, self.lock_remote_cache]
+            candidates = [self.output_pyodide / PYODIDE_LOCK]
+            if self.lock_effective_url:
+                candidates += [self.lock_remote_cache]
             for candidate in candidates:
                 if candidate.is_file():
                     in_lock = candidate
+                    break
 
             if not (in_lock and in_lock.is_file()):  # pragma: no cover
                 self.log.error(
@@ -505,8 +524,16 @@ class PyodideAddon(_BaseAddon):
 
         kwargs = deepcopy(self.lock_compile_options)
         url_base: str | None = None
-        if self.lock_url:
-            url_base = self.lock_url.rsplit("/", 1)[0]
+        lock_url = self.lock_effective_url
+        if not lock_url and self.is_partial_pyodide(input_lock):
+            lock_url = PYODIDE_LOCK_DEFAULT_URL
+            self.log.warning(
+                "Partial Pyodide distribution described in %s, using base URL %s",
+                input_lock,
+                lock_url,
+            )
+        if lock_url:
+            url_base = lock_url.rsplit("/", 1)[0]
         extra_uv_args = [
             *kwargs.pop("extra_uv_args", []),
             *self.lock_all_extra_uv_args,
@@ -550,20 +577,19 @@ class PyodideAddon(_BaseAddon):
         spec: PyodideLockSpec | None = None
         try:
             from pyodide_lock.spec import PyodideLockSpec
-            from packaging.utils import canonicalize_name
 
             spec = PyodideLockSpec.from_json(self.lock_output)
             ok["lock"] = True
         except Exception as err:
             self.log.error(
                 "Failed to parse lock with pyodide-lock v%s: %s\n%s\n",
-                self.lock_output,
                 PYODIDE_LOCK_VERSION,
+                self.lock_output,
                 err,
             )
             ok["lock"] = False
         if spec:
-            c_names = {canonicalize_name(n) for n in spec.packages}
+            c_names = {*normalize_names(*spec.packages)}
             for pkg in spec.packages.values():
                 ok.update(self.check_package_spec(pkg, c_names))
         self.log.debug("Lock OK: %s", ok)
@@ -703,3 +729,17 @@ class PyodideAddon(_BaseAddon):
                 self.log.error("[%s] missing wheel: %s", name, path)
 
         return is_ok
+
+    def is_partial_pyodide(self, lockfile: Path) -> bool:
+        """Get whether a lockfile is missing a local file."""
+        from pyodide_lock.spec import PyodideLockSpec
+
+        dist_dir = lockfile.parent
+        lock = PyodideLockSpec.from_json(lockfile)
+        for pkg in lock.packages.values():
+            url = urllib.parse.urlparse(pkg.file_name)
+            if url.scheme:
+                continue
+            if not (dist_dir / url.path).is_file():
+                return True
+        return False

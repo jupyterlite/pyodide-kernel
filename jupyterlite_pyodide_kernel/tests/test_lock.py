@@ -2,22 +2,26 @@
 
 from __future__ import annotations
 
+import os
 import json
-
-from typing import TYPE_CHECKING, Any
-import pytest
-from copy import deepcopy
 import textwrap
+
+from copy import deepcopy
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
+
+import pytest
 
 from .conftest import WHEELS
 
 if TYPE_CHECKING:
-    from pytest_console_scripts import ScriptRunner, RunResult
-    from pathlib import Path
     from collections.abc import Callable
+    from pathlib import Path
+
+    from pytest_console_scripts import ScriptRunner, RunResult
 
     TLockRunner = Callable[[list[str], int], RunResult]
-    TPostRun = Callable[[Path, str, TLockRunner], None]
+    TPostRun = Callable[[Path, str, str, TLockRunner], None]
 
 # paths
 PL = "pyodide-lock"
@@ -86,18 +90,39 @@ CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
     fed_ext={BQ, IPW, "traittypes", *DEFAULT_WHEELS},
 )
 
+# hide expected warnings about favicon, translation, etc.
+CLI_ENV = {
+    **os.environ,
+    "JUPYTERLITE_NO_JUPYTER_SERVER": "true",
+    "JUPYTERLITE_NO_JUPYTERLAB_SERVER": "true",
+}
+
+
+@dataclass
+class PostCheck:
+    an_empty_lite_dir: Path
+    a_lock_config: str
+    the_pyodide_lock_version: str
+    run: TLockRunner
+
+    def check(self) -> None:
+        """Subclasses implement this."""
+        raise NotImplementedError
+
+
 #: extra checks to perform
-CONFIG_POST: dict[str, Callable[[], list[TPostRun]]] = dict(
-    ipy911_specs=lambda: [break_ipython_lock],
-    fed_ext=lambda: [check_fed_ext],
+CONFIG_POST: dict[str, Callable[[], list[type[PostCheck]]]] = dict(
+    ipy911_specs=lambda: [CheckBreakLock],
+    fed_ext=lambda: [CheckFederated],
 )
 
 
 def test_pyodide_lock(
-    some_post_run_checks: list[TPostRun],
+    some_post_run_checks: list[type[PostCheck]],
     an_empty_lite_dir: Path,
     run_with_lock: TLockRunner,
     a_lock_config: str,
+    the_pyodide_lock_version: str,
 ) -> None:
     """can we generate a custom Pyodide lockfile?"""
     run_with_lock(["status"], 0)
@@ -105,20 +130,22 @@ def test_pyodide_lock(
     run_with_lock(["check"], 0)
 
     for post in some_post_run_checks:
-        post(an_empty_lite_dir, a_lock_config, run_with_lock)
+        post(
+            an_empty_lite_dir, a_lock_config, the_pyodide_lock_version, run_with_lock
+        ).check()
 
 
 # fixtures
 @pytest.fixture(params=sorted(CONFIGS))
-def a_lock_config(request: pytest.FixtureRequest, has_pyodide_lock_uv: bool) -> str:
+def a_lock_config(request: pytest.FixtureRequest, the_pyodide_lock_version: str) -> str:
     """Provide a key from ``CONFIGS`` above."""
     return f"{request.param}"
 
 
 @pytest.fixture
-def some_post_run_checks(a_lock_config: str) -> list[TPostRun]:
+def some_post_run_checks(a_lock_config: str) -> list[type[PostCheck]]:
     get_custom = CONFIG_POST.get(a_lock_config)
-    return [check_paths, check_lock, *(get_custom() if get_custom else [])]
+    return [CheckPaths, CheckLock, *(get_custom() if get_custom else [])]
 
 
 @pytest.fixture
@@ -137,7 +164,11 @@ def run_with_lock(
     (an_empty_lite_dir / JLCJ).write_text(json.dumps(conf), encoding="utf-8")
 
     def run(args: list[str], expect_rc: int = 0) -> RunResult:
-        res = script_runner.run(["jupyter", "lite", *args], cwd=an_empty_lite_dir)
+        res = script_runner.run(
+            ["jupyter", "lite", *args],
+            cwd=an_empty_lite_dir,
+            env=CLI_ENV,
+        )
         rc = res.returncode
         ok = rc == expect_rc
         if not ok:  # pragma: no cover
@@ -151,58 +182,69 @@ def run_with_lock(
 
 
 # post-run checks
-def check_paths(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -> None:
+class CheckPaths(PostCheck):
     """Check whether key paths exist."""
-    pyodide_path = an_empty_lite_dir / SPJS
-    if a_lock_config in CONFIG_NO_TARBALL:
-        assert not pyodide_path.exists(), f"{SPJS} should NOT exist"
-    else:
-        assert pyodide_path.exists(), f"{SPJS} should exist"
 
-    lock_path = an_empty_lite_dir / SPLJ
-    assert lock_path.exists(), f"{SPLJ} should exist"
+    def check(self) -> None:
+        pyodide_path = self.an_empty_lite_dir / SPJS
+        if self.a_lock_config in CONFIG_NO_TARBALL:
+            assert not pyodide_path.exists(), f"{SPJS} should NOT exist"
+        else:
+            assert pyodide_path.exists(), f"{SPJS} should exist"
 
-    expect_wheels = CONFIG_EXPECT_WHEEL_STEMS[a_lock_config]
-    wheels = sorted(lock_path.parent.glob("*.whl"))
-    wheel_names = {w.name.split("-")[0] for w in wheels}
-    extra_wheels = wheel_names - expect_wheels
-    missing_wheels = expect_wheels - wheel_names
-    assert not missing_wheels, "not enough wheels after build"
-    assert not extra_wheels, "too many wheels after build"
+        lock_path = self.an_empty_lite_dir / SPLJ
+        assert lock_path.exists(), f"{SPLJ} should exist"
+
+        expect_wheels = CONFIG_EXPECT_WHEEL_STEMS[self.a_lock_config]
+        wheels = sorted(lock_path.parent.glob("*.whl"))
+        wheel_names = {w.name.split("-")[0] for w in wheels}
+        extra_wheels = wheel_names - expect_wheels
+        missing_wheels = expect_wheels - wheel_names
+        assert not missing_wheels, "not enough wheels after build"
+        assert not extra_wheels, "too many wheels after build"
 
 
-def check_lock(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner) -> None:
+class CheckLock(PostCheck):
     """Check some properties of the lock."""
-    lock = json.loads((an_empty_lite_dir / SPLJ).read_text(encoding="utf-8"))
-    assert "widgetsnbextension" not in lock["packages"]
-    assert "jupyterlab-widgets" not in lock["packages"]
+
+    def check(self) -> None:
+        lock = json.loads((self.an_empty_lite_dir / SPLJ).read_text(encoding="utf-8"))
+        assert "widgetsnbextension" not in lock["packages"]
+        assert "jupyterlab-widgets" not in lock["packages"]
 
 
-def break_ipython_lock(
-    an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner
-) -> None:
+class CheckBreakLock(PostCheck):
     """Break a bunch of things."""
-    lock_path = an_empty_lite_dir / SPLJ
-    lock = json.loads(lock_path.read_text(encoding="utf-8"))
-    lock["packages"].pop("jedi")
-    next(lock_path.parent.glob("matplotlib*.whl")).unlink()
-    lock_path.write_text(json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8")
-    res = run(["doit", "--", "-s", "check"], 1)
-    assert f"[{IPY}] missing dependency: jedi" in res.stderr
-    assert "[matplotlib-inline] missing wheel" in res.stderr
-    lock_path.unlink()
-    res = run(["doit", "--", "-s", "check"], 1)
-    lock.pop("info")
-    lock_path.write_text(json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8")
-    res = run(["doit", "--", "-s", "check"], 1)
-    assert "Failed to parse lock with pyodide-lock" in res.stderr
+
+    def check(self) -> None:
+        lock_path = self.an_empty_lite_dir / SPLJ
+        lock = json.loads(lock_path.read_text(encoding="utf-8"))
+        lock["packages"].pop("jedi")
+        next(lock_path.parent.glob("matplotlib*.whl")).unlink()
+        lock_path.write_text(
+            json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8"
+        )
+        res = self.run(["doit", "--", "-s", "check"], 1)
+        assert f"[{IPY}] missing dependency: jedi" in res.stderr
+        assert "[matplotlib-inline] missing wheel" in res.stderr
+        lock_path.unlink()
+        res = self.run(["doit", "--", "-s", "check"], 1)
+        lock.pop("info")
+        lock_path.write_text(
+            json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8"
+        )
+        res = self.run(["doit", "--", "-s", "check"], 1)
+        msg = f"Failed to parse lock with pyodide-lock v{self.the_pyodide_lock_version}"
+        assert msg in res.stderr
 
 
-def check_fed_ext(an_empty_lite_dir: Path, a_lock_config: str, run: TLockRunner):
+class CheckFederated(PostCheck):
     """Check whether a federated extension constrains the solve."""
-    for path in sorted((an_empty_lite_dir / PLW).glob("*")):
-        print(path.name)
-        print(textwrap.indent(path.read_text(encoding="utf-8"), "\t"))
-    lock_path = an_empty_lite_dir / SPLJ
-    wheels = sorted(w.name for w in lock_path.parent.glob("*.whl"))
-    assert BQ_FN in wheels, "federated extension did not constrain solve"
+
+    def check(self) -> None:
+        for path in sorted((self.an_empty_lite_dir / PLW).glob("*")):
+            print(path.name)
+            print(textwrap.indent(path.read_text(encoding="utf-8"), "\t"))
+        lock_path = self.an_empty_lite_dir / SPLJ
+        wheels = sorted(w.name for w in lock_path.parent.glob("*.whl"))
+        assert BQ_FN in wheels, "federated extension did not constrain solve"
