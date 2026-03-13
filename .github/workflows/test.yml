@@ -86,14 +86,13 @@ jobs:
       matrix:
         os: [ubuntu, windows, macos]
         python-version: ['3.10', '3.14']
+        test-extra: ['test', 'test,lock']
         include:
-          - python-version: '3.10'
+          - test-extra: test
             use-dist: sdist
-            test-extra: test
             pytest-args: --cov-fail-under=69
-          - python-version: '3.14'
+          - test-extra: test,lock
             use-dist: wheel
-            test-extra: test,lock
             pytest-args: --cov-fail-under=94
 
     steps:
