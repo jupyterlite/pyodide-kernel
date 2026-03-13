@@ -5,9 +5,11 @@ from __future__ import annotations
 import os
 import json
 import textwrap
+import shutil
 
 from copy import deepcopy
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -16,23 +18,16 @@ from .conftest import WHEELS
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
 
     from pytest_console_scripts import ScriptRunner, RunResult
 
+    TConfig = dict[str, dict[str, Any]]
     TLockRunner = Callable[[list[str], int], RunResult]
-    TPostRun = Callable[[Path, str, str, TLockRunner], None]
 
-# paths
-PL = "pyodide-lock"
-PLJ = "pyodide-lock.json"
-SPLJ = f"_output/static/{PL}/{PLJ}"
-SPJS = "_output/static/pyodide/pyodide.js"
-JLCJ = "jupyter_lite_config.json"
-PLW = ".cache/pyodide-lock/_work"
 
 #: a valid timestamp for IPython 9.11.0
 IPY911_EPOCH = 1_772_814_229
+
 #: a set of de-normalized specs for IPython 9.11.0 to override the pyodide defaults
 IPY911_SPECS = [
     "IPython ==9.11.0",
@@ -40,38 +35,61 @@ IPY911_SPECS = [
     "matplotlib_inline >=0.1.6",
     "Pygments >=2.14.0",
 ]
-PA = "PyodideAddon"
-LBC = "LiteBuildConfig"
-LCO = "lock_compile_options"
-TSE = "the_smallest_extension"
-IPY = "ipython"
-IPW = "ipywidgets"
-SDE = "source_date_epoch"
-BQ = "bqplot"
-BQ_FN = f"{BQ}-0.12.44-py2.py3-none-any.whl"
-BQ_URL = f"https://pypi.org/packages/py2.py3/b/{BQ}/{BQ_FN}"
 
-CONFIGS: dict[str, dict[str, dict[str, Any]]] = dict(
-    #: enabled, no other configuration
-    defaults={},
-    #: a single local wheel with no dependencies
-    wheel={PA: {"lock_wheels": [f"{WHEELS[0]}"]}},
-    #: a single folder containing a wheel
-    wheels={PA: {"lock_wheels": [f"{WHEELS[0].parent}"]}},
-    #: specs for a specific IPython, not inlcuded in any Pyodide distribution
-    ipy911_specs={PA: {"lock_specs": IPY911_SPECS}, LBC: {SDE: IPY911_EPOCH}},
-    #: constraints for a specific version of IPython, not inlcuded in any Pyodide distribution
-    ipy911_constraints={PA: {"lock_constraints": IPY911_SPECS}},
-    #: ipywidgets
-    widgets={PA: {"lock_specs": [IPW]}},
-    #: use any publicly-available URL instead of locally-cached copies
-    all_remote={PA: {LCO: {"preserve_url_prefixes": ["https://"]}}},
-    #: a federated extension wheel that should constrain the solved version
-    fed_ext={LBC: {"federated_extensions": [BQ_URL]}, PA: {"lock_specs": ["bqplot"]}},
+#: A URL for a federated extension/kernel package
+BQ_URL = (
+    "https://pypi.org/packages/py2.py3/b/bqplot/bqplot-0.12.44-py2.py3-none-any.whl"
+)
+
+#: a set of configurations, keyed use as fixture values; `lock_enabled` set to True
+CONFIGS: dict[str, TConfig] = dict(
+    defaults={
+        # enabled, no other configuration
+        "PyodideAddon": {},
+    },
+    wheel={
+        # a single local wheel with no dependencies
+        "PyodideAddon": {"lock_wheels": [f"{WHEELS[0]}"]},
+    },
+    wheels={
+        # a single folder containing a wheel
+        "PyodideAddon": {"lock_wheels": [f"{WHEELS[0].parent}"]},
+    },
+    wheel_well_known={
+        # a wheel in `lite_dir/static/pyodide-lock`
+        "PyodideAddon": {},
+    },
+    ipy911_specs={
+        # specs for a specific IPython, not in any Pyodide distribution
+        "PyodideAddon": {"lock_specs": IPY911_SPECS},
+        "LiteBuildConfig": {"source_date_epoch": IPY911_EPOCH},
+    },
+    ipy911_constraints={
+        # constraints for a specific version of IPython, not in any Pyodide distribution
+        "PyodideAddon": {"lock_constraints": IPY911_SPECS},
+    },
+    widgets={
+        # ipywidgets
+        "PyodideAddon": {"lock_specs": ["ipywidgets"]},
+    },
+    all_remote={
+        # use any publicly-available URL instead of locally-cached copies
+        "PyodideAddon": {
+            "lock_compile_options": {"preserve_url_prefixes": ["https://"]},
+        }
+    },
+    fed_ext={
+        # a federated extension wheel that should constrain the solved version
+        "LiteBuildConfig": {"federated_extensions": [BQ_URL, f"{WHEELS[0]}"]},
+        "PyodideAddon": {"lock_specs": ["bqplot", "the-smallest-extension"]},
+    },
 )
 
 #: keys of CONFIGS that should not use the test fixture tarball
 CONFIG_NO_TARBALL: set[str] = {"all_remote"}
+
+#: keys of CONFIGS that should get a wheel in the well-known folder
+CONFIG_ADD_WELL_KNOWN: set[str] = {"wheel_well_known"}
 
 #: the PyPI dependencies of ``pyodide_kernel`` not included in the current Pyodide distribution
 DEFAULT_WHEELS = {"comm", "ipython_pygments_lexers"}
@@ -81,33 +99,28 @@ IPY911_WHEELS = {"ipython", "pygments", "jedi", "matplotlib_inline"}
 #: wheels to expect in the ``static/pyodide-lock`` folder after a build
 CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
     defaults=DEFAULT_WHEELS,
-    wheel={TSE, *DEFAULT_WHEELS},
-    wheels={TSE, *DEFAULT_WHEELS},
+    wheel={"the_smallest_extension", *DEFAULT_WHEELS},
+    wheels={"the_smallest_extension", *DEFAULT_WHEELS},
+    wheel_well_known={"the_smallest_extension", *DEFAULT_WHEELS},
     ipy911_specs={*IPY911_WHEELS, *DEFAULT_WHEELS},
     ipy911_constraints={*IPY911_WHEELS, *DEFAULT_WHEELS},
-    widgets={IPW, *DEFAULT_WHEELS},
+    widgets={"ipywidgets", *DEFAULT_WHEELS},
     all_remote=set(),
-    fed_ext={BQ, IPW, "traittypes", *DEFAULT_WHEELS},
+    fed_ext={
+        "bqplot",
+        "ipywidgets",
+        "traittypes",
+        "the_smallest_extension",
+        *DEFAULT_WHEELS,
+    },
 )
 
-# hide expected warnings about favicon, translation, etc.
+#: hide expected warnings about favicon, translation, etc.
 CLI_ENV = {
     **os.environ,
     "JUPYTERLITE_NO_JUPYTER_SERVER": "true",
     "JUPYTERLITE_NO_JUPYTERLAB_SERVER": "true",
 }
-
-
-@dataclass
-class PostCheck:
-    an_empty_lite_dir: Path
-    a_lock_config: str
-    the_pyodide_lock_version: str
-    run: TLockRunner
-
-    def check(self) -> None:
-        """Subclasses implement this."""
-        raise NotImplementedError
 
 
 #: extra checks to perform
@@ -157,11 +170,21 @@ def run_with_lock(
 ) -> TLockRunner:
     """Provide a pre-configured script runner."""
     conf = deepcopy(CONFIGS[a_lock_config])
-    pyodide_config = conf.setdefault(PA, {})
-    pyodide_url = None if a_lock_config in CONFIG_NO_TARBALL else f"{a_pyodide_tarball}"
-    pyodide_config.update(lock_enabled=True, pyodide_url=pyodide_url)
-    pyodide_config.setdefault(LCO, {}).update(debug=True)
-    (an_empty_lite_dir / JLCJ).write_text(json.dumps(conf), encoding="utf-8")
+    pyodide_config = conf["PyodideAddon"]
+    pyodide_config.update(
+        lock_enabled=True,
+        pyodide_url=None
+        if a_lock_config in CONFIG_NO_TARBALL
+        else f"{a_pyodide_tarball}",
+    )
+    (an_empty_lite_dir / "jupyter_lite_config.json").write_text(
+        json.dumps(conf), encoding="utf-8"
+    )
+
+    if a_lock_config in CONFIG_ADD_WELL_KNOWN:
+        well_known = an_empty_lite_dir / "static/pyodide-lock"
+        well_known.mkdir(parents=True)
+        shutil.copy2(WHEELS[0], well_known / WHEELS[0].name)
 
     def run(args: list[str], expect_rc: int = 0) -> RunResult:
         res = script_runner.run(
@@ -182,21 +205,38 @@ def run_with_lock(
 
 
 # post-run checks
+@dataclass
+class PostCheck:
+    an_empty_lite_dir: Path
+    a_lock_config: str
+    the_pyodide_lock_version: str
+    run: TLockRunner
+
+    @property
+    def out_pyodide(self) -> Path:
+        return self.an_empty_lite_dir / "_output/static/pyodide/pyodide.js"
+
+    @property
+    def out_lock(self) -> Path:
+        return self.an_empty_lite_dir / "_output/static/pyodide-lock/pyodide-lock.json"
+
+    def check(self) -> None:
+        """Subclasses implement this."""
+        raise NotImplementedError
+
+
 class CheckPaths(PostCheck):
     """Check whether key paths exist."""
 
     def check(self) -> None:
-        pyodide_path = self.an_empty_lite_dir / SPJS
         if self.a_lock_config in CONFIG_NO_TARBALL:
-            assert not pyodide_path.exists(), f"{SPJS} should NOT exist"
+            assert not self.out_pyodide.exists()
         else:
-            assert pyodide_path.exists(), f"{SPJS} should exist"
-
-        lock_path = self.an_empty_lite_dir / SPLJ
-        assert lock_path.exists(), f"{SPLJ} should exist"
+            assert self.out_pyodide.exists()
+        assert self.out_lock.exists()
 
         expect_wheels = CONFIG_EXPECT_WHEEL_STEMS[self.a_lock_config]
-        wheels = sorted(lock_path.parent.glob("*.whl"))
+        wheels = sorted(self.out_lock.parent.glob("*.whl"))
         wheel_names = {w.name.split("-")[0] for w in wheels}
         extra_wheels = wheel_names - expect_wheels
         missing_wheels = expect_wheels - wheel_names
@@ -208,7 +248,7 @@ class CheckLock(PostCheck):
     """Check some properties of the lock."""
 
     def check(self) -> None:
-        lock = json.loads((self.an_empty_lite_dir / SPLJ).read_text(encoding="utf-8"))
+        lock = json.loads(self.out_lock.read_text(encoding="utf-8"))
         assert "widgetsnbextension" not in lock["packages"]
         assert "jupyterlab-widgets" not in lock["packages"]
 
@@ -217,20 +257,19 @@ class CheckBreakLock(PostCheck):
     """Break a bunch of things."""
 
     def check(self) -> None:
-        lock_path = self.an_empty_lite_dir / SPLJ
-        lock = json.loads(lock_path.read_text(encoding="utf-8"))
+        lock = json.loads(self.out_lock.read_text(encoding="utf-8"))
         lock["packages"].pop("jedi")
-        next(lock_path.parent.glob("matplotlib*.whl")).unlink()
-        lock_path.write_text(
+        next(self.out_lock.parent.glob("matplotlib*.whl")).unlink()
+        self.out_lock.write_text(
             json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8"
         )
         res = self.run(["doit", "--", "-s", "check"], 1)
-        assert f"[{IPY}] missing dependency: jedi" in res.stderr
+        assert "[ipython] missing dependency: jedi" in res.stderr
         assert "[matplotlib-inline] missing wheel" in res.stderr
-        lock_path.unlink()
+        self.out_lock.unlink()
         res = self.run(["doit", "--", "-s", "check"], 1)
         lock.pop("info")
-        lock_path.write_text(
+        self.out_lock.write_text(
             json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8"
         )
         res = self.run(["doit", "--", "-s", "check"], 1)
@@ -242,9 +281,12 @@ class CheckFederated(PostCheck):
     """Check whether a federated extension constrains the solve."""
 
     def check(self) -> None:
-        for path in sorted((self.an_empty_lite_dir / PLW).glob("*")):
+        for path in sorted(
+            (self.an_empty_lite_dir / ".cache/pyodide-lock/_work").glob("*")
+        ):
             print(path.name)
             print(textwrap.indent(path.read_text(encoding="utf-8"), "\t"))
-        lock_path = self.an_empty_lite_dir / SPLJ
-        wheels = sorted(w.name for w in lock_path.parent.glob("*.whl"))
-        assert BQ_FN in wheels, "federated extension did not constrain solve"
+        wheels = sorted(w.name for w in self.out_lock.parent.glob("*.whl"))
+        assert Path(BQ_URL).name in wheels, (
+            "federated extension did not constrain solve"
+        )

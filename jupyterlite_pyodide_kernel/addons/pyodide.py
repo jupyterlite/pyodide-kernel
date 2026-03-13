@@ -608,7 +608,7 @@ class PyodideAddon(_BaseAddon):
                 if path.is_dir():
                     raw_wheels += [*map(str, list_wheels(path))]
                 elif path.is_file() and is_pyodide_wheel(ext):
-                    raw_wheels += [path]
+                    raw_wheels += [f"{path}"]
 
         ext_constraints: list[str] = []
 
