@@ -170,7 +170,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: |-
-            jupyterlite-pyodide-kernel-pytest-${{ github.run_number }}-${{ matrix.os }}-${{ matrix.python-version}}
+            jupyterlite-pyodide-kernel-pytest-${{ github.run_number }}-${{ matrix.os }}-${{ matrix.python-version}}-${{ case(matrix.test-extra == 'test', 'min', 'full') }}
           path: build/reports
           if-no-files-found: error
 
