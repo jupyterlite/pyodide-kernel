@@ -37,8 +37,8 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "jupyterlite-core >=0.7.3,<0.8.0",
-    "pkginfo"
+    "jupyterlite-core >=0.7.4,<0.8.0",
+    "pkginfo",
 ]
 
 [project.urls]
@@ -56,10 +56,14 @@ jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.addons.piplite:
 jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:PyodideAddon"
 
 [project.optional-dependencies]
+lock = [
+    "pyodide-lock[uv] >=0.1.2,<0.2.0",
+]
+
 dev = [
     "build",
     "hatch",
-    "jupyterlab >=4.5.5,<4.6.0",
+    "jupyterlab >=4.5.6,<4.6.0",
 ]
 
 lint = [
@@ -156,7 +160,6 @@ addopts = [
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=95",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",

@@ -7,7 +7,7 @@ from jupyterlite_core.app import DescribedMixin
 from jupyterlite_core.trait_types import CPath
 
 from ._version import __version__
-from .addons.piplite import list_wheels
+from .utils import list_wheels
 
 
 class PipliteIndex(DescribedMixin, JupyterApp):

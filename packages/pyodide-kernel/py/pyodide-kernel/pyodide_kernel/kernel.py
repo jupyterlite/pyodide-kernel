@@ -1,4 +1,6 @@
 # This is our ipykernel mock
+from __future__ import annotations
+
 import typing
 
 from .comm import get_comm_manager, CommManager
@@ -26,12 +28,12 @@ _EXPERIMENTAL_KEY_NAME = "_jupyter_types_experimental"
 
 
 class PyodideKernel(LoggingConfigurable):
-    interpreter: "Interpreter" = Instance("pyodide_kernel.interpreter.Interpreter")
-    comm_manager: CommManager = Instance(CommManager)
-    parent_header: typing.Any = Instance(Any, allow_none=True)
+    interpreter: Interpreter = Instance("pyodide_kernel.interpreter.Interpreter")  # type: ignore[assignment]
+    comm_manager: CommManager = Instance(CommManager)  # type: ignore[assignment]
+    parent_header: typing.Any = Instance(Any, allow_none=True)  # type: ignore[assignment]
     lite_transform_manager: LiteTransformerManager = Instance(
         LiteTransformerManager, ()
-    )
+    )  # type: ignore[assignment]
 
     @default("comm_manager")
     def _default_comm_manager(self):

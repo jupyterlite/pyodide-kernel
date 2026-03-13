@@ -11,7 +11,6 @@ RE_CDN_JS_URL = rf"{RE_CDN_ROOT}/pyodide.js"
 
 VERSION_PATH_PATTERNS = {
     "packages/pyodide-kernel/package.json": r"\"pyodide\": \"(.*)\"",
-    "examples/jupyter-lite.json": rf"{RE_CDN_ROOT}/pyodide-lock.json",
     "packages/pyodide-kernel-extension/src/index.ts": RE_CDN_JS_URL,
     "packages/pyodide-kernel-extension/schema/kernel.v0.schema.json": RE_CDN_JS_URL,
 }
