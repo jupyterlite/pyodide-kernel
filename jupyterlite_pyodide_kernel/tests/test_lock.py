@@ -75,7 +75,7 @@ CONFIGS: dict[str, TConfig] = dict(
     all_remote={
         # use any publicly-available URL instead of locally-cached copies
         "PyodideLockAddon": {
-            "compile_options": {"preserve_url_prefixes": ["https://"]},
+            "pyodide_lock_uv_options": {"preserve_url_prefixes": ["https://"]},
         }
     },
     fed_ext={

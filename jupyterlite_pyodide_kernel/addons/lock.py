@@ -128,7 +128,7 @@ class PyodideLockAddon(_BaseAddon):
         help=f"extra Python package names to exclude from {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
-    uv_pip_compile_options: dict[str, Any] = Dict(
+    pyodide_lock_uv_options: dict[str, Any] = Dict(
         help="extra options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
     ).tag(config=True)  # type: ignore[assignment]
 
@@ -162,7 +162,8 @@ class PyodideLockAddon(_BaseAddon):
 
     @property
     def pyodide_addon(self) -> PyodideAddon:
-        return self.manager["jupyterlite-pyodide-kernel-pyodide"]
+        addons: dict[str, _BaseAddon] = self.manager._addons  # noqa: SLF001
+        return addons["jupyterlite-pyodide-kernel-pyodide"]
 
     @property
     def output_lock(self) -> Path:
@@ -205,7 +206,7 @@ class PyodideLockAddon(_BaseAddon):
         lines = [
             f"pyodide-lock version:  {PYODIDE_LOCK_VERSION or 'not installed'}",
             f"pyodide-lock URL:      {self.effective_lock_url}",
-            f"pyodide-lock options:  {self.uv_pip_compile_options}",
+            f"pyodide-lock options:  {self.pyodide_lock_uv_options}",
             "lock:",
             f" - wheels:       {self.wheels}",
             f" - specs:        {self.specs}",
@@ -356,7 +357,7 @@ class PyodideLockAddon(_BaseAddon):
         tmp_lock = self.cache_dir / PYODIDE_LOCK
         self.copy_one(input_lock, tmp_lock)
 
-        kwargs = deepcopy(self.uv_pip_compile_options)
+        kwargs = deepcopy(self.pyodide_lock_uv_options)
         url_base: str | None = None
         lock_url = self.effective_lock_url
         if not lock_url and self.is_partial_pyodide(input_lock):

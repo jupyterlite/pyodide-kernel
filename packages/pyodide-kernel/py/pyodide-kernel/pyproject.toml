@@ -13,7 +13,8 @@ authors = [
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.13"
+dependencies = ["pyodide-kernel"]
 dynamic = ["version", "description"]
 
 [project.urls]
