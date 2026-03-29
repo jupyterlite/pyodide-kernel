@@ -122,11 +122,11 @@ version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
 before-bump-version = [
-    "python -m pip install 'jupyterlab~=4.5.0'",
+    "python -m pip install 'jupyterlab~=4.6.0a2'",
     "jlpm"
 ]
 before-build-npm = [
-    "python -m pip install 'jupyterlab~=4.5.0' hatch",
+    "python -m pip install 'jupyterlab~=4.6.0a2' hatch",
     "python -m pip install -e .[dev]",
     "jlpm",
     "jlpm build:prod",
