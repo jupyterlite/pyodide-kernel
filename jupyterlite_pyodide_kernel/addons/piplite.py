@@ -13,7 +13,6 @@ from jupyterlite_core.constants import (
     ALL_JSON,
     JSON_FMT,
     JUPYTERLITE_JSON,
-    LAB_EXTENSIONS,
     UTF8,
 )
 from traitlets import List
@@ -22,7 +21,6 @@ from ._base import _BaseAddon
 
 from ..utils import list_wheels
 from ..constants import (
-    ALL_WHL,
     PIPLITE_INDEX_SCHEMA,
     PIPLITE_URLS,
     PKG_JSON_PIPLITE,

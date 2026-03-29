@@ -82,6 +82,7 @@ def list_wheels(
         wheels += sorted((wheel_dir.rglob if recursive else wheel_dir.glob)("*.whl"))
     return [w for w in wheels if is_pyodide_wheel(w, patterns)]
 
+
 def patch_dict(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     """Recursively update a dict in-place with new values."""
     for key, value in new.items():

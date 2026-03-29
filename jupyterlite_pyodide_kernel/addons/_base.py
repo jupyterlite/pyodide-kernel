@@ -18,7 +18,7 @@ from jupyterlite_core.constants import (
     JUPYTER_CONFIG_DATA,
     LITE_PLUGIN_SETTINGS,
     JSON_FMT,
-    LAB_EXTENSIONS
+    LAB_EXTENSIONS,
 )
 
 from ..constants import PYODIDE_KERNEL_PLUGIN_ID
@@ -27,7 +27,6 @@ __all__ = ["_BaseAddon"]
 
 
 class _BaseAddon(BaseAddon):
-
     @property
     def output_extensions(self):
         """where labextensions will go in the output folder"""

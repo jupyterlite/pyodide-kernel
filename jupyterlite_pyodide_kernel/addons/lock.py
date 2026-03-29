@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import importlib.metadata
-import os
-import re
 import shutil
 import urllib.parse
 
@@ -14,7 +12,7 @@ from pathlib import Path
 from textwrap import indent
 from typing import Any, TYPE_CHECKING
 
-from traitlets import Unicode, default, Bool, Dict
+from traitlets import Unicode, Bool, Dict
 import doit.tools
 
 from jupyterlite_core.trait_types import TypedTuple
@@ -29,10 +27,7 @@ from ..utils import (
     wheel_to_pep508,
 )
 from ..constants import (
-    PYODIDE,
-    PYODIDE_JS,
     PYODIDE_LOCK,
-    PYODIDE_URL,
     PYODIDE_LOCK_STEM,
     PYODIDE_LOCK_DEFAULT_URL,
     PYODIDE_UV_WHEELS,
@@ -169,7 +164,6 @@ class PyodideLockAddon(_BaseAddon):
     def pyodide_addon(self) -> PyodideAddon:
         return self.manager["jupyterlite-pyodide-kernel-pyodide"]
 
-
     @property
     def output_lock(self) -> Path:
         return self.manager.output_dir / "static" / PYODIDE_LOCK_STEM / PYODIDE_LOCK
@@ -232,7 +226,10 @@ class PyodideLockAddon(_BaseAddon):
         if self.url:
             return self.url
 
-        if self.pyodide_addon.pyodide_url or self.pyodide_addon.well_known_pyodide.exists():
+        if (
+            self.pyodide_addon.pyodide_url
+            or self.pyodide_addon.well_known_pyodide.exists()
+        ):
             return None
         return PYODIDE_LOCK_DEFAULT_URL
 
@@ -242,9 +239,7 @@ class PyodideLockAddon(_BaseAddon):
         if self.enabled:
             yield self.task(
                 name="pyodide-lock",
-                actions=[
-                    lambda: print(indent(self.status_info, "    "), flush=True)
-                ],
+                actions=[lambda: print(indent(self.status_info, "    "), flush=True)],
             )
 
     def post_init(self, manager: LiteManager) -> TTaskGenerator:
@@ -253,7 +248,6 @@ class PyodideLockAddon(_BaseAddon):
 
         if lock_url:
             yield from self.post_init_cache_pyodide_lock(lock_url)
-
 
     def post_build(self, manager: LiteManager) -> TTaskGenerator:
         """configure jupyter-lite.json for Pyodide, potentially after updating a lockfile."""
@@ -303,7 +297,11 @@ class PyodideLockAddon(_BaseAddon):
                 doc=f"ensure {JUPYTERLITE_JSON} includes pyodide-lock customizations",
                 file_dep=[jupyterlite_json, *patch_kwargs.values()],
                 actions=[
-                    (self.post_build_patch_jupyterlite_json, [jupyterlite_json], patch_kwargs)
+                    (
+                        self.post_build_patch_jupyterlite_json,
+                        [jupyterlite_json],
+                        patch_kwargs,
+                    )
                 ],
                 uptodate=[doit.tools.config_changed(patch_uptodate)],
             )
