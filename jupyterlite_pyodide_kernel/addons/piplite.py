@@ -57,11 +57,6 @@ class PipliteAddon(_BaseAddon):
         return self.manager.cache_dir / "wheels"
 
     @property
-    def output_extensions(self):
-        """where labextensions will go in the output folder"""
-        return self.manager.output_dir / LAB_EXTENSIONS
-
-    @property
     def output_kernel_extension(self):
         """the location of the Pyodide kernel labextension static assets"""
         return self.output_extensions / PYODIDE_KERNEL_NPM_NAME
