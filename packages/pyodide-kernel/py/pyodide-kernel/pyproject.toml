@@ -14,7 +14,10 @@ license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["pyodide-kernel"]
+dependencies = [
+    "comm",
+    "ipython",
+]
 dynamic = ["version", "description"]
 
 [project.urls]
