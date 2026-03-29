@@ -20,6 +20,7 @@ from traitlets import List
 
 from ._base import _BaseAddon
 
+from ..utils import list_wheels
 from ..constants import (
     ALL_WHL,
     PIPLITE_INDEX_SCHEMA,
@@ -300,11 +301,6 @@ class PipliteAddon(_BaseAddon):
             **UTF8,
         )
         self.maybe_timestamp(whl_meta)
-
-
-def list_wheels(wheel_dir):
-    """get all wheels we know how to handle in a directory"""
-    return sorted(sum([[*wheel_dir.glob(f"*{whl}")] for whl in ALL_WHL], []))
 
 
 def get_wheel_fileinfo(whl_path):
