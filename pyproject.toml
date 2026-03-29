@@ -56,6 +56,10 @@ jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.addons.piplite:
 jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:PyodideAddon"
 
 [project.optional-dependencies]
+lock = [
+    "pyodide-lock[uv] >=0.1.2,<0.2.0",
+]
+
 dev = [
     "build",
     "hatch",
