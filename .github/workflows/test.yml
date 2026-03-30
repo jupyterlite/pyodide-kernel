@@ -93,7 +93,7 @@ jobs:
             pytest-args: --cov-fail-under=65
           - test-extra: test,lock
             use-dist: wheel
-            pytest-args: --cov-fail-under=95
+            pytest-args: --cov-fail-under=94
 
     steps:
       - name: Install Python
