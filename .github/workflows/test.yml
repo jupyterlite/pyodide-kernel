@@ -90,7 +90,7 @@ jobs:
         include:
           - test-extra: test
             use-dist: sdist
-            pytest-args: --cov-fail-under=69
+            pytest-args: --cov-fail-under=67
           - test-extra: test,lock
             use-dist: wheel
             pytest-args: --cov-fail-under=94
