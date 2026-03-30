@@ -137,12 +137,12 @@ This should show something like the following:
     Equivalent to: [--PyodideLockAddon.wheels]
 --pyodide-lock-constraints=<typedtuple-item-1>...
     PEP-508 specs for Python packages to use only if required in pyodide-lock.json;
-    may include ``-r/--requirements`` relative to ``lite_dir``
+    may include ``-r/--requirements``, ``-g/--group`` relative to ``lite_dir``
     Default: ()
     Equivalent to: [--PyodideLockAddon.constraints]
 --pyodide-lock-specs=<typedtuple-item-1>...
     PEP-508 specs for Python packages to include in pyodide-lock.json;
-    may include ``-r/--requirements`` relative to ``lite_dir``
+    may include ``-r/--requirements``, ``-g/--group`` relative to ``lite_dir``
     Default: ()
     Equivalent to: [--PyodideLockAddon.specs]
 --pyodide-lock-excludes=<typedtuple-item-1>...

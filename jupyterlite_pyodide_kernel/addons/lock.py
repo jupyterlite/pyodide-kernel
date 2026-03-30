@@ -102,7 +102,8 @@ class PyodideLockAddon(_BaseAddon):
         Unicode(),
         help=(
             f"PEP-508 specs for Python packages to include in {PYODIDE_LOCK};"
-            " may include ``-r/--requirements`` relative to ``lite_dir``"
+            " may include ``-r/--requirements`` and ``-g/--group``"
+            " relative to ``lite_dir``"
         ),
     ).tag(config=True)  # type: ignore[assignment]
 
@@ -110,7 +111,8 @@ class PyodideLockAddon(_BaseAddon):
         Unicode(),
         help=(
             "PEP-508 specs for Python packages to lock only if required in"
-            f"{PYODIDE_LOCK}; may include ``-r/--requirements`` relative to ``lite_dir``"
+            f" {PYODIDE_LOCK}; may include ``-r/--requirements`` and "
+            " ``-g/--group`` relative to ``lite_dir``"
         ),
     ).tag(config=True)  # type: ignore[assignment]
 

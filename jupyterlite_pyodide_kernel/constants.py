@@ -73,5 +73,8 @@ OPTION_LOCK_FILE_URL = "lockFileURL"
 #: configuration key for preloaded packages
 OPTION_PACKAGES = "packages"
 
-#: a reference in a ``requirements.txt`` file to another local file
-RE_PEP_508_FILE_REF = r"^(?P<flag>-r|--requirements)\s*=?\s*(?P<path_ref>.+)$"
+#: key in a ``pyproject.toml`` for named dependency groups
+PEP_735_DEP_GROUPS = "dependency-groups"
+
+#: self-referential group in ``dependency-groups`` member
+PEP_735_INC_GROUP = "include-group"

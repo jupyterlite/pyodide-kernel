@@ -234,6 +234,9 @@ class PostCheck:
     def check(self) -> None:
         """Subclasses implement this and add their own ``assert`."""
 
+    def clean_out(self) -> None:
+        shutil.rmtree(self.out)
+
 
 class CheckPaths(PostCheck):
     """Check whether key paths exist."""
@@ -304,14 +307,17 @@ class CheckReqFiles(PostCheck):
     def check(self) -> None:
         lite_dir = self.an_empty_lite_dir
         jlc_json = lite_dir / JLC_JSON
-        reqs_txt = lite_dir / "reqs/requirements.txt"
-        reqs_txt2 = lite_dir / "reqs/real/requirements.txt"
+        reqs = lite_dir / "reqs"
+        reqs_txt = reqs / "requirements.txt"
+        reqs_txt2 = reqs / "real/requirements.txt"
         old_wheels = {p.name for p in self.out_lock.parent.glob("*.whl")}
-
-        shutil.rmtree(self.out)
 
         jlc = json.loads(jlc_json.read_text(**UTF8))
         pla = jlc["PyodideLockAddon"]
+        real_specs = pla.pop("specs")
+
+        self.clean_out()
+
         spec_lines = [
             "# a comment",
             "# a misleading comment about -r requirements.txt",
@@ -321,7 +327,7 @@ class CheckReqFiles(PostCheck):
             "# the above line is intentionally blank",
         ]
         spec_lines2 = [
-            *pla.pop("specs"),
+            *real_specs,
             "-r ../requirements.txt  # intentional circular reference",
         ]
         reqs_txt2.parent.mkdir(parents=True)
@@ -330,10 +336,30 @@ class CheckReqFiles(PostCheck):
 
         pla["specs"] = [f"-r reqs/{reqs_txt.name}"]
         jlc_json_text = json.dumps(jlc, indent=2, sort_keys=True)
-        print(jlc_json_text)
+        print("building with -r", jlc_json_text)
         jlc_json.write_text(jlc_json_text, **UTF8)
 
         self.run(["build"], 0)
+        req_wheels = {p.name for p in self.out_lock.parent.glob("*.whl")}
+        assert old_wheels == req_wheels
 
-        new_wheels = {p.name for p in self.out_lock.parent.glob("*.whl")}
-        assert old_wheels == new_wheels
+        self.clean_out()
+        shutil.rmtree(reqs)
+
+        reqs.mkdir()
+        ppt = reqs / "pyproject.toml"
+        ppt_lines = [
+            "[dependency-groups]",
+            f"demo = {json.dumps(real_specs)}",
+            "demo2 = [{include-group='demo'}]",
+        ]
+        ppt.write_text("\n".join(ppt_lines))
+
+        pla["specs"] = [f"-g reqs/{ppt.name}:demo", f"-g reqs/{ppt.name}:demo2"]
+        jlc_json_text = json.dumps(jlc, indent=2, sort_keys=True)
+        print("building with -g", jlc_json_text)
+        jlc_json.write_text(jlc_json_text, **UTF8)
+
+        self.run(["build"], 0)
+        ppt_wheels = {p.name for p in self.out_lock.parent.glob("*.whl")}
+        assert old_wheels == ppt_wheels

@@ -13,7 +13,12 @@ from typing import TYPE_CHECKING
 
 from jupyterlite_core.constants import JSON_FMT, UTF8
 
-from .constants import ALL_WHL, RE_WHEEL_DIST_NAME, RE_PEP_508_FILE_REF
+from .constants import (
+    ALL_WHL,
+    RE_WHEEL_DIST_NAME,
+    PEP_735_DEP_GROUPS,
+    PEP_735_INC_GROUP,
+)
 
 
 if TYPE_CHECKING:
@@ -103,36 +108,81 @@ def patch_json_path(old_path: Path, patch: dict[str, Any]) -> None:
 
 
 def iter_pep508_specs(
-    specs: list[str], base_path: Path, seen: set[Path] | None = None
+    specs: list[str], base_path: Path, seen: set[str] | None = None
 ) -> Iterator[str]:
     """Parse a set of PEP-508 specs, with potential file references."""
-    seen = set() if seen is None else seen
+    seen = seen if seen is not None else set()
     for line in specs:
-        yield from iter_one_pep508_spec(line, base_path, seen)
+        yield from _iter_one_pep508_spec(line, base_path, seen)
 
 
-def iter_one_pep508_spec(line: str, base_path: Path, seen: set[Path]) -> Iterator[str]:
+def _iter_one_pep508_spec(line: str, base_path: Path, seen: set[str]) -> Iterator[str]:
     """Parse a single ``requirements.txt`` line."""
     line = line.split("#")[0].strip()
-    if line:
-        ref_match = re.match(RE_PEP_508_FILE_REF, line)
-        if ref_match is not None:
-            path_ref = f"""{ref_match.groupdict()["path_ref"]}"""
-            path = (base_path / path_ref).resolve()
-            yield from iter_one_pep508_path(path, seen)
-        else:
-            yield line
 
-
-def iter_one_pep508_path(path: Path, seen: set[Path]) -> Iterator[str]:
-    """Parse a ``requirements.txt``-style file as PEP-508 specs."""
-    if not path.exists():
-        msg = f"The requirements/constraints file could not be found: {path}"
-        raise FileNotFoundError(msg)
-    if path in seen:
+    if not line:
         return
 
-    seen = {*(seen or set()), path}
+    for pattern, _handler in _PEP_508_HANDLERS.items():
+        match = re.match(pattern, line)
+        if match is None:
+            continue
+        m = match.groupdict()
+        m["path"] = (base_path / str(m["path"])).resolve()
+        yield from _handler(**m, seen=seen)  # type: ignore[operator]
+        return
+
+    yield line
+
+
+def _iter_one_pep508_reqs_path(path: Path, seen: set[str]) -> Iterator[str]:
+    """Parse a ``requirements.txt``-style file as PEP-508 specs."""
+    if not path.exists():  # pragma: no cover
+        msg = f"The requirements/constraints file could not be found: {path}"
+        raise FileNotFoundError(msg)
+
+    uri = path.as_uri()
+    if uri in seen:
+        return
+
+    seen |= {uri}
 
     lines = path.read_text(encoding="utf-8").splitlines()
     yield from iter_pep508_specs(lines, path.parent, seen)
+
+
+def _iter_one_pep735_group_path(
+    path: Path, group: str, seen: set[str], ppt: dict[str, Any] | None = None
+) -> Iterator[str]:
+    """Parse a named ``dependency-group`` from ``pyproject.toml`` as PEP-508 specs."""
+    uri = f"{path.as_uri()}#{group}"
+    if uri in seen:
+        return
+
+    seen |= {uri}
+
+    if ppt is None:
+        try:  # pragma: no cover
+            import tomllib
+        except ImportError:  # pragma: no cover
+            import tomli as tomllib
+
+        ppt = tomllib.loads(path.read_text(**UTF8))
+
+    for spec in ppt[PEP_735_DEP_GROUPS][group]:
+        if isinstance(spec, str):
+            yield from _iter_one_pep508_spec(spec, path.parent, seen)
+        elif isinstance(spec, dict) and PEP_735_INC_GROUP in spec:
+            ref = spec[PEP_735_INC_GROUP]
+            yield from _iter_one_pep735_group_path(path, ref, seen, ppt)
+        else:  # pragma: no cover
+            msg = f"Can't parse requested spec from {group} in {path}: {spec}"
+            raise ValueError(msg)
+
+
+_PEP_508_HANDLERS = {
+    #: a PEP-508-like reference to a ``requirements.txt``-style file
+    r"^(-r|--requirements)\s*=?\s*(?P<path>.+)$": _iter_one_pep508_reqs_path,
+    #: a PEP-508-like reference to a ``dependency-groups`` in a ``pyproject.toml``
+    r"^(-g|--group)\s*=?\s*(?P<path>.+):(?P<group>.+)$": _iter_one_pep735_group_path,
+}
