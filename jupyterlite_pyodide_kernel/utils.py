@@ -13,12 +13,13 @@ from typing import TYPE_CHECKING
 
 from jupyterlite_core.constants import JSON_FMT, UTF8
 
-from .constants import ALL_WHL, RE_WHEEL_DIST_NAME
+from .constants import ALL_WHL, RE_WHEEL_DIST_NAME, RE_PEP_508_FILE_REF
 
 
 if TYPE_CHECKING:
     from packaging.utils import NormalizedName
     from pkginfo import Distribution
+    from collections.abc import Iterator
 
 
 @lru_cache(100)
@@ -99,3 +100,39 @@ def patch_json_path(old_path: Path, patch: dict[str, Any]) -> None:
     """Update an on-disk JSON file with a patch."""
     old = patch_dict(json.loads(old_path.read_text(**UTF8)), patch)
     old_path.write_text(json.dumps(old, **JSON_FMT) + "\n", **UTF8)
+
+
+def iter_pep508_specs(
+    specs: list[str], base_path: Path, seen: set[Path] | None = None
+) -> Iterator[str]:
+    """Parse a set of PEP-508 specs, with potential file references."""
+    seen = set() if seen is None else seen
+    for line in specs:
+        yield from iter_one_pep508_spec(line, base_path, seen)
+
+
+def iter_one_pep508_spec(line: str, base_path: Path, seen: set[Path]) -> Iterator[str]:
+    """Parse a single ``requirements.txt`` line."""
+    line = line.split("#")[0].strip()
+    if line:
+        ref_match = re.match(RE_PEP_508_FILE_REF, line)
+        if ref_match is not None:
+            path_ref = f"""{ref_match.groupdict()["path_ref"]}"""
+            path = (base_path / path_ref).resolve()
+            yield from iter_one_pep508_path(path, seen)
+        else:
+            yield line
+
+
+def iter_one_pep508_path(path: Path, seen: set[Path]) -> Iterator[str]:
+    """Parse a ``requirements.txt``-style file as PEP-508 specs."""
+    if not path.exists():
+        msg = f"The requirements/constraints file could not be found: {path}"
+        raise FileNotFoundError(msg)
+    if path in seen:
+        return
+
+    seen = {*(seen or set()), path}
+
+    lines = path.read_text(encoding="utf-8").splitlines()
+    yield from iter_pep508_specs(lines, path.parent, seen)

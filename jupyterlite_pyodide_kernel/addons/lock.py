@@ -1,4 +1,4 @@
-"""a JupyterLite addon for supporting the Pyodide distribution."""
+"""a JupyterLite addon for customizing Pyodide lockfiles."""
 
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ from jupyterlite_core.trait_types import TypedTuple
 from jupyterlite_core.constants import JUPYTERLITE_JSON
 
 from ..utils import (
+    iter_pep508_specs,
     list_wheels,
     normalize_names,
     get_wheel_name,
@@ -63,7 +64,7 @@ class PyodideLockAddon(_BaseAddon):
 
     # CLI
     aliases = {
-        "pyodide-lock-url": "PyodideLockAddon.url",
+        "pyodide-lock-url": "PyodideLockAddon.pyodide_lock_url",
         "pyodide-lock-wheels": "PyodideLockAddon.wheels",
         "pyodide-lock-constraints": "PyodideLockAddon.constraints",
         "pyodide-lock-specs": "PyodideLockAddon.specs",
@@ -88,7 +89,7 @@ class PyodideLockAddon(_BaseAddon):
         help="whether Pyodide lockfile customization is enabled",
     ).tag(config=True)  # type: ignore[assignment]
 
-    url: str | None = Unicode(
+    pyodide_lock_url: str | None = Unicode(
         help=f"URL of a remote {PYODIDE_LOCK}: {PYODIDE_LOCK_DEFAULT_URL}",
         allow_none=True,
     ).tag(config=True)  # type: ignore[assignment]
@@ -99,12 +100,18 @@ class PyodideLockAddon(_BaseAddon):
 
     specs: tuple[str, ...] = TypedTuple(
         Unicode(),
-        help=f"PEP-508 specs for Python packages to include in {PYODIDE_LOCK}",
+        help=(
+            f"PEP-508 specs for Python packages to include in {PYODIDE_LOCK};"
+            " may include ``-r/--requirements`` relative to ``lite_dir``"
+        ),
     ).tag(config=True)  # type: ignore[assignment]
 
     constraints: tuple[str, ...] = TypedTuple(
         Unicode(),
-        help=f"PEP-508 specs for Python packages to lock only if required in {PYODIDE_LOCK}",
+        help=(
+            "PEP-508 specs for Python packages to lock only if required in"
+            f"{PYODIDE_LOCK}; may include ``-r/--requirements`` relative to ``lite_dir``"
+        ),
     ).tag(config=True)  # type: ignore[assignment]
 
     constrain_extensions: bool = Bool(
@@ -190,6 +197,18 @@ class PyodideLockAddon(_BaseAddon):
         return normalize_names(*self.excludes, *self.excludes_extra)
 
     @property
+    def all_specs(self) -> list[str]:
+        """All PEP-508 specs, including ``requirements.txt``-style files."""
+        return sorted(set(iter_pep508_specs([*self.specs], self.manager.lite_dir)))
+
+    @property
+    def all_constraints(self) -> list[str]:
+        """All PEP-508 constraints, including ``requirements.txt``-style files."""
+        return sorted(
+            set(iter_pep508_specs([*self.constraints], self.manager.lite_dir))
+        )
+
+    @property
     def all_extra_uv_args(self) -> list[str]:
         """All arguments to inject for ``uv pip compile``."""
         args: list[str] = []
@@ -209,8 +228,8 @@ class PyodideLockAddon(_BaseAddon):
             f"pyodide-lock options:  {self.pyodide_lock_uv_options}",
             "lock:",
             f" - wheels:       {self.wheels}",
-            f" - specs:        {self.specs}",
-            f" - constraints:  {self.constraints}",
+            f" - specs:        {self.all_specs}",
+            f" - constraints:  {self.all_constraints}",
             f" - excludes:     {self.all_excludes}",
             f" - uv args:      {self.all_extra_uv_args}",
             f" - patches:      {self.patches}",
@@ -224,14 +243,15 @@ class PyodideLockAddon(_BaseAddon):
         """Get an effective remote lock; empty for a local pyodide with no remote lock."""
         if not self.enabled:
             return None
-        if self.url:
-            return self.url
 
-        if (
-            self.pyodide_addon.pyodide_url
-            or self.pyodide_addon.well_known_pyodide.exists()
-        ):
+        if self.pyodide_lock_url:
+            return self.pyodide_lock_url
+
+        pyodide = self.pyodide_addon
+
+        if pyodide.pyodide_url or pyodide.well_known_pyodide.exists():
             return None
+
         return PYODIDE_LOCK_DEFAULT_URL
 
     # JupyterLite API task generators
@@ -321,23 +341,20 @@ class PyodideLockAddon(_BaseAddon):
     def post_build_patch_jupyterlite_json(
         self,
         config_path: Path,
-        lockfile: Path | None = None,
+        lockfile: Path,
     ) -> None:
         """update jupyter-lite.json to use the custom Pyodide files"""
         out = self.manager.output_dir
         settings = self.get_pyodide_settings(config_path)
 
-        if lockfile:
-            lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
-            packages = normalize_names(
-                *lpo.get(OPTION_PACKAGES, []), *self.all_prefetch
-            )
-            lpo.update(
-                {
-                    OPTION_LOCK_FILE_URL: f"./{lockfile.relative_to(out).as_posix()}",
-                    OPTION_PACKAGES: packages,
-                }
-            )
+        lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
+        packages = normalize_names(*lpo.get(OPTION_PACKAGES, []), *self.all_prefetch)
+        lpo.update(
+            {
+                OPTION_LOCK_FILE_URL: f"./{lockfile.relative_to(out).as_posix()}",
+                OPTION_PACKAGES: packages,
+            }
+        )
 
         self.set_pyodide_settings(config_path, settings)
 
@@ -382,8 +399,8 @@ class PyodideLockAddon(_BaseAddon):
             output_path=tmp_lock.parent / f"patched-{tmp_lock.name}",
             input_base_url=url_base,
             wheels=[*wheels_by_name.values()],
-            specs=[*self.specs],
-            constraints=[*self.constraints],
+            specs=[*self.all_specs],
+            constraints=[*self.all_constraints],
             work_dir=self.cache_dir / "_work",
             wheel_dir=self.cache_dir / PYODIDE_UV_WHEELS,
             base_url_for_missing=url_base,

@@ -11,13 +11,8 @@
   },
   "PyodideLockAddon": {
     "enabled": true,
-    "specs": [
-      "IPython >=9.11.0",
-      "ipywidgets",
-      "jedi >=0.18.2",
-      "matplotlib-inline >=0.1.6",
-      "pygments >=2.14.0"
-    ],
+    "specs": ["-r requirements.txt"],
+    "constraints": ["-r constraints.txt"],
     "prefetch_extra": ["ipywidgets"],
     "pyodide_lock_uv_options": {
       "preserve_url_prefixes": ["https://"]

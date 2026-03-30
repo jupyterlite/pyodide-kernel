@@ -90,10 +90,10 @@ jobs:
         include:
           - test-extra: test
             use-dist: sdist
-            pytest-args: --cov-fail-under=67
+            pytest-args: --cov-fail-under=65
           - test-extra: test,lock
             use-dist: wheel
-            pytest-args: --cov-fail-under=94
+            pytest-args: --cov-fail-under=95
 
     steps:
       - name: Install Python

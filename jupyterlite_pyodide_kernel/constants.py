@@ -49,8 +49,10 @@ WASM_WHL = EMSCRIPTEN_ABI_WHL
 #  YYYY_buildnumber.
 PYODIDE_ABI_WHL = "pyodide_*_wasm32.whl"
 
+#: all wheel globs we understand
 ALL_WHL = [NOARCH_WHL, WASM_WHL, PYODIDE_ABI_WHL]
 
+#: a best-effort wheel filename pattern
 RE_WHEEL_DIST_NAME = r"(?P<name>[a-zA-Z\d][a-z\d_\-\.]*[^\-])-[\d\.]+.*\.whl"
 
 #: the default fallback URL prefix for pyodide packages
@@ -70,3 +72,6 @@ OPTION_LOCK_FILE_URL = "lockFileURL"
 
 #: configuration key for preloaded packages
 OPTION_PACKAGES = "packages"
+
+#: a reference in a ``requirements.txt`` file to another local file
+RE_PEP_508_FILE_REF = r"^(?P<flag>-r|--requirements)\s*=?\s*(?P<path_ref>.+)$"

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import abc
 import json
 import textwrap
 import shutil
@@ -24,6 +25,11 @@ if TYPE_CHECKING:
     TConfig = dict[str, dict[str, Any]]
     TLockRunner = Callable[[list[str], int], RunResult]
 
+#: JSON-compatible encoding
+UTF8 = {"encoding": "utf-8"}
+
+#: configuration path
+JLC_JSON = "jupyter_lite_config.json"
 
 #: a valid timestamp for IPython 9.11.0
 IPY911_EPOCH = 1_772_814_229
@@ -125,7 +131,7 @@ CLI_ENV = {
 
 #: extra checks to perform
 CONFIG_POST: dict[str, Callable[[], list[type[PostCheck]]]] = dict(
-    ipy911_specs=lambda: [CheckBreakLock],
+    ipy911_specs=lambda: [CheckReqFiles, CheckBreakLock],
     fed_ext=lambda: [CheckFederated],
 )
 
@@ -179,9 +185,7 @@ def run_with_lock(
         ),
     )
     lock_config.update(enabled=True)
-    (an_empty_lite_dir / "jupyter_lite_config.json").write_text(
-        json.dumps(conf), encoding="utf-8"
-    )
+    (an_empty_lite_dir / JLC_JSON).write_text(json.dumps(conf), **UTF8)
 
     if a_lock_config in CONFIG_ADD_WELL_KNOWN:
         well_known = an_empty_lite_dir / "static/pyodide-lock"
@@ -215,16 +219,20 @@ class PostCheck:
     run: TLockRunner
 
     @property
+    def out(self) -> Path:
+        return self.an_empty_lite_dir / "_output"
+
+    @property
     def out_pyodide(self) -> Path:
-        return self.an_empty_lite_dir / "_output/static/pyodide/pyodide.js"
+        return self.out / "static/pyodide/pyodide.js"
 
     @property
     def out_lock(self) -> Path:
-        return self.an_empty_lite_dir / "_output/static/pyodide-lock/pyodide-lock.json"
+        return self.out / "static/pyodide-lock/pyodide-lock.json"
 
+    @abc.abstractmethod
     def check(self) -> None:
-        """Subclasses implement this."""
-        raise NotImplementedError
+        """Subclasses implement this and add their own ``assert`."""
 
 
 class CheckPaths(PostCheck):
@@ -250,7 +258,7 @@ class CheckLock(PostCheck):
     """Check some properties of the lock."""
 
     def check(self) -> None:
-        lock = json.loads(self.out_lock.read_text(encoding="utf-8"))
+        lock = json.loads(self.out_lock.read_text(**UTF8))
         assert "widgetsnbextension" not in lock["packages"]
         assert "jupyterlab-widgets" not in lock["packages"]
 
@@ -259,21 +267,17 @@ class CheckBreakLock(PostCheck):
     """Break a bunch of things."""
 
     def check(self) -> None:
-        lock = json.loads(self.out_lock.read_text(encoding="utf-8"))
+        lock = json.loads(self.out_lock.read_text(**UTF8))
         lock["packages"].pop("jedi")
         next(self.out_lock.parent.glob("matplotlib*.whl")).unlink()
-        self.out_lock.write_text(
-            json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8"
-        )
+        self.out_lock.write_text(json.dumps(lock, indent=2, sort_keys=True), **UTF8)
         res = self.run(["doit", "--", "-s", "check"], 1)
         assert "[ipython] missing dependency: jedi" in res.stderr
         assert "[matplotlib-inline] missing wheel" in res.stderr
         self.out_lock.unlink()
         res = self.run(["doit", "--", "-s", "check"], 1)
         lock.pop("info")
-        self.out_lock.write_text(
-            json.dumps(lock, indent=2, sort_keys=True), encoding="utf-8"
-        )
+        self.out_lock.write_text(json.dumps(lock, indent=2, sort_keys=True), **UTF8)
         res = self.run(["doit", "--", "-s", "check"], 1)
         msg = f"Failed to parse lock with pyodide-lock v{self.the_pyodide_lock_version}"
         assert msg in res.stderr
@@ -287,8 +291,49 @@ class CheckFederated(PostCheck):
             (self.an_empty_lite_dir / ".cache/pyodide-lock/_work").glob("*")
         ):
             print(path.name)
-            print(textwrap.indent(path.read_text(encoding="utf-8"), "\t"))
+            print(textwrap.indent(path.read_text(**UTF8), "\t"))
         wheels = sorted(w.name for w in self.out_lock.parent.glob("*.whl"))
         assert Path(BQ_URL).name in wheels, (
             "federated extension did not constrain solve"
         )
+
+
+class CheckReqFiles(PostCheck):
+    """Re-run with specs in a nested ``requirements.txt`` file."""
+
+    def check(self) -> None:
+        lite_dir = self.an_empty_lite_dir
+        jlc_json = lite_dir / JLC_JSON
+        reqs_txt = lite_dir / "reqs/requirements.txt"
+        reqs_txt2 = lite_dir / "reqs/real/requirements.txt"
+        old_wheels = {p.name for p in self.out_lock.parent.glob("*.whl")}
+
+        shutil.rmtree(self.out)
+
+        jlc = json.loads(jlc_json.read_text(**UTF8))
+        pla = jlc["PyodideLockAddon"]
+        spec_lines = [
+            "# a comment",
+            "# a misleading comment about -r requirements.txt",
+            "-r ./real/requirements.txt # another comment",
+            "--requirements ../reqs/real/requirements.txt # a second copy",
+            "",
+            "# the above line is intentionally blank",
+        ]
+        spec_lines2 = [
+            *pla.pop("specs"),
+            "-r ../requirements.txt  # intentional circular reference",
+        ]
+        reqs_txt2.parent.mkdir(parents=True)
+        reqs_txt2.write_text("\n".join(spec_lines2), **UTF8)
+        reqs_txt.write_text("\n".join(spec_lines), **UTF8)
+
+        pla["specs"] = [f"-r reqs/{reqs_txt.name}"]
+        jlc_json_text = json.dumps(jlc, indent=2, sort_keys=True)
+        print(jlc_json_text)
+        jlc_json.write_text(jlc_json_text, **UTF8)
+
+        self.run(["build"], 0)
+
+        new_wheels = {p.name for p in self.out_lock.parent.glob("*.whl")}
+        assert old_wheels == new_wheels
