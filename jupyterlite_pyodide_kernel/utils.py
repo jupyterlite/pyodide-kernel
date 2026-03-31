@@ -18,6 +18,7 @@ from .constants import (
     RE_WHEEL_DIST_NAME,
     PEP_735_DEP_GROUPS,
     PEP_735_INC_GROUP,
+    PYPROJECT_TOML,
 )
 
 
@@ -110,7 +111,7 @@ def patch_json_path(old_path: Path, patch: dict[str, Any]) -> None:
 def iter_pep508_specs(
     specs: list[str], base_path: Path, seen: set[str] | None = None
 ) -> Iterator[str]:
-    """Parse a set of PEP-508 specs, with potential file references."""
+    """Parse a set of PEP-508 specs, with relative file references."""
     seen = seen if seen is not None else set()
     for line in specs:
         yield from _iter_one_pep508_spec(line, base_path, seen)
@@ -119,25 +120,22 @@ def iter_pep508_specs(
 def _iter_one_pep508_spec(line: str, base_path: Path, seen: set[str]) -> Iterator[str]:
     """Parse a single ``requirements.txt`` line."""
     line = line.split("#")[0].strip()
-
     if not line:
         return
-
-    for pattern, _handler in _PEP_508_HANDLERS.items():
+    for pattern, _handler in _PEP_508_FILE_HANDLERS.items():
         match = re.match(pattern, line)
         if match is None:
             continue
         m = match.groupdict()
-        m["path"] = (base_path / str(m["path"])).resolve()
+        m["path"] = (base_path / (m.get("path") or "")).resolve()
         yield from _handler(**m, seen=seen)  # type: ignore[operator]
         return
-
     yield line
 
 
 def _iter_one_pep508_reqs_path(path: Path, seen: set[str]) -> Iterator[str]:
     """Parse a ``requirements.txt``-style file as PEP-508 specs."""
-    if not path.exists():  # pragma: no cover
+    if not path.is_file():  # pragma: no cover
         msg = f"The requirements/constraints file could not be found: {path}"
         raise FileNotFoundError(msg)
 
@@ -155,6 +153,7 @@ def _iter_one_pep735_group_path(
     path: Path, group: str, seen: set[str], ppt: dict[str, Any] | None = None
 ) -> Iterator[str]:
     """Parse a named ``dependency-group`` from ``pyproject.toml`` as PEP-508 specs."""
+    path = path / PYPROJECT_TOML if path.is_dir() else path
     uri = f"{path.as_uri()}#{group}"
     if uri in seen:
         return
@@ -173,16 +172,17 @@ def _iter_one_pep735_group_path(
         if isinstance(spec, str):
             yield from _iter_one_pep508_spec(spec, path.parent, seen)
         elif isinstance(spec, dict) and PEP_735_INC_GROUP in spec:
-            ref = spec[PEP_735_INC_GROUP]
-            yield from _iter_one_pep735_group_path(path, ref, seen, ppt)
+            yield from _iter_one_pep735_group_path(
+                path, spec[PEP_735_INC_GROUP], seen, ppt
+            )
         else:  # pragma: no cover
             msg = f"Can't parse requested spec from {group} in {path}: {spec}"
             raise ValueError(msg)
 
 
-_PEP_508_HANDLERS = {
-    #: a PEP-508-like reference to a ``requirements.txt``-style file
+_PEP_508_FILE_HANDLERS = {
+    #: a reference to a ``requirements.txt``-style file
     r"^(-r|--requirements)\s*=?\s*(?P<path>.+)$": _iter_one_pep508_reqs_path,
-    #: a PEP-508-like reference to a ``dependency-groups`` in a ``pyproject.toml``
-    r"^(-g|--group)\s*=?\s*(?P<path>.+):(?P<group>.+)$": _iter_one_pep735_group_path,
+    #: a reference to a ``dependency-groups`` in a ``pyproject.toml``
+    r"^(-g|--group)\s*=?\s*((?P<path>.+):)?(?P<group>[^:/\\]+)$": _iter_one_pep735_group_path,
 }

@@ -73,6 +73,9 @@ OPTION_LOCK_FILE_URL = "lockFileURL"
 #: configuration key for preloaded packages
 OPTION_PACKAGES = "packages"
 
+#: the python project file
+PYPROJECT_TOML = "pyproject.toml"
+
 #: key in a ``pyproject.toml`` for named dependency groups
 PEP_735_DEP_GROUPS = "dependency-groups"
 

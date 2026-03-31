@@ -346,8 +346,7 @@ class CheckReqFiles(PostCheck):
         self.clean_out()
         shutil.rmtree(reqs)
 
-        reqs.mkdir()
-        ppt = reqs / "pyproject.toml"
+        ppt = lite_dir / "pyproject.toml"
         ppt_lines = [
             "[dependency-groups]",
             f"demo = {json.dumps(real_specs)}",
@@ -355,7 +354,7 @@ class CheckReqFiles(PostCheck):
         ]
         ppt.write_text("\n".join(ppt_lines))
 
-        pla["specs"] = [f"-g reqs/{ppt.name}:demo", f"-g reqs/{ppt.name}:demo2"]
+        pla["specs"] = ["-g demo", f"--group={ppt.name}:demo2"]
         jlc_json_text = json.dumps(jlc, indent=2, sort_keys=True)
         print("building with -g", jlc_json_text)
         jlc_json.write_text(jlc_json_text, **UTF8)
