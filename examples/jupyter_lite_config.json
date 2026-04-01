@@ -21,11 +21,7 @@
     "patches": {
       "packages": {
         "ipywidgets": {
-          "depends": [
-            "comm",
-            "ipython",
-            "traitlets"
-          ]
+          "depends": ["comm", "ipython", "traitlets"]
         }
       }
     }
