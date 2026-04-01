@@ -17,6 +17,17 @@
     "prefetch_extra": ["ipywidgets"],
     "pyodide_lock_uv_options": {
       "preserve_url_prefixes": ["https://"]
+    },
+    "patches": {
+      "packages": {
+        "ipywidgets": {
+          "depends": [
+            "comm",
+            "ipython",
+            "traitlets"
+          ]
+        }
+      }
     }
   }
 }

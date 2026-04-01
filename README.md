@@ -124,6 +124,15 @@ This should show something like the following:
 <details><summary>.... patching the Pyodide lockfile for automatically imported packages</summary>
 
 ```bash
+# flags
+--pyodide-lock
+    Use pyodide-lock and uv to customize pyodide-lock.json
+    Equivalent to: [--PyodideLockAddon.enabled=True]
+--pyodide-lock-no-constrain-extensions
+    Add ``LiteBuildConfig.federated_extensions`` to constraints
+    Equivalent to: [--PyodideLockAddon.constrain_extensions=False]
+
+# options
 --pyodide-lock-url=<Unicode>
     URL of a remote pyodide-lock.json:
     https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide-lock.json

@@ -102,8 +102,12 @@ CONFIG_ADD_WELL_KNOWN: set[str] = {"wheel_well_known"}
 
 #: the PyPI dependencies of ``pyodide_kernel`` not included in the current Pyodide distribution
 DEFAULT_WHEELS = {"comm", "ipython_pygments_lexers"}
+
 #: additional wheels expected for a specific version of IPython
 IPY911_WHEELS = {"ipython", "pygments", "jedi", "matplotlib_inline"}
+
+#: the wheels that come with widgets
+WIDGETS_WHEELS = {"ipywidgets", "jupyterlab_widgets", "widgetsnbextension"}
 
 #: wheels to expect in the ``static/pyodide-lock`` folder after a build
 CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
@@ -113,13 +117,13 @@ CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
     wheel_well_known={"the_smallest_extension", *DEFAULT_WHEELS},
     ipy911_specs={*IPY911_WHEELS, *DEFAULT_WHEELS},
     ipy911_constraints={*IPY911_WHEELS, *DEFAULT_WHEELS},
-    widgets={"ipywidgets", *DEFAULT_WHEELS},
+    widgets={*WIDGETS_WHEELS, *DEFAULT_WHEELS},
     all_remote=set(),
     fed_ext={
         "bqplot",
-        "ipywidgets",
-        "traittypes",
         "the_smallest_extension",
+        "traittypes",
+        *WIDGETS_WHEELS,
         *DEFAULT_WHEELS,
     },
 )
@@ -168,7 +172,7 @@ def a_lock_config(request: pytest.FixtureRequest, the_pyodide_lock_version: str)
 @pytest.fixture
 def some_post_run_checks(a_lock_config: str) -> list[type[PostCheck]]:
     get_custom = CONFIG_POST.get(a_lock_config)
-    return [CheckPaths, CheckLock, *(get_custom() if get_custom else [])]
+    return [CheckPaths, *(get_custom() if get_custom else [])]
 
 
 @pytest.fixture
@@ -259,15 +263,6 @@ class CheckPaths(PostCheck):
         missing_wheels = expect_wheels - wheel_names
         assert not missing_wheels, "not enough wheels after build"
         assert not extra_wheels, "too many wheels after build"
-
-
-class CheckLock(PostCheck):
-    """Check some properties of the lock."""
-
-    def check(self) -> None:
-        lock = json.loads(self.out_lock.read_text(**UTF8))
-        assert "widgetsnbextension" not in lock["packages"]
-        assert "jupyterlab-widgets" not in lock["packages"]
 
 
 class CheckBreakLock(PostCheck):

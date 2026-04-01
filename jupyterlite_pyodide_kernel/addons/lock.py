@@ -130,24 +130,23 @@ class PyodideLockAddon(_BaseAddon):
         help=f"Python package names to exclude from {PYODIDE_LOCK}",
         default_value=[
             "jupyter-server",
-            "jupyterlab-widgets",
             "jupyterlab",
-            "widgetsnbextension",
+            "notebook",
         ],
     ).tag(config=True)  # type: ignore[assignment]
+
+    omit_output_wheels: tuple[str, ...] = TypedTuple(
+        help="names of packages to omit from discovery in ``output_dir``",
+        default_value=[
+            "jupyterlab-widgets",
+            "widgetsnbextension",
+        ],
+    ).tag(config=True)
 
     excludes_extra: tuple[str, ...] = TypedTuple(
         Unicode(),
         help=f"extra Python package names to exclude from {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
-
-    exclude_newer: str = TypedTuple(
-        Unicode(),
-        help=(
-            "exclude packages newer than a: ISO-8601/RFC-3339 timestamp, human date;"
-            " see `uv pip compile --exclude-newer`"
-        ),
-    )
 
     pyodide_lock_uv_options: dict[str, Any] = Dict(
         help="extra options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
@@ -549,6 +548,8 @@ class PyodideLockAddon(_BaseAddon):
     def find_wheels_by_name(self) -> TWheels:
         """Gather a wheel per canonical name, first-in wins."""
 
+        from packaging.utils import canonicalize_name
+
         wheels_by_name: TWheels = {}
 
         # add directly-requested wheels
@@ -566,8 +567,12 @@ class PyodideLockAddon(_BaseAddon):
         for wheel in list_wheels(self.well_known_lock):
             self.add_wheel_by_name(wheel, wheels_by_name)
 
-        # add all wheels already in output
+        omit = {*map(canonicalize_name, self.omit_output_wheels)}
+
+        # add all wheels already in output, unless omitted
         for wheel in list_wheels(self.output_extensions, recursive=True):
+            if get_wheel_name(wheel) in omit:
+                continue
             self.add_wheel_by_name(wheel, wheels_by_name)
 
         return wheels_by_name
