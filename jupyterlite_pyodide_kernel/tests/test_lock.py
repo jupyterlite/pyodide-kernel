@@ -72,7 +72,10 @@ CONFIGS: dict[str, TConfig] = dict(
     },
     ipy911_constraints={
         # constraints for a specific version of IPython, not in any Pyodide distribution
-        "PyodideLockAddon": {"constraints": IPY911_SPECS},
+        "PyodideLockAddon": {
+            "constraints": IPY911_SPECS,
+            "lite_constraints_file": "lite-constraints.txt",
+        },
     },
     widgets={
         # ipywidgets
@@ -132,6 +135,7 @@ CLI_ENV = {
 #: extra checks to perform
 CONFIG_POST: dict[str, Callable[[], list[type[PostCheck]]]] = dict(
     ipy911_specs=lambda: [CheckReqFiles, CheckBreakLock],
+    ipy911_constraints=lambda: [CheckLiteConstraints],
     fed_ext=lambda: [CheckFederated],
 )
 
@@ -362,3 +366,21 @@ class CheckReqFiles(PostCheck):
         self.run(["build"], 0)
         ppt_wheels = {p.name for p in self.out_lock.parent.glob("*.whl")}
         assert old_wheels == ppt_wheels
+
+
+class CheckLiteConstraints(PostCheck):
+    def check(self) -> None:
+        """Check that the lite constraints file was written."""
+        lcp = self.an_empty_lite_dir / "lite-constraints.txt"
+        old_lcp_text = lcp.read_text(**UTF8)
+        old_wheels = {*self.out_lock.parent.glob("*.whl")}
+        non_empty_lines = [
+            line for line in old_lcp_text.splitlines() if not line.startswith("#")
+        ]
+        assert non_empty_lines
+        self.clean_out()
+        self.run(["build"], 0)
+        new_lcp_text = lcp.read_text(**UTF8)
+        assert new_lcp_text == old_lcp_text, "the constraints changed upexectedly"
+        new_wheels = {*self.out_lock.parent.glob("*.whl")}
+        assert new_wheels == old_wheels

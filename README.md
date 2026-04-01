@@ -124,25 +124,30 @@ This should show something like the following:
 <details><summary>.... patching the Pyodide lockfile for automatically imported packages</summary>
 
 ```bash
---pyodide-lock
-    Use pyodide-lock and uv to customize pyodide-lock.json
-    Equivalent to: [--PyodideLockAddon.enabled=True]
 --pyodide-lock-url=<Unicode>
-    URL of a remote pyodide-lock.json
-    Default: 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide-lock.json'
+    URL of a remote pyodide-lock.json:
+    https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide-lock.json
+    Default: ''
     Equivalent to: [--PyodideLockAddon.pyodide_lock_url]
 --pyodide-lock-wheels=<typedtuple-item-1>...
     paths to local wheels or folders to include in pyodide-lock.json
     Default: ()
     Equivalent to: [--PyodideLockAddon.wheels]
 --pyodide-lock-constraints=<typedtuple-item-1>...
-    PEP-508 specs for Python packages to use only if required in pyodide-lock.json;
-    may include ``-r/--requirements``, ``-g/--group`` relative to ``lite_dir``
+    PEP-508 specs for Python packages to lock only if required in pyodide-
+    lock.json; may include ``-r/--requirements`` and  ``-g/--group`` relative to
+    ``lite_dir``
     Default: ()
     Equivalent to: [--PyodideLockAddon.constraints]
+--pyodide-lock-lite-constraints=<Unicode>
+    path relative to ``lite_dir`` to a ``requirements.txt``-style file with
+    versions of all `none-any.whl` packages from pyodide-lock.json written if
+    missing, otherwise added to ``constraints`` and left unchanged
+    Default: ''
+    Equivalent to: [--PyodideLockAddon.lite_constraints_file]
 --pyodide-lock-specs=<typedtuple-item-1>...
-    PEP-508 specs for Python packages to include in pyodide-lock.json;
-    may include ``-r/--requirements``, ``-g/--group`` relative to ``lite_dir``
+    PEP-508 specs for Python packages to include in pyodide-lock.json; may
+    include ``-r/--requirements`` and ``-g/--group`` relative to ``lite_dir``
     Default: ()
     Equivalent to: [--PyodideLockAddon.specs]
 --pyodide-lock-excludes=<typedtuple-item-1>...

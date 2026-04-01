@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import importlib.metadata
+import json
 import shutil
 import urllib.parse
+from fnmatch import fnmatch
 
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -16,7 +18,7 @@ from traitlets import Unicode, Bool, Dict
 import doit.tools
 
 from jupyterlite_core.trait_types import TypedTuple
-from jupyterlite_core.constants import JUPYTERLITE_JSON
+from jupyterlite_core.constants import JUPYTERLITE_JSON, UTF8
 
 from ..utils import (
     iter_pep508_specs,
@@ -35,6 +37,7 @@ from ..constants import (
     LOAD_PYODIDE_OPTIONS,
     OPTION_LOCK_FILE_URL,
     OPTION_PACKAGES,
+    NOARCH_WHL,
 )
 
 from ._base import _BaseAddon
@@ -67,6 +70,7 @@ class PyodideLockAddon(_BaseAddon):
         "pyodide-lock-url": "PyodideLockAddon.pyodide_lock_url",
         "pyodide-lock-wheels": "PyodideLockAddon.wheels",
         "pyodide-lock-constraints": "PyodideLockAddon.constraints",
+        "pyodide-lock-lite-constraints": "PyodideLockAddon.lite_constraints_file",
         "pyodide-lock-specs": "PyodideLockAddon.specs",
         "pyodide-lock-excludes": "PyodideLockAddon.excludes_extra",
         "pyodide-lock-prefetch": "PyodideLockAddon.prefetch_extra",
@@ -137,6 +141,14 @@ class PyodideLockAddon(_BaseAddon):
         help=f"extra Python package names to exclude from {PYODIDE_LOCK}",
     ).tag(config=True)  # type: ignore[assignment]
 
+    exclude_newer: str = TypedTuple(
+        Unicode(),
+        help=(
+            "exclude packages newer than a: ISO-8601/RFC-3339 timestamp, human date;"
+            " see `uv pip compile --exclude-newer`"
+        ),
+    )
+
     pyodide_lock_uv_options: dict[str, Any] = Dict(
         help="extra options to pass to ``pyodide_lock.uv_pip_compile.UvPipCompile``",
     ).tag(config=True)  # type: ignore[assignment]
@@ -161,6 +173,15 @@ class PyodideLockAddon(_BaseAddon):
     prefetch_extra: tuple[str] = TypedTuple(
         Unicode(),
         help=f"extra Python package names from {PYODIDE_LOCK} to prefetch while initializing Pyodide",
+    ).tag(config=True)  # type: ignore[assignment]
+
+    lite_constraints_file: str = Unicode(
+        allow_none=True,
+        help=(
+            "path relative to ``lite_dir`` to a ``requirements.txt``-style"
+            f" file with versions of all `none-any.whl` packages from {PYODIDE_LOCK}"
+            " written if missing, otherwise added to ``constraints`` and left unchanged"
+        ),
     ).tag(config=True)  # type: ignore[assignment]
 
     # properties
@@ -206,9 +227,18 @@ class PyodideLockAddon(_BaseAddon):
     @property
     def all_constraints(self) -> list[str]:
         """All PEP-508 constraints, including ``requirements.txt``-style files."""
-        return sorted(
-            set(iter_pep508_specs([*self.constraints], self.manager.lite_dir))
-        )
+        constraints = [*self.constraints]
+        lcp = self.lite_constraints_path
+        if lcp and lcp.exists():
+            constraints += [f"-r {self.lite_constraints_file}"]
+        return sorted(set(iter_pep508_specs(constraints, self.manager.lite_dir)))
+
+    @property
+    def lite_constraints_path(self) -> Path | None:
+        """Get the effective path of a ``constraints.txt`` to use in a lock, or write."""
+        if not self.lite_constraints_file:
+            return None
+        return self.manager.lite_dir / self.lite_constraints_file
 
     @property
     def all_extra_uv_args(self) -> list[str]:
@@ -237,6 +267,8 @@ class PyodideLockAddon(_BaseAddon):
             f" - patches:      {self.patches}",
             "runtime:",
             f" - prefetch packages:   {self.all_prefetch}",
+            "output:",
+            f" - lite constraints:    {self.lite_constraints_file}",
         ]
         return "\n".join(lines)
 
@@ -274,6 +306,9 @@ class PyodideLockAddon(_BaseAddon):
 
     def post_build(self, manager: LiteManager) -> TTaskGenerator:
         """configure jupyter-lite.json for Pyodide, potentially after updating a lockfile."""
+        if not self.enabled:
+            return
+
         pyodide_addon = self.pyodide_addon
 
         out = manager.output_dir
@@ -282,51 +317,56 @@ class PyodideLockAddon(_BaseAddon):
         patch_kwargs: dict[str, Path] = {}
         patch_uptodate = ""
 
-        if self.enabled:
-            wheels_by_name = self.find_wheels_by_name()
-            in_lock: Path | None = None
+        wheels_by_name = self.find_wheels_by_name()
+        in_lock: Path | None = None
+        lcp = self.lite_constraints_path
 
-            candidates = [pyodide_addon.output_pyodide / PYODIDE_LOCK]
-            if self.effective_lock_url:
-                candidates += [self.cached_remote_lock]
-            for candidate in candidates:
-                if candidate.is_file():
-                    in_lock = candidate
-                    break
+        candidates = [pyodide_addon.output_pyodide / PYODIDE_LOCK]
+        if self.effective_lock_url:
+            candidates += [self.cached_remote_lock]
+        for candidate in candidates:
+            if candidate.is_file():
+                in_lock = candidate
+                break
 
-            if not (in_lock and in_lock.is_file()):  # pragma: no cover
-                self.log.error(
-                    "A custom %s was requested, but no input lock found in: %s",
-                    PYODIDE_LOCK,
-                    candidates,
-                )
-                return
-
-            yield self.task(
-                name="lock:build",
-                doc=f"build {PYODIDE_LOCK} with kernel, extension, and user-requested wheels",
-                actions=[(self.post_build_lock, [in_lock, wheels_by_name])],
-                file_dep=[in_lock, *wheels_by_name.values()],
-                targets=[self.output_lock],
-                uptodate=[doit.tools.config_changed(self.status_info)],
+        if not (in_lock and in_lock.is_file()):  # pragma: no cover
+            self.log.error(
+                "A custom %s was requested, but no input lock found in: %s",
+                PYODIDE_LOCK,
+                candidates,
             )
+            return
 
-            patch_kwargs["lockfile"] = self.output_lock
-            patch_uptodate += self.status_info
+        yield self.task(
+            name="lock:build",
+            doc=f"build {PYODIDE_LOCK} with kernel, extension, and user-requested wheels",
+            actions=[(self.post_build_lock, [in_lock, wheels_by_name])],
+            file_dep=[
+                in_lock,
+                *wheels_by_name.values(),
+                *([lcp] if lcp and lcp.is_file() else []),
+            ],
+            targets=[self.output_lock],
+            uptodate=[doit.tools.config_changed(self.status_info)],
+        )
 
-        if patch_kwargs:
+        patch_uptodate += self.status_info
+
+        yield self.task(
+            name=f"patch:{JUPYTERLITE_JSON}",
+            doc=f"ensure {JUPYTERLITE_JSON} includes pyodide-lock customizations",
+            file_dep=[jupyterlite_json, *patch_kwargs.values()],
+            actions=[(self.post_build_patch_jupyterlite_json, [jupyterlite_json])],
+            uptodate=[doit.tools.config_changed(patch_uptodate)],
+        )
+
+        if lcp and not lcp.is_file():
             yield self.task(
-                name=f"patch:{JUPYTERLITE_JSON}",
-                doc=f"ensure {JUPYTERLITE_JSON} includes pyodide-lock customizations",
-                file_dep=[jupyterlite_json, *patch_kwargs.values()],
-                actions=[
-                    (
-                        self.post_build_patch_jupyterlite_json,
-                        [jupyterlite_json],
-                        patch_kwargs,
-                    )
-                ],
-                uptodate=[doit.tools.config_changed(patch_uptodate)],
+                name=f"lite-constraints:{lcp}",
+                doc=f"update lite constraints from {PYODIDE_LOCK}",
+                actions=[(self.post_build_lite_constraints, [in_lock, lcp])],
+                file_dep=[self.output_lock],
+                targets=[lcp],
             )
 
     def check(self, manager: LiteManager) -> TTaskGenerator:
@@ -340,26 +380,6 @@ class PyodideLockAddon(_BaseAddon):
             )
 
     # task actions
-    def post_build_patch_jupyterlite_json(
-        self,
-        config_path: Path,
-        lockfile: Path,
-    ) -> None:
-        """update jupyter-lite.json to use the custom Pyodide files"""
-        out = self.manager.output_dir
-        settings = self.get_pyodide_settings(config_path)
-
-        lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
-        packages = normalize_names(*lpo.get(OPTION_PACKAGES, []), *self.all_prefetch)
-        lpo.update(
-            {
-                OPTION_LOCK_FILE_URL: f"./{lockfile.relative_to(out).as_posix()}",
-                OPTION_PACKAGES: packages,
-            }
-        )
-
-        self.set_pyodide_settings(config_path, settings)
-
     def post_init_cache_pyodide_lock(self, url: str) -> TTaskGenerator:
         """Cache a remote ``pyodide-lock.json`` if requested."""
         yield self.task(
@@ -424,6 +444,52 @@ class PyodideLockAddon(_BaseAddon):
         patch_json_path(self.output_lock, self.patches)
         self.maybe_timestamp(self.output_lock)
         return True
+
+    def post_build_lite_constraints(
+        self, in_lock_path: Path, lite_constraints: Path
+    ) -> bool:
+        """Write out a requested constraint file of portable wheels not in base lock."""
+        from packaging.utils import canonicalize_name
+
+        in_packages, out_packages = [
+            {
+                canonicalize_name(pkg["name"]): pkg
+                for pkg in json.loads(p.read_text(**UTF8))["packages"].values()
+            }
+            for p in [in_lock_path, self.output_lock]
+        ]
+        noarch_fn = f"*{NOARCH_WHL}"
+        lines = ["# generated by jupyterlite-pyodide-kernel:PyodideLockAddon"]
+
+        for c_name, pkg in sorted(out_packages.items()):
+            fn = str(pkg["file_name"])
+            old_sha = in_packages.get(c_name, {}).get("sha256")
+            is_portable = fnmatch(fn, noarch_fn)
+            did_change = pkg["sha256"] != old_sha
+            if is_portable and did_change:
+                lines += [f"""{c_name} =={pkg["version"]}"""]
+        lite_constraints.parent.mkdir(parents=True, exist_ok=True)
+        lite_constraints.write_text("\n".join(sorted(lines)))
+        return True
+
+    def post_build_patch_jupyterlite_json(
+        self,
+        config_path: Path,
+    ) -> None:
+        """update jupyter-lite.json to use the custom Pyodide files"""
+        out = self.manager.output_dir
+        settings = self.get_pyodide_settings(config_path)
+
+        lpo = settings.setdefault(LOAD_PYODIDE_OPTIONS, {})
+        packages = normalize_names(*lpo.get(OPTION_PACKAGES, []), *self.all_prefetch)
+        lpo.update(
+            {
+                OPTION_LOCK_FILE_URL: f"./{self.output_lock.relative_to(out).as_posix()}",
+                OPTION_PACKAGES: packages,
+            }
+        )
+
+        self.set_pyodide_settings(config_path, settings)
 
     def check_lock(self) -> bool:
         """Check the lock."""
