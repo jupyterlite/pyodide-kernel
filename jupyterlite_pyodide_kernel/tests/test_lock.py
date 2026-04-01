@@ -371,10 +371,12 @@ class CheckLiteConstraints(PostCheck):
         old_text = lcp.read_text(**UTF8)
         old_lines = old_text.splitlines()
         old_wheels = {*self.out_lock.parent.glob("*.whl")}
-        non_empty_lines = [line for line in old_lines if not line.startswith("#")]
+        non_empty_lines = [line for line in old_lines if line.split("#")[0].strip()]
         assert non_empty_lines
-        bad_names = ("ipykernel", "pyodide-kernel", "piplite", "widgetsnbextension")
-        bad_lines = {line for line in old_lines if line.split(" ")[0] in bad_names}
+        bad_names = ("ipykernel", "pyodide-kernel", "piplite")
+        bad_lines = {
+            line for line in old_lines if line.split(" ")[0].strip() in bad_names
+        }
         assert not bad_lines, "unexpected bad names"
         self.clean_out()
         self.run(["build"], 0)

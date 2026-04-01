@@ -469,7 +469,7 @@ class PyodideLockAddon(_BaseAddon):
             if is_portable and did_change:
                 lines += [f"""{c_name} =={pkg["version"]}"""]
         lite_constraints.parent.mkdir(parents=True, exist_ok=True)
-        lite_constraints.write_text("\n".join(sorted(lines)))
+        lite_constraints.write_text("\n".join([*sorted(lines), ""]), **UTF8)
         return True
 
     def post_build_patch_jupyterlite_json(
