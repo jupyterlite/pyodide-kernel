@@ -369,18 +369,21 @@ class CheckReqFiles(PostCheck):
 
 
 class CheckLiteConstraints(PostCheck):
+    """Check that the lite constraints file was written."""
+
     def check(self) -> None:
-        """Check that the lite constraints file was written."""
         lcp = self.an_empty_lite_dir / "lite-constraints.txt"
-        old_lcp_text = lcp.read_text(**UTF8)
+        old_text = lcp.read_text(**UTF8)
+        old_lines = old_text.splitlines()
         old_wheels = {*self.out_lock.parent.glob("*.whl")}
-        non_empty_lines = [
-            line for line in old_lcp_text.splitlines() if not line.startswith("#")
-        ]
+        non_empty_lines = [line for line in old_lines if not line.startswith("#")]
         assert non_empty_lines
+        bad_names = ("ipykernel", "pyodide-kernel", "piplite", "widgetsnbextension")
+        bad_lines = {line for line in old_lines if line.split(" ")[0] in bad_names}
+        assert not bad_lines, "unexpected bad names"
         self.clean_out()
         self.run(["build"], 0)
-        new_lcp_text = lcp.read_text(**UTF8)
-        assert new_lcp_text == old_lcp_text, "the constraints changed upexectedly"
+        new_text = lcp.read_text(**UTF8)
+        assert new_text == old_text, "the constraints should not change"
         new_wheels = {*self.out_lock.parent.glob("*.whl")}
-        assert new_wheels == old_wheels
+        assert new_wheels == old_wheels, "unexpected wheels"
