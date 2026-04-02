@@ -47,8 +47,8 @@ WASM_WHL = EMSCRIPTEN_ABI_WHL
 PYODIDE_ABI_WHL = "pyodide_*_wasm32.whl"
 
 #: our new default platform tag for Pyodide wheels per PEP 783
-#: (pyemscripten_*_wasm32), introduced in Pyodide 0.30 and
-#: supported by micropip >= 0.11.1
+#: (pyemscripten_*_wasm32). pyodide-build produces these by default
+#: from Pyodide 0.30 onwards, where micropip >= 0.11.1 is bundled
 PYEMSCRIPTEN_ABI_WHL = "pyemscripten_*_wasm32.whl"
 
 ALL_WHL = [NOARCH_WHL, WASM_WHL, PYODIDE_ABI_WHL, PYEMSCRIPTEN_ABI_WHL]
