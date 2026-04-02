@@ -93,8 +93,14 @@ ${e.stack}`;
       throw new Error('Uninitialized');
     }
 
-    const { pipliteWheelUrl, disablePyPIFallback, pipliteUrls, loadPyodideOptions } =
-      this._options;
+    const {
+      pipliteWheelUrl,
+      disablePyPIFallback,
+      pipliteUrls,
+      loadPyodideOptions,
+      pipliteIndexUrls,
+      pipliteInstallDefaultOptions,
+    } = this._options;
 
     const preloaded = (loadPyodideOptions || {}).packages || [];
 
@@ -109,12 +115,23 @@ ${e.stack}`;
     `);
     }
 
+    const pyJson = JSON.stringify({
+      piplite_urls: pipliteUrls,
+      disable_pypi: disablePyPIFallback,
+      // pipliteInstallDefaultOptions.index_urls is supported but
+      // pipliteIndexUrls takes precedence if set
+      ...(pipliteInstallDefaultOptions || {}),
+      ...(pipliteIndexUrls?.length ? { index_urls: pipliteIndexUrls } : {}),
+    });
+
+    const pythonConfig = [
+      'import piplite.piplite, json',
+      `_from_js = json.loads("""${pyJson}""")`,
+      'piplite.piplite._PIPLITE_DEFAULT_INSTALL_ARGS.update(_from_js)',
+    ];
+
     // get piplite early enough to impact pyodide-kernel dependencies
-    await this._pyodide.runPythonAsync(`
-      import piplite.piplite
-      piplite.piplite._PIPLITE_DISABLE_PYPI = ${disablePyPIFallback ? 'True' : 'False'}
-      piplite.piplite._PIPLITE_URLS = ${JSON.stringify(pipliteUrls)}
-    `);
+    await this._pyodide.runPythonAsync(pythonConfig.join('\n'));
   }
 
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {

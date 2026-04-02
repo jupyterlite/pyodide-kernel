@@ -13,7 +13,7 @@ As of the upstream:
         deps: bool = True,                              # --no-deps
         credentials: str | None = None,                 # no CLI alias
         pre: bool = False,                              # --pre
-        index_urls: list[str] | str | None = None,      # no CLI alias
+        index_urls: list[str] | str | None = None,      # -i and --index-url
         *,
         constraints: list[str] | None = None,           # --constraints
         reinstall: bool = False,                        # no CLI alias
@@ -27,6 +27,7 @@ failures should not block execution.
 from __future__ import annotations
 
 import re
+import shlex
 import sys
 from typing import Any, TYPE_CHECKING
 from argparse import ArgumentParser
@@ -36,6 +37,31 @@ if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
 REQ_FILE_SPEC = r"^(?P<flag>-r|--requirements)\s*=?\s*(?P<path_ref>.+)$"
+
+
+def _parse_index_url_line(raw: str) -> str | None:
+    """Return the index URL from a ``--index-url``/``-i`` directive line.
+
+    Handles the ``--flag URL``, ``--flag=URL``, and all other quoting forms
+    that ``shlex`` understands. Returns ``None`` if the line is not such a
+    directive.
+    """
+    try:
+        parts = shlex.split(raw)
+    except ValueError:
+        return None
+    if not parts:
+        return None
+    flag = parts[0]
+    # --index-url=URL / -i=URL
+    for prefix in ("--index-url=", "-i="):
+        if flag.startswith(prefix):
+            return flag[len(prefix) :] or None
+    # --index-url URL / -i URL
+    if flag in ("--index-url", "-i") and len(parts) >= 2:
+        return parts[1]
+    return None
+
 
 __all__ = ["get_transformed_code"]
 
@@ -96,6 +122,13 @@ def _get_parser() -> ArgumentParser:
         help="whether pre-release packages should be considered",
     )
     parser.add_argument(
+        "--index-url",
+        "-i",
+        type=str,
+        default=None,
+        help="base URL of the package index to use for lookup",
+    )
+    parser.add_argument(
         "--force-reinstall",
         action="store_true",
         help="reinstall all packages even if they are already installed",
@@ -138,8 +171,7 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
     except (Exception, SystemExit):
         return None, {}
 
-    kwargs = {}
-
+    kwargs: dict[str, Any] = {}
     action = args.action
 
     if action == "install":
@@ -154,33 +186,54 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
         if args.verbose:
             kwargs["keep_going"] = True
 
+        if args.index_url:
+            kwargs["index_urls"] = args.index_url
+
         if args.force_reinstall:
             kwargs["reinstall"] = True
 
+        index_urls: list[str] = []
         for req_file in args.requirements or []:
-            async for spec in _specs_from_requirements_file(Path(req_file)):
+            async for spec in _specs_from_requirements_file(
+                Path(req_file), index_urls=index_urls
+            ):
                 kwargs["requirements"] += [spec]
 
         for const_file in args.constraints or []:
             async for spec in _specs_from_requirements_file(Path(const_file)):
-                kwargs["constraints"] += [spec]
+                kwargs.setdefault("constraints", []).append(spec)
+
+        # Apply index URLs from requirements files only if --index-url was not
+        # already given on the command line.
+        if index_urls and "index_urls" not in kwargs:
+            kwargs["index_urls"] = index_urls
 
     return action, kwargs
 
 
-async def _specs_from_requirements_file(spec_path: Path) -> AsyncIterator[str]:
+async def _specs_from_requirements_file(
+    spec_path: Path,
+    *,
+    index_urls: list[str] | None = None,
+) -> AsyncIterator[str]:
     """Extract package specs from a ``requirements.txt``-style file."""
     if not spec_path.exists():
         warn(f"piplite could not find requirements file {spec_path}")
         return
 
-    for line_no, line in enumerate(spec_path.read_text(encoding="utf").splitlines()):
-        async for spec in _specs_from_requirements_line(spec_path, line_no + 1, line):
+    for line_no, line in enumerate(spec_path.read_text(encoding="utf-8").splitlines()):
+        async for spec in _specs_from_requirements_line(
+            spec_path, line_no + 1, line, index_urls=index_urls
+        ):
             yield spec
 
 
 async def _specs_from_requirements_line(
-    spec_path: Path, line_no: int, line: str
+    spec_path: Path,
+    line_no: int,
+    line: str,
+    *,
+    index_urls: list[str] | None = None,
 ) -> AsyncIterator[str]:
     """Get package specs from a line of a ``requirements.txt``-style file.
 
@@ -195,13 +248,20 @@ async def _specs_from_requirements_line(
     if file_match:
         ref = file_match.groupdict()["path_ref"]
         ref_path = Path(ref if ref.startswith("/") else spec_path.parent / ref)
-        async for sub_spec in _specs_from_requirements_file(ref_path):
+        async for sub_spec in _specs_from_requirements_file(
+            ref_path, index_urls=index_urls
+        ):
             yield sub_spec
+        return
+
+    url = _parse_index_url_line(raw)
+    if url is not None:
+        if index_urls is not None:
+            index_urls.append(url)
+        return
     elif raw.startswith("-"):
         warn(f"{spec_path}:{line_no}: unrecognized spec: {raw}")
         return
-    else:
-        spec = raw
 
-    if spec:
-        yield spec
+    if raw:
+        yield raw

@@ -83,9 +83,25 @@ export interface ICoincidentPyodideWorkerKernel extends IPyodideWorkerKernel {
 export type IRemotePyodideWorkerKernel = IPyodideWorkerKernel;
 
 /**
- * An namespace for Pyodide workers.
+ * A namespace for Pyodide workers.
  */
 export namespace IPyodideWorkerKernel {
+  /**
+   * Options for piplite installation.
+   */
+  export interface IPipliteInstallOptions {
+    /**
+     * URL(s) of package indices to use, forwarded to micropip.install as
+     * ``index_urls``.
+     */
+    index_urls?: string[];
+
+    /**
+     * Any additional piplite install options.
+     */
+    [key: string]: any;
+  }
+
   /**
    * Initialization options for a worker.
    */
@@ -124,6 +140,18 @@ export namespace IPyodideWorkerKernel {
      * Whether or not to mount the Emscripten drive
      */
     mountDrive: boolean;
+
+    /**
+     * Default index URLs to pass to piplite.install as `index_urls`. Takes
+     * precedence over `pipliteInstallDefaultOptions.index_urls`.
+     */
+    pipliteIndexUrls?: string[];
+
+    /**
+     * Additional default options to pass to piplite.install. The `index_urls`
+     * key is supported, but prefer `pipliteIndexUrls`.
+     */
+    pipliteInstallDefaultOptions?: IPipliteInstallOptions;
 
     /**
      * A unique ID to identify the origin of this request.

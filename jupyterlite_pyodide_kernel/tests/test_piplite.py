@@ -135,6 +135,69 @@ def a_lite_config_file(request, an_empty_lite_dir):
     return an_empty_lite_dir / request.param
 
 
+@pytest.mark.parametrize(
+    "index_urls",
+    [
+        ["https://example.com/simple"],
+        ["https://example.com/simple", "https://pypi.org/simple"],
+    ],
+    ids=["single", "multiple"],
+)
+def test_validate_piplite_install_default_options_valid(
+    script_runner, a_lite_config_file, index_urls
+):
+    """valid index_urls (list of URLs) in pipliteInstallDefaultOptions passes check"""
+    lite_dir = a_lite_config_file.parent
+    output = lite_dir / "_output"
+
+    build = script_runner.run(["jupyter", "lite", "build"], cwd=str(lite_dir))
+    assert build.success
+    shutil.copy2(output / a_lite_config_file.name, a_lite_config_file)
+
+    whole_file = config_data = json.loads(a_lite_config_file.read_text(**UTF8))
+    if a_lite_config_file.name == JUPYTERLITE_IPYNB:
+        config_data = whole_file["metadata"][JUPYTERLITE_METADATA]
+
+    config_data[JUPYTER_CONFIG_DATA].setdefault(LITE_PLUGIN_SETTINGS, {}).setdefault(
+        PYODIDE_KERNEL_PLUGIN_ID, {}
+    )["pipliteInstallDefaultOptions"] = {"index_urls": index_urls}
+
+    a_lite_config_file.write_text(json.dumps(whole_file, **JSON_FMT), **UTF8)
+    rebuild = script_runner.run(["jupyter", "lite", "build"], cwd=str(lite_dir))
+    assert rebuild.success
+
+    check = script_runner.run(["jupyter", "lite", "check"], cwd=str(lite_dir))
+    assert check.success, f"check failed for index_urls={index_urls!r}"
+
+
+def test_validate_piplite_install_default_options_invalid(
+    script_runner, a_lite_config_file
+):
+    """a non-string, non-list index_urls in pipliteInstallDefaultOptions fails check"""
+    lite_dir = a_lite_config_file.parent
+    output = lite_dir / "_output"
+
+    build = script_runner.run(["jupyter", "lite", "build"], cwd=str(lite_dir))
+    assert build.success
+    shutil.copy2(output / a_lite_config_file.name, a_lite_config_file)
+
+    whole_file = config_data = json.loads(a_lite_config_file.read_text(**UTF8))
+    if a_lite_config_file.name == JUPYTERLITE_IPYNB:
+        config_data = whole_file["metadata"][JUPYTERLITE_METADATA]
+
+    config_data[JUPYTER_CONFIG_DATA].setdefault(LITE_PLUGIN_SETTINGS, {}).setdefault(
+        PYODIDE_KERNEL_PLUGIN_ID, {}
+    )["pipliteInstallDefaultOptions"] = {"index_urls": 42}
+
+    invalid_config = json.dumps(whole_file, **JSON_FMT)
+    a_lite_config_file.write_text(invalid_config, **UTF8)
+    rebuild = script_runner.run(["jupyter", "lite", "build"], cwd=str(lite_dir))
+    assert rebuild.success
+
+    recheck = script_runner.run(["jupyter", "lite", "check"], cwd=str(lite_dir))
+    assert not recheck.success, invalid_config
+
+
 def test_validate_config(script_runner, a_lite_config_file):
     lite_dir = a_lite_config_file.parent
     output = lite_dir / "_output"

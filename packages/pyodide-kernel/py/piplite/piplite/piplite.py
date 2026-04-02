@@ -20,17 +20,36 @@ from micropip.package_index import query_package as _MP_QUERY_PACKAGE
 logger = logging.getLogger(__name__)
 
 
-#: a list of Warehouse-like API endpoints or derived multi-package all.json
-_PIPLITE_URLS: list[str] = []
-
 #: a cache of available packages
 _PIPLITE_INDICES: dict[str, dict[str, Any]] = {}
 
-#: don't fall back to pypi.org if a package is not found in _PIPLITE_URLS
-_PIPLITE_DISABLE_PYPI = False
-
 #: a well-known file name respected by the rest of the build chain
 ALL_JSON = "/all.json"
+
+#: This is the runtime configuration set from the JS side via worker.ts, which acts as
+#: a single source of truth for all site-level piplite settings.
+#:
+#: Keys written by worker.ts on every kernel start:
+#:   piplite_urls  – list of local all.json warehouse index URLs
+#:   disable_pypi  – whether to block fallback to pypi.org
+#:
+#: Keys that are optionally written by worker.ts from pipliteIndexUrls (preferred)
+#: or pipliteInstallDefaultOptions.index_urls.
+#:   index_urls    – default index URL(s) that get forwarded to micropip.install
+_PIPLITE_DEFAULT_INSTALL_ARGS: dict[str, Any] = {
+    "piplite_urls": [],  # a list of Warehouse-like API endpoints or derived multi-package all.json
+    "disable_pypi": False,  # don't fall back to pypi.org if package not found in _PIPLITE_URLS
+}
+
+#: a list of Warehouse-like API endpoints or derived multi-package all.json
+#: N.B. this is kept as a live alias to ``_PIPLITE_DEFAULT_INSTALL_ARGS["piplite_urls"]``
+#: right now but should be deprecated later
+_PIPLITE_URLS: list[str] = _PIPLITE_DEFAULT_INSTALL_ARGS["piplite_urls"]
+
+#: don't fall back to pypi.org if a package is not found in ``_PIPLITE_URLS``.
+#: N.B. this reflects the initial value of ``_PIPLITE_DEFAULT_INSTALL_ARGS["disable_pypi"]`` at
+#: module load time, but is not kept in sync with it and should be deprecated later
+_PIPLITE_DISABLE_PYPI: bool = _PIPLITE_DEFAULT_INSTALL_ARGS["disable_pypi"]
 
 
 class PiplitePyPIDisabled(ValueError):
@@ -91,7 +110,7 @@ async def _query_package(
     fetch_kwargs: dict[str, Any] | None = None,
 ) -> ProjectInfo:
     """Fetch the warehouse API metadata for a specific ``pkgname``."""
-    for piplite_url in _PIPLITE_URLS:
+    for piplite_url in _PIPLITE_DEFAULT_INSTALL_ARGS.get("piplite_urls", []):
         if not piplite_url.split("?")[0].split("#")[0].endswith(ALL_JSON):
             logger.warning("Non-all.json piplite URL not supported %s", piplite_url)
             continue
@@ -105,7 +124,7 @@ async def _query_package(
         if pypi_json_from_index:
             return pypi_json_from_index
 
-    if _PIPLITE_DISABLE_PYPI:
+    if _PIPLITE_DEFAULT_INSTALL_ARGS.get("disable_pypi", False):
         raise PiplitePyPIDisabled(
             f"{name} could not be installed: PyPI fallback is disabled"
         )
@@ -130,7 +149,17 @@ async def _install(
     constraints: list[str] | None = None,
     reinstall: bool = False,
 ):
-    """Invoke micropip.install with a patch to get data from local indexes"""
+    """Invoke micropip.install with a patch to get data from local indexes.
+
+    If ``index_urls`` is not explicitly provided and a default has been
+    configured via ``_PIPLITE_DEFAULT_INSTALL_ARGS`` (e.g. from
+    ``pipliteInstallDefaultOptions`` in ``jupyter-lite.json``), the default
+    is used.
+    """
+    effective_index_urls = index_urls
+    if effective_index_urls is None:
+        effective_index_urls = _PIPLITE_DEFAULT_INSTALL_ARGS.get("index_urls")
+
     with patch("micropip.package_index.query_package", _query_package):
         return await micropip.install(
             requirements=requirements,
@@ -139,7 +168,7 @@ async def _install(
             credentials=credentials,
             pre=pre,
             constraints=constraints,
-            index_urls=index_urls,
+            index_urls=effective_index_urls,
             verbose=verbose,
             reinstall=reinstall,
         )
