@@ -6,11 +6,11 @@ PIPLITE_URLS = "pipliteUrls"
 DISABLE_PYPI_FALLBACK = "disablePyPIFallback"
 #: the schema for piplite-compatible wheel index
 PIPLITE_INDEX_SCHEMA = "piplite.v0.schema.json"
-#: the schema for piplite-compatible wheel index
+#: the schema for the Pyodide kernel settings
 KERNEL_SETTINGS_SCHEMA = "kernel.v0.schema.json"
 #: where we put wheels, for now
 PYPI_WHEELS = "pypi"
-#: the plugin id for the Pydodide kernel labextension
+#: the plugin id for the Pyodide kernel labextension
 PYODIDE_KERNEL_PLUGIN_ID = "@jupyterlite/pyodide-kernel-extension:kernel"
 #: the npm name of the Pyodide kernel
 PYODIDE_KERNEL_NPM_NAME = PYODIDE_KERNEL_PLUGIN_ID.split(":")[0]
@@ -19,10 +19,10 @@ PKG_JSON_PIPLITE = "piplite"
 #: the package.json/piplite key for wheels
 PKG_JSON_WHEELDIR = "wheelDir"
 
-#: where we put wheels, for now
+#: the jupyter-lite.json config key for the Pyodide base URL
 PYODIDE_URL = "pyodideUrl"
 
-#: where we put pyodide, for now
+#: directory name and filenames for the Pyodide distribution
 PYODIDE = "pyodide"
 PYODIDE_JS = "pyodide.js"
 PYODIDE_LOCK = "pyodide-lock.json"
@@ -34,15 +34,21 @@ PYODIDE_VERSION = "0.29.3"
 #: the only kind of noarch wheel piplite understands
 NOARCH_WHL = "py3-none-any.whl"
 
-#: the only kind of binary wheel piplite previously understood
+#: legacy: the raw Emscripten platform tag (emscripten_*_wasm32),
+#: predating both the pyodide_ and pyemscripten_ platform tags
 EMSCRIPTEN_ABI_WHL = "emscripten_*_wasm32.whl"
 
 #: legacy variable alias
 WASM_WHL = EMSCRIPTEN_ABI_WHL
 
-#: the Pyodide ABI wheel is the same as the Emscripten
-#: ABI wheel, but with a different platform tag, i.e.,
-#  YYYY_buildnumber.
+#: legacy: the Pyodide-specific platform tag (pyodide_*_wasm32),
+#: kept for backward compatibility + superseded by PYEMSCRIPTEN_ABI_WHL
+#: following PEP 783 from Pyodide 0.30 onwards
 PYODIDE_ABI_WHL = "pyodide_*_wasm32.whl"
 
-ALL_WHL = [NOARCH_WHL, WASM_WHL, PYODIDE_ABI_WHL]
+#: our new default platform tag for Pyodide wheels per PEP 783
+#: (pyemscripten_*_wasm32), introduced in Pyodide 0.30 and
+#: supported by micropip >= 0.11.1
+PYEMSCRIPTEN_ABI_WHL = "pyemscripten_*_wasm32.whl"
+
+ALL_WHL = [NOARCH_WHL, WASM_WHL, PYODIDE_ABI_WHL, PYEMSCRIPTEN_ABI_WHL]
