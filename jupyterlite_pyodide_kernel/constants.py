@@ -34,26 +34,19 @@ PYODIDE_VERSION = "0.29.3"
 #: the only kind of noarch wheel piplite understands
 NOARCH_WHL = "py3-none-any.whl"
 
-#: [pyodide <0.26] the raw Emscripten platform tag (emscripten_*_wasm32),
-#: predating both the pyodide_ and pyemscripten_ platform tags
+#: [pyodide <0.26] Emscripten platform tag (emscripten_*_wasm32)
 EMSCRIPTEN_ABI_WHL = "emscripten_*_wasm32.whl"
 
 #: variable alias for EMSCRIPTEN_ABI_WHL
 WASM_WHL = EMSCRIPTEN_ABI_WHL
 
-#: [pyodide <0.30] [micropip <0.11.1] the Pyodide-specific platform tag
-#: (pyodide_*_wasm32); kept for backward compatibility, superseded by
-#: PYEMSCRIPTEN_ABI_WHL following PEP 783:
-#: https://peps.python.org/pep-0783/
-#: https://github.com/pyodide/micropip/pull/270
+#: [pyodide <0.30] [micropip <0.11.1] Pyodide platform tag (pyodide_*_wasm32)
 PYODIDE_ABI_WHL = "pyodide_*_wasm32.whl"
 
-#: [pyodide >=0.30] [micropip >=0.11.1] the PEP 783 platform tag
-#: (pyemscripten_*_wasm32); pyodide-build produces these by default
-#: and micropip accepts them via updated sys_tags():
-#: https://peps.python.org/pep-0783/
-#: https://github.com/pyodide/micropip/pull/270
-#: https://github.com/pyodide/pyodide-build/pull/319
+#: [pyodide >=0.30] [micropip >=0.11.1] PEP 783 platform tag (pyemscripten_*_wasm32)
+#: See: https://peps.python.org/pep-0783/
+#:      https://pyodide.org/en/stable/development/abi.html
 PYEMSCRIPTEN_ABI_WHL = "pyemscripten_*_wasm32.whl"
 
+#: all wheel filename patterns recognised by the piplite addon
 ALL_WHL = [NOARCH_WHL, WASM_WHL, PYODIDE_ABI_WHL, PYEMSCRIPTEN_ABI_WHL]
