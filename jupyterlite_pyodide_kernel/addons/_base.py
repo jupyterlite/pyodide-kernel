@@ -18,6 +18,7 @@ from jupyterlite_core.constants import (
     JUPYTER_CONFIG_DATA,
     LITE_PLUGIN_SETTINGS,
     JSON_FMT,
+    LAB_EXTENSIONS,
 )
 
 from ..constants import PYODIDE_KERNEL_PLUGIN_ID
@@ -26,6 +27,11 @@ __all__ = ["_BaseAddon"]
 
 
 class _BaseAddon(BaseAddon):
+    @property
+    def output_extensions(self):
+        """where labextensions will go in the output folder"""
+        return self.manager.output_dir / LAB_EXTENSIONS
+
     def get_pyodide_settings(self, config_path: Path):
         """Get the settings for the client-side Pyodide kernel."""
         return self.get_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID)

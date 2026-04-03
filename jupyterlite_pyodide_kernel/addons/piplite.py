@@ -13,15 +13,14 @@ from jupyterlite_core.constants import (
     ALL_JSON,
     JSON_FMT,
     JUPYTERLITE_JSON,
-    LAB_EXTENSIONS,
     UTF8,
 )
 from traitlets import List
 
 from ._base import _BaseAddon
 
+from ..utils import list_wheels
 from ..constants import (
-    ALL_WHL,
     PIPLITE_INDEX_SCHEMA,
     PIPLITE_URLS,
     PKG_JSON_PIPLITE,
@@ -54,11 +53,6 @@ class PipliteAddon(_BaseAddon):
     def wheel_cache(self):
         """where wheels will go in the cache folder"""
         return self.manager.cache_dir / "wheels"
-
-    @property
-    def output_extensions(self):
-        """where labextensions will go in the output folder"""
-        return self.manager.output_dir / LAB_EXTENSIONS
 
     @property
     def output_kernel_extension(self):
@@ -300,11 +294,6 @@ class PipliteAddon(_BaseAddon):
             **UTF8,
         )
         self.maybe_timestamp(whl_meta)
-
-
-def list_wheels(wheel_dir):
-    """get all wheels we know how to handle in a directory"""
-    return sorted(sum([[*wheel_dir.glob(f"*{whl}")] for whl in ALL_WHL], []))
 
 
 def get_wheel_fileinfo(whl_path):
