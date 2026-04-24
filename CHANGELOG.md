@@ -2,6 +2,31 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.8.0a2
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.8.0-alpha.1...bbe05b288ac9fab7e5a20c5339d5fa1619d7f35b))
+
+### Enhancements made
+
+- Add `PYEMSCRIPTEN_ABI_WHL` [#277](https://github.com/jupyterlite/pyodide-kernel/pull/277) ([@agriyakhetarpal](https://github.com/agriyakhetarpal), [@bollwyvl](https://github.com/bollwyvl), [@ryanking13](https://github.com/ryanking13))
+- [0.8] Add pyodide-lock.json customization with optional pyodide-lock and uv dependencies [#275](https://github.com/jupyterlite/pyodide-kernel/pull/275) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+- Update to Pyodide 0.29.3 [#259](https://github.com/jupyterlite/pyodide-kernel/pull/259) ([@agriyakhetarpal](https://github.com/agriyakhetarpal), [@bollwyvl](https://github.com/bollwyvl), [@ianthomas23](https://github.com/ianthomas23))
+
+### Maintenance and upkeep improvements
+
+- Forward port #266 to main (various bumps) [#268](https://github.com/jupyterlite/pyodide-kernel/pull/268) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-01-28&to=2026-04-24&type=c))
+
+@agriyakhetarpal ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aagriyakhetarpal+updated%3A2026-01-28..2026-04-24&type=Issues)) | @bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2026-01-28..2026-04-24&type=Issues)) | @ianthomas23 ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aianthomas23+updated%3A2026-01-28..2026-04-24&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-01-28..2026-04-24&type=Issues)) | @ryanking13 ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aryanking13+updated%3A2026-01-28..2026-04-24&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.8.0a1
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.8.0-alpha.0...66519b6729cb3cb67fc453d5a8e2bc94f43fcf14))
@@ -23,8 +48,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-12-19&to=2026-01-28&type=c))
 
 @bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2025-12-19..2026-01-28&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-12-19..2026-01-28&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.8.0a0
 
