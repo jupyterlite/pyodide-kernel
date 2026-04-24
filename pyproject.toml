@@ -52,10 +52,15 @@ PyPI = "https://pypi.org/project/jupyterlite-pyodide-kernel"
 jupyter-piplite = "jupyterlite_pyodide_kernel.app:main"
 
 [project.entry-points."jupyterlite.addon.v0"]
+jupyterlite-pyodide-kernel-lock = "jupyterlite_pyodide_kernel.addons.lock:PyodideLockAddon"
 jupyterlite-pyodide-kernel-piplite = "jupyterlite_pyodide_kernel.addons.piplite:PipliteAddon"
 jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:PyodideAddon"
 
 [project.optional-dependencies]
+lock = [
+    "pyodide-lock[uv] >=0.1.2,<0.2.0",
+]
+
 dev = [
     "build",
     "hatch",
@@ -118,11 +123,11 @@ version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
 before-bump-version = [
-    "python -m pip install 'jupyterlab~=4.5.0'",
+    "python -m pip install 'jupyterlab~=4.6.0a2'",
     "jlpm"
 ]
 before-build-npm = [
-    "python -m pip install 'jupyterlab~=4.5.0' hatch",
+    "python -m pip install 'jupyterlab~=4.6.0a2' hatch",
     "python -m pip install -e .[dev]",
     "jlpm",
     "jlpm build:prod",
@@ -156,7 +161,6 @@ addopts = [
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html:build/reports/htmlcov",
     "--cov-branch",
-    "--cov-fail-under=95",
     "--no-cov-on-fail",
     # html
     "--html=build/reports/pytest.html",

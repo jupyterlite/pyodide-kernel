@@ -4,9 +4,27 @@
     "output_dir": "../build/docs-app",
     "ignore_sys_prefix": ["federated_extensions"],
     "federated_extensions": [
-      "https://files.pythonhosted.org/packages/65/f6/659ca44182c86f57977e946047c339c717745fda9f43b7ac47f274e86553/jupyterlab_widgets-3.0.11-py3-none-any.whl",
+      "https://pypi.org/packages/py3/j/jupyterlab-widgets/jupyterlab_widgets-3.0.15-py3-none-any.whl",
       "../jupyterlite_pyodide_kernel/labextension"
     ],
-    "cache_dir": "../build/.lite-cache"
+    "cache_dir": "../build/.lite_cache"
+  },
+  "PyodideLockAddon": {
+    "enabled": true,
+    "pyodide_lock_url": "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide-lock.json?from-lite-config=1",
+    "specs": ["-r requirements.txt"],
+    "constraints": ["-r constraints.txt"],
+    "lite_constraints_file": "lite-constraints.txt",
+    "prefetch_extra": ["ipywidgets"],
+    "pyodide_lock_uv_options": {
+      "preserve_url_prefixes": ["https://"]
+    },
+    "patches": {
+      "packages": {
+        "ipywidgets": {
+          "depends": ["comm", "ipython", "traitlets"]
+        }
+      }
+    }
   }
 }

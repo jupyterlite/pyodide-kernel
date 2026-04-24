@@ -2,7 +2,9 @@
 
 from pathlib import Path
 import sys
+import importlib.metadata
 import pytest
+import contextlib
 import jupyterlite_core.tests.conftest
 from jupyterlite_core.tests.conftest import (
     a_fixture_server,
@@ -92,3 +94,20 @@ def a_pyodide_server(an_unused_port, a_pyodide_tarball):  # pragma: no cover
     url = f"http://localhost:{an_unused_port}"
     yield url
     p.terminate()
+
+
+@pytest.fixture(params=[True])
+def the_pyodide_lock_version(request: pytest.FixtureRequest) -> str:
+    version: str | None = None
+    err: Exception | None = None
+    uv_path: Path | None = None
+    with contextlib.suppress(ImportError):
+        from pyodide_lock.uv_pip_compile import _find_uv_path
+
+        version = importlib.metadata.version("pyodide-lock")
+        uv_path = _find_uv_path()
+
+    if err or not (uv_path and version):
+        pytest.skip(f"missing pyodide-lock or uv: {err}", allow_module_level=True)
+
+    return version

@@ -23,6 +23,7 @@ python:
       extra_requirements:
         - dev
         - docs
+        - lock
 
 sphinx:
   builder: html
