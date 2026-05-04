@@ -129,3 +129,6 @@ ui-tests/playwright-report/
 
 # Yarn patches
 !.yarn/patches
+
+# lerna
+.nx/
