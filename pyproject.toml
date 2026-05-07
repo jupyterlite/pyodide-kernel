@@ -58,7 +58,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:
 
 [project.optional-dependencies]
 lock = [
-    "pyodide-lock[uv] >=0.1.2,<0.2.0",
+    "pyodide-lock[uv] >=0.1.3,<0.2.0",
 ]
 
 dev = [
