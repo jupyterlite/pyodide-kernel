@@ -85,7 +85,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, windows, macos]
-        python-version: ['3.10', '3.14']
+        python-version: ['3.10', '3.12', '3.14']
         test-extra: ['test', 'test,lock']
         include:
           - test-extra: test
@@ -94,6 +94,9 @@ jobs:
           - test-extra: test,lock
             use-dist: wheel
             pytest-args: --cov-fail-under=94
+        exclude:
+          - python-version: '3.10'
+            test-extra: 'test,lock'
 
     steps:
       - name: Install Python
@@ -198,7 +201,7 @@ jobs:
       - name: Install the extension
         run: |
           set -eux
-          python -m pip install "jupyterlab>=4.6.0a2,<4.7.0" dist/jupyterlite_pyodide_kernel*.whl
+          python -m pip install "jupyterlab>=4.6.0a5,<4.7.0" dist/jupyterlite_pyodide_kernel*.whl
 
       - name: Install dependencies
         working-directory: ui-tests
