@@ -159,7 +159,7 @@ class PyodideAddon(_BaseAddon):
         settings = self.get_pyodide_settings(config_path)
 
         url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
-        if settings.get(PYODIDE_URL) != url:
+        if not settings.get(PYODIDE_URL):
             settings[PYODIDE_URL] = url
             self.set_pyodide_settings(config_path, settings)
 
