@@ -30,10 +30,10 @@ PYODIDE_LOCK = f"{PYODIDE_LOCK_STEM}.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 
 #: probably only compatible with this version of pyodide
-PYODIDE_VERSION = "0.29.4"
+PYODIDE_VERSION = "314.0.0"
 
 #: probably only compatible with this version of python in browser
-PYODIDE_PYTHON_VERSION = "3.13"
+PYODIDE_PYTHON_VERSION = "3.14"
 
 #: the only kind of noarch wheel piplite understands
 NOARCH_WHL = "py3-none-any.whl"
