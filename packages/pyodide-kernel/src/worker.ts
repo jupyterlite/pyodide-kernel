@@ -45,10 +45,10 @@ export abstract class PyodideRemoteKernel {
     const { pyodideUrl, indexUrl } = options;
     let loadPyodide: typeof Pyodide.loadPyodide;
     if (pyodideUrl.endsWith('.mjs')) {
-      // note: this does not work at all in firefox
-      const pyodideModule: typeof Pyodide = await import(
-        /* webpackIgnore: true */ pyodideUrl
-      );
+      const dynamicImport = new Function('url', 'return import(url)') as (
+        url: string,
+      ) => Promise<typeof Pyodide>;
+      const pyodideModule = await dynamicImport(pyodideUrl);
       loadPyodide = pyodideModule.loadPyodide;
     } else {
       importScripts(pyodideUrl);
