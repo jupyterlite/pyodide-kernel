@@ -120,14 +120,7 @@ ${e.stack}`;
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const preloaded = (options.loadPyodideOptions || {}).packages || [];
 
-    const toLoad = [
-      'sqlite3',
-      'ipykernel',
-      'comm',
-      'pyodide_kernel',
-      'jedi',
-      'ipython',
-    ];
+    const toLoad = ['ipykernel', 'comm', 'pyodide_kernel', 'jedi', 'ipython'];
 
     const scriptLines: string[] = [];
 

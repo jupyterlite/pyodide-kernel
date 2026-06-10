@@ -159,8 +159,6 @@ class PyodideLockAddon(_BaseAddon):
     prefetch: tuple[str, ...] = TypedTuple(
         Unicode(),
         default_value=[
-            "ssl",
-            "sqlite3",
             "ipykernel",
             "comm",
             "pyodide-kernel",
