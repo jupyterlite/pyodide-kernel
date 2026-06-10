@@ -29,7 +29,7 @@ def test_pyodide_version():
 
 @pytest.fixture
 def the_default_pyodide_url():
-    return f"https://cdn.jsdelivr.net/pyodide/v{PYODIDE_VERSION}/full/pyodide.js"
+    return f"https://cdn.jsdelivr.net/pyodide/v{PYODIDE_VERSION}/full/pyodide.mjs"
 
 
 @pytest.mark.parametrize(
