@@ -24,7 +24,11 @@ PYODIDE_URL = "pyodideUrl"
 
 #: directory name and filenames for the Pyodide distribution
 PYODIDE = "pyodide"
+#: the legacy classic-script entry point. Pyodide still ships it, but it
+#: cannot be loaded from the kernel's module workers, so it is no longer used.
 PYODIDE_JS = "pyodide.js"
+#: the ES module entry point, required by Pyodide 314.0.0 and later
+PYODIDE_MJS = "pyodide.mjs"
 PYODIDE_LOCK_STEM = "pyodide-lock"
 PYODIDE_LOCK = f"{PYODIDE_LOCK_STEM}.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"

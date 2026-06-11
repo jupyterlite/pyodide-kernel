@@ -232,7 +232,7 @@ class PostCheck:
 
     @property
     def out_pyodide(self) -> Path:
-        return self.out / "static/pyodide/pyodide.js"
+        return self.out / "static/pyodide/pyodide.mjs"
 
     @property
     def out_lock(self) -> Path:
