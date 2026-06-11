@@ -9,6 +9,8 @@ import type { KernelMessage } from '@jupyterlab/services';
 
 import type { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
+import { importPyodideModule } from './loader';
+
 import type { IPyodideWorkerKernel } from './tokens';
 
 export abstract class PyodideRemoteKernel {
@@ -43,33 +45,8 @@ export abstract class PyodideRemoteKernel {
 
   protected async initRuntime(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const { pyodideUrl, indexUrl } = options;
-
-    // Pyodide 314.0.0 and later only ships an ES module runtime, and it
-    // only runs inside module workers, where the classic importScripts
-    // function does not exist. If a configuration still points at the old
-    // classic entry point pyodide.js, load the pyodide.mjs file that every
-    // pyodide distribution ships right next to it.
-    let resolvedPyodideUrl = pyodideUrl;
-    if (resolvedPyodideUrl.endsWith('.js')) {
-      resolvedPyodideUrl = resolvedPyodideUrl.replace(/\.js$/, '.mjs');
-      console.warn(
-        `Loading ${resolvedPyodideUrl} instead of the configured ${pyodideUrl}. ` +
-          'Pyodide 314.0.0 and later can only be loaded as an ES module.',
-      );
-    }
-
-    // Load the ES module entry point with a plain dynamic import. The
-    // import call is hidden inside `new Function` on purpose. Bundlers
-    // such as webpack and rspack try to statically analyse any
-    // `import(variable)` they see and replace it with their own module
-    // lookup, which then fails at runtime because the URL is only known
-    // at runtime. A function body built from a string is invisible to
-    // that analysis, so the browser performs a real dynamic import here.
-    const dynamicImport = new Function('url', 'return import(url)') as (
-      url: string,
-    ) => Promise<typeof Pyodide>;
-    const pyodideModule = await dynamicImport(resolvedPyodideUrl);
-    const loadPyodide = pyodideModule.loadPyodide;
+    const pyodideModule = await importPyodideModule(pyodideUrl);
+    const { loadPyodide } = pyodideModule;
     this._pyodide = await loadPyodide({
       indexURL: indexUrl,
       stdout: (text: string) => {
