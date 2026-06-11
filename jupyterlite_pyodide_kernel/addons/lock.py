@@ -625,7 +625,7 @@ class PyodideLockAddon(_BaseAddon):
             msg = f"Don't know what to do with {just_name} from {pkg}: {out_wheel}"
             raise NotImplementedError(msg)
 
-        # build a relative path from root for `pyodide.js`
+        # build a relative path from the location the pyodide runtime loads from
         pkg.file_name = f"../../{rel_url}"
 
     def check_package_spec(

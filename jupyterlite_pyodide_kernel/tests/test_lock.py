@@ -43,9 +43,7 @@ IPY911_SPECS = [
 ]
 
 #: A URL for a federated extension/kernel package
-BQ_URL = (
-    "https://pypi.org/packages/py2.py3/b/bqplot/bqplot-0.12.44-py2.py3-none-any.whl"
-)
+BQ_URL = "https://pypi.org/packages/py2.py3/b/bqplot/bqplot-0.13.1-py2.py3-none-any.whl"
 
 #: a set of configurations, keyed use as fixture values; `lock_enabled` set to True
 CONFIGS: dict[str, TConfig] = dict(
@@ -121,6 +119,7 @@ CONFIG_EXPECT_WHEEL_STEMS: dict[str, set[str]] = dict(
     all_remote=set(),
     fed_ext={
         "bqplot",
+        "bqscales",
         "the_smallest_extension",
         "traittypes",
         *WIDGETS_WHEELS,
