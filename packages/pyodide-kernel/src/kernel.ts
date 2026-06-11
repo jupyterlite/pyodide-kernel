@@ -48,18 +48,30 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    *
    * ### Note
    *
-   * Subclasses must implement this typographically almost _exactly_ for
-   * webpack to find it.
+   * The worker files referenced here are already complete, self-contained
+   * ES modules. They are built ahead of time with esbuild, see the
+   * build:workers scripts in package.json. We do not want the extension
+   * build (rspack) to bundle them again as worker entry points. When
+   * rspack sees the inline pattern `new Worker(new URL(...), ...)`,
+   * it takes over the worker creation and rewrites the `type` option
+   * based on its global `output.module` setting, which is off in the
+   * extension build. That produces a classic worker, and Pyodide 314
+   * and later refuses to run in anything but a module worker.
+   *
+   * Passing the URL through a helper function keeps the pattern out of
+   * the bundler's static analysis. The standalone `new URL(...)` is still
+   * detected, but only as a plain file asset. See the `*.worker.js` rule
+   * in `pyodide-kernel-extension/webpack.config.js`. The prebundled worker
+   * file is copied to the build output unchanged and the `type: 'module'`
+   * option reaches the browser as written.
    */
   protected initWorker(options: PyodideKernel.IOptions): Worker {
+    const createModuleWorker = (url: URL): Worker =>
+      new Worker(url, { type: 'module' });
     if (crossOriginIsolated) {
-      return new Worker(new URL('./coincident.worker.js', import.meta.url), {
-        type: 'module',
-      });
+      return createModuleWorker(new URL('./coincident.worker.js', import.meta.url));
     } else {
-      return new Worker(new URL('./comlink.worker.js', import.meta.url), {
-        type: 'module',
-      });
+      return createModuleWorker(new URL('./comlink.worker.js', import.meta.url));
     }
   }
 
