@@ -45,8 +45,7 @@ export abstract class PyodideRemoteKernel {
 
   protected async initRuntime(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const { pyodideUrl, indexUrl } = options;
-    const pyodideModule = await importPyodideModule(pyodideUrl);
-    const { loadPyodide } = pyodideModule;
+    const { loadPyodide } = await importPyodideModule(pyodideUrl);
     this._pyodide = await loadPyodide({
       indexURL: indexUrl,
       stdout: (text: string) => {
