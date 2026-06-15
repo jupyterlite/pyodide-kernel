@@ -9,7 +9,7 @@ import type { KernelMessage } from '@jupyterlab/services';
 
 import type { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
-import { importPyodideModule } from './loader';
+import { importModule } from './loader';
 
 import type { IPyodideWorkerKernel } from './tokens';
 
@@ -45,7 +45,7 @@ export abstract class PyodideRemoteKernel {
 
   protected async initRuntime(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const { pyodideUrl, indexUrl } = options;
-    const { loadPyodide } = await importPyodideModule(pyodideUrl);
+    const { loadPyodide } = await importModule<typeof Pyodide>(pyodideUrl);
     this._pyodide = await loadPyodide({
       indexURL: indexUrl,
       stdout: (text: string) => {
