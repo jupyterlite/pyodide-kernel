@@ -22,7 +22,7 @@ const KERNEL_ICON_URL = `data:image/svg+xml;base64,${btoa(KERNEL_ICON_SVG_STR)}`
 /**
  * The default CDN fallback for Pyodide
  */
-const PYODIDE_CDN_URL = 'https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide.js';
+const PYODIDE_CDN_URL = 'https://cdn.jsdelivr.net/pyodide/v314.0.0/full/pyodide.mjs';
 
 /**
  * The id for the extension, and key in the litePlugins.

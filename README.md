@@ -76,7 +76,7 @@ yet work in a full, `jupyter_server`-hosted client such as JupyterLab or Noteboo
 |      `>=0.5.0,<=0.6.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |            |
 |      `>=0.6.0,<=0.7.0`       | `0.27.*`  | `3.12.*` |   `3.1.58`   |                |            |
 |      `>=0.7.0,<=0.8.0`       | `0.29.*`  | `3.13.*` |   `4.0.9`    |                |            |
-|      `>=0.8.0,<=0.9.0`       | `0.29.*`  | `3.13.*` |   `4.0.9`    | `>=0.1.3,<0.2` | `>=0.9.27` |
+|      `>=0.8.0,<=0.9.0`       |  `314.*`  | `3.14.*` |   `5.0.3`    | `>=0.1.3,<0.2` | `>=0.9.27` |
 
 > **Note**: the Emscripten version is strict down to the patch version.
 
@@ -135,7 +135,7 @@ This should show something like the following:
 # options
 --pyodide-lock-url=<Unicode>
     URL of a remote pyodide-lock.json:
-    https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide-lock.json
+    https://cdn.jsdelivr.net/pyodide/v314.0.0/full/pyodide-lock.json
     Default: ''
     Equivalent to: [--PyodideLockAddon.pyodide_lock_url]
 --pyodide-lock-wheels=<typedtuple-item-1>...

@@ -1,3 +1,6 @@
+// Copyright (c) Jupyter Development Team.
+// Distributed under the terms of the Modified BSD License.
+
 import coincident from 'coincident';
 
 import type { Remote } from 'comlink';
@@ -48,18 +51,21 @@ export class PyodideKernel extends BaseKernel implements IKernel {
    *
    * ### Note
    *
-   * Subclasses must implement this typographically almost _exactly_ for
-   * webpack to find it.
+   * The worker files are self-contained ES modules prebuilt with esbuild,
+   * see the `build:workers` scripts. The `createModuleWorker` indirection
+   * keeps bundlers from re-bundling them as worker entry points and
+   * downgrading them to classic workers. They are instead emitted as plain
+   * assets, see the `*.worker.js` rule in
+   * `pyodide-kernel-extension/webpack.config.js` and
+   * https://github.com/jupyterlite/pyodide-kernel/pull/294 for details.
    */
   protected initWorker(options: PyodideKernel.IOptions): Worker {
+    const createModuleWorker = (url: URL): Worker =>
+      new Worker(url, { type: 'module' });
     if (crossOriginIsolated) {
-      return new Worker(new URL('./coincident.worker.js', import.meta.url), {
-        type: 'module',
-      });
+      return createModuleWorker(new URL('./coincident.worker.js', import.meta.url));
     } else {
-      return new Worker(new URL('./comlink.worker.js', import.meta.url), {
-        type: 'module',
-      });
+      return createModuleWorker(new URL('./comlink.worker.js', import.meta.url));
     }
   }
 

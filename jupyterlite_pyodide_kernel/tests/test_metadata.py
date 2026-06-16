@@ -7,7 +7,7 @@ import pytest
 import re
 
 RE_CDN_ROOT = r"https://cdn.jsdelivr.net/pyodide/v(.*)/full"
-RE_CDN_JS_URL = rf"{RE_CDN_ROOT}/pyodide.js"
+RE_CDN_JS_URL = rf"{RE_CDN_ROOT}/pyodide.mjs"
 
 VERSION_PATH_PATTERNS = {
     "packages/pyodide-kernel/package.json": r"\"pyodide\": \"(.*)\"",
