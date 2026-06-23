@@ -19,7 +19,7 @@
     "clean:dist": "rimraf dist",
     "clean": "jlpm workspaces foreach -tv run clean",
     "deduplicate": "yarn-berry-deduplicate -s fewer --fail",
-    "dist:npm": "jlpm workspaces foreach -tv run dist",
+    "dist:npm": "jlpm workspaces foreach -tv --no-private run dist",
     "dist:pypi": "pyproject-build .",
     "dist": "jlpm dist:pypi && jlpm dist:npm",
     "docs:lite": "cd examples && jupyter lite build",
