@@ -73,7 +73,7 @@ lint = [
 
 test = [
     "pytest-console-scripts >=1.4.0",
-    "pytest-cov <7.1",
+    "pytest-cov <7",
     "pytest-html",
     "pytest",
 ]
