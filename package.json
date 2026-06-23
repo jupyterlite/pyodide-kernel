@@ -4,21 +4,22 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/pyodide-kernel",
+      "packages/pyodide-kernel-extension"
     ]
   },
   "scripts": {
-    "build:prod": "lerna run --stream build:prod",
-    "build:py": "lerna run --stream build:py",
-    "build": "lerna run --stream build",
-    "bump:js:version": "lerna version --no-push --force-publish --no-git-tag-version --yes",
-    "clean:all": "jlpm clean:build && jlpm clean:dist && lerna run --stream clean:all && jlpm clean:cache",
+    "build:prod": "jlpm build:py && jlpm workspaces foreach -tv run build:prod",
+    "build:py": "jlpm workspaces foreach -tv run build:py",
+    "build": "jlpm build:py && jlpm workspaces foreach -tv run build",
+    "bump:js:version": "npx -- lerna@7.4.2 version --no-push --force-publish --no-git-tag-version --yes",
+    "clean:all": "jlpm clean:build && jlpm clean:dist && jlpm workspaces foreach -tv run clean:all && jlpm clean:cache",
     "clean:build": "rimraf build",
     "clean:cache": "rimraf node_modules/.cache build/.lite-cache examples/.jupyterlite.doit.db",
     "clean:dist": "rimraf dist",
-    "clean": "lerna run --stream clean",
+    "clean": "jlpm workspaces foreach -tv run clean",
     "deduplicate": "yarn-berry-deduplicate -s fewer --fail",
-    "dist:npm": "lerna run --stream dist",
+    "dist:npm": "jlpm workspaces foreach -tv run dist",
     "dist:pypi": "pyproject-build .",
     "dist": "jlpm dist:pypi && jlpm dist:npm",
     "docs:lite": "cd examples && jupyter lite build",
@@ -50,7 +51,6 @@
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "lerna": "^7.2.0",
     "prettier": "^3.0.3",
     "rimraf": "^5.0.1",
     "typescript": "~5.2.2",
