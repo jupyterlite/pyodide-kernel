@@ -72,9 +72,8 @@ lint = [
 ]
 
 test = [
-    "coverage[toml] >=7.14.0",
     "pytest-console-scripts >=1.4.0",
-    "pytest-cov >=7.1.0",
+    "pytest-cov <7.1",
     "pytest-html",
     "pytest",
 ]
@@ -142,13 +141,10 @@ before-build-python = [
 [tool.check-wheel-contents]
 ignore = ["W002"]
 
-[tool.coverage.run]
-patch = ["subprocess"]
-
 [tool.coverage.paths]
 source = [
     "jupyterlite_pyodide_kernel/",
-    "*/site-packages/jupyterlite_pyodide_kernel/"
+    "*/site-packages/jupyterlite_pyodide_kernel/",
 ]
 
 [tool.pytest.ini_options]
