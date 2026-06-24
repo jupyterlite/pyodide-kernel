@@ -5,7 +5,7 @@
 
 [![ci-badge]][ci] [![lite-badge]][lite] [![docs-badge]][docs]
 
-[ci-badge]: https://github.com/jupyterlite/pyodide-kernel/workflows/Build/badge.svg
+[ci-badge]: https://github.com/jupyterlite/pyodide-kernel/workflows/Test/badge.svg
 [lite-badge]: https://jupyterlite.rtfd.io/en/latest/_static/badge.svg
 [lite]: https://jupyterlite-pyodide-kernel.rtfd.io/en/latest/_static
 [ci]: https://github.com/jupyterlite/pyodide-kernel/actions?query=branch%3Amain

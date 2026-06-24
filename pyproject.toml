@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "hatchling >=1.28.0",
-    "jupyter-builder >=1.0.0",
+    "jupyter-builder >=1.0.2",
 ]
 build-backend = "hatchling.build"
 
@@ -37,7 +37,7 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "jupyterlite-core >=0.8.0b0,<0.9.0",
+    "jupyterlite-core >=0.8.0,<0.9.0",
     "pkginfo"
 ]
 
@@ -64,7 +64,7 @@ lock = [
 dev = [
     "build",
     "hatch",
-    "jupyterlab >=4.6.0a5,<4.7.0",
+    "jupyterlab >=4.6.0,<4.7.0",
 ]
 
 lint = [
@@ -80,13 +80,13 @@ test = [
 
 docs = [
     "ipywidgets >=8.1.3,<9",
+    "jupyter-server-mathjax",
     "jupyterlab-language-pack-fr-FR",
     "jupyterlab-language-pack-zh-CN",
+    "libarchive-c",
     "myst-parser",
     "pydata-sphinx-theme",
     "sphinx-copybutton",
-    "jupyter-server-mathjax",
-    "libarchive-c"
 ]
 
 [tool.hatch.metadata]
@@ -123,11 +123,11 @@ version_cmd = "python scripts/bump-version.py"
 
 [tool.jupyter-releaser.hooks]
 before-bump-version = [
-    "python -m pip install 'jupyterlab~=4.6.0a5'",
+    "python -m pip install 'jupyterlab~=4.6.0'",
     "jlpm"
 ]
 before-build-npm = [
-    "python -m pip install 'jupyterlab~=4.6.0a5' hatch",
+    "python -m pip install 'jupyterlab~=4.6.0' hatch",
     "python -m pip install -e .[dev]",
     "jlpm",
     "jlpm build:prod",
@@ -144,7 +144,7 @@ ignore = ["W002"]
 [tool.coverage.paths]
 source = [
     "jupyterlite_pyodide_kernel/",
-    "*/site-packages/jupyterlite_pyodide_kernel/"
+    "*/site-packages/jupyterlite_pyodide_kernel/",
 ]
 
 [tool.pytest.ini_options]
