@@ -31,7 +31,7 @@ PYODIDE_LOCK = f"{PYODIDE_LOCK_STEM}.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 
 #: probably only compatible with this version of pyodide
-PYODIDE_VERSION = "314.0.0"
+PYODIDE_VERSION = "314.0.1"
 
 #: probably only compatible with this version of python in browser
 PYODIDE_PYTHON_VERSION = "3.14"
