@@ -50,12 +50,12 @@
     "@jupyterlab/application": "^4.6.0",
     "@jupyterlab/coreutils": "^6.6.0",
     "@jupyterlab/logconsole": "^4.6.0",
-    "@jupyterlite/apputils": "^0.8.0",
+    "@jupyterlite/apputils": "^0.8.1",
     "@jupyterlite/pyodide-kernel": "^0.8.1",
-    "@jupyterlite/services": "^0.8.0"
+    "@jupyterlite/services": "^0.8.1"
   },
   "devDependencies": {
-    "@jupyter/builder": "^1.0.0",
+    "@jupyter/builder": "^1.1.0",
     "rimraf": "^6.0.1",
     "typescript": "~5.2.2"
   },
