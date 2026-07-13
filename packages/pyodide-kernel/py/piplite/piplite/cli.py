@@ -200,8 +200,5 @@ async def _specs_from_requirements_line(
     elif raw.startswith("-"):
         warn(f"{spec_path}:{line_no}: unrecognized spec: {raw}")
         return
-    else:
-        spec = raw
-
-    if spec:
-        yield spec
+    elif raw:
+        yield raw

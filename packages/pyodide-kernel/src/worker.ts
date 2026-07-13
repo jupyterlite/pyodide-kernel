@@ -9,6 +9,8 @@ import type { KernelMessage } from '@jupyterlab/services';
 
 import type { DriveFS } from '@jupyterlite/services/lib/contents/drivefs';
 
+import { importModule } from './loader';
+
 import type { IPyodideWorkerKernel } from './tokens';
 
 export abstract class PyodideRemoteKernel {
@@ -43,17 +45,7 @@ export abstract class PyodideRemoteKernel {
 
   protected async initRuntime(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const { pyodideUrl, indexUrl } = options;
-    let loadPyodide: typeof Pyodide.loadPyodide;
-    if (pyodideUrl.endsWith('.mjs')) {
-      // note: this does not work at all in firefox
-      const pyodideModule: typeof Pyodide = await import(
-        /* webpackIgnore: true */ pyodideUrl
-      );
-      loadPyodide = pyodideModule.loadPyodide;
-    } else {
-      importScripts(pyodideUrl);
-      loadPyodide = (self as any).loadPyodide;
-    }
+    const { loadPyodide } = await importModule<typeof Pyodide>(pyodideUrl);
     this._pyodide = await loadPyodide({
       indexURL: indexUrl,
       stdout: (text: string) => {
@@ -120,14 +112,7 @@ ${e.stack}`;
   protected async initKernel(options: IPyodideWorkerKernel.IOptions): Promise<void> {
     const preloaded = (options.loadPyodideOptions || {}).packages || [];
 
-    const toLoad = [
-      'sqlite3',
-      'ipykernel',
-      'comm',
-      'pyodide_kernel',
-      'jedi',
-      'ipython',
-    ];
+    const toLoad = ['ipykernel', 'comm', 'pyodide-kernel', 'jedi', 'ipython'];
 
     const scriptLines: string[] = [];
 

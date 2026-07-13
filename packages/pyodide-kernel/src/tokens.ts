@@ -91,7 +91,7 @@ export namespace IPyodideWorkerKernel {
    */
   export interface IOptions extends IWorkerKernel.IOptions {
     /**
-     * The URL of the main `pyodide.js` file in the standard pyodide layout.
+     * The URL of the main `pyodide.mjs` file in the standard pyodide layout.
      */
     pyodideUrl: string;
 

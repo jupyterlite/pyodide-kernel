@@ -2,6 +2,79 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.8.1
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.8.0...0aae83a7960378fc97b837d34ec982c22ce0fad0))
+
+### Maintenance and upkeep improvements
+
+- Update to pyodide 314.0.1 [#298](https://github.com/jupyterlite/pyodide-kernel/pull/298) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-06-24&to=2026-06-26&type=c))
+
+@bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2026-06-24..2026-06-26&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-06-24..2026-06-26&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
+## 0.8.0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.7.0...230f2c1c4df73feb262a59797e2df84f9aa2448f))
+
+### Enhancements made
+
+- Update to Pyodide v314.0.0 [#294](https://github.com/jupyterlite/pyodide-kernel/pull/294) ([@agriyakhetarpal](https://github.com/agriyakhetarpal), [@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+- Add `PYEMSCRIPTEN_ABI_WHL` [#277](https://github.com/jupyterlite/pyodide-kernel/pull/277) ([@agriyakhetarpal](https://github.com/agriyakhetarpal), [@bollwyvl](https://github.com/bollwyvl), [@ryanking13](https://github.com/ryanking13))
+- [0.8] Add pyodide-lock.json customization with optional pyodide-lock and uv dependencies [#275](https://github.com/jupyterlite/pyodide-kernel/pull/275) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+- Update to Pyodide 0.29.3 [#259](https://github.com/jupyterlite/pyodide-kernel/pull/259) ([@agriyakhetarpal](https://github.com/agriyakhetarpal), [@bollwyvl](https://github.com/bollwyvl), [@ianthomas23](https://github.com/ianthomas23))
+- update to pyodide 0.29.1 [#252](https://github.com/jupyterlite/pyodide-kernel/pull/252) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+
+### Maintenance and upkeep improvements
+
+- Dependabot updates [#297](https://github.com/jupyterlite/pyodide-kernel/pull/297) ([@jtpio](https://github.com/jtpio))
+- Update to jupyterlite-core 0.8.0 [#296](https://github.com/jupyterlite/pyodide-kernel/pull/296) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+- Update to pyodide 0.29.4, jupyterlite-core 0.8.0b0 [#289](https://github.com/jupyterlite/pyodide-kernel/pull/289) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+- Forward port #266 to main (various bumps) [#268](https://github.com/jupyterlite/pyodide-kernel/pull/268) ([@jtpio](https://github.com/jtpio))
+- Bump lodash from 4.17.21 to 4.17.23 in /ui-tests [#258](https://github.com/jupyterlite/pyodide-kernel/pull/258) ([@jtpio](https://github.com/jtpio))
+- Update to JupyterLite 0.8.0a1 [#257](https://github.com/jupyterlite/pyodide-kernel/pull/257) ([@jtpio](https://github.com/jtpio))
+- Update to JupyterLite 0.8.0a0 [#247](https://github.com/jupyterlite/pyodide-kernel/pull/247) ([@jtpio](https://github.com/jtpio), [@bollwyvl](https://github.com/bollwyvl))
+- Bump systeminformation from 5.27.11 to 5.27.14 in /ui-tests [#246](https://github.com/jupyterlite/pyodide-kernel/pull/246) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2025-11-26&to=2026-06-24&type=c))
+
+@agriyakhetarpal ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aagriyakhetarpal+updated%3A2025-11-26..2026-06-24&type=Issues)) | @bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2025-11-26..2026-06-24&type=Issues)) | @ianthomas23 ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aianthomas23+updated%3A2025-11-26..2026-06-24&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2025-11-26..2026-06-24&type=Issues)) | @ryanking13 ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aryanking13+updated%3A2025-11-26..2026-06-24&type=Issues))
+
+## 0.8.0rc0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.8.0-beta.0...230f2c1c4df73feb262a59797e2df84f9aa2448f))
+
+### Enhancements made
+
+- Update to Pyodide v314.0.0 [#294](https://github.com/jupyterlite/pyodide-kernel/pull/294) ([@agriyakhetarpal](https://github.com/agriyakhetarpal), [@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+
+### Maintenance and upkeep improvements
+
+- Dependabot updates [#297](https://github.com/jupyterlite/pyodide-kernel/pull/297) ([@jtpio](https://github.com/jtpio))
+- Update to jupyterlite-core 0.8.0 [#296](https://github.com/jupyterlite/pyodide-kernel/pull/296) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-05-25&to=2026-06-24&type=c))
+
+@agriyakhetarpal ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aagriyakhetarpal+updated%3A2026-05-25..2026-06-24&type=Issues)) | @bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2026-05-25..2026-06-24&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-05-25..2026-06-24&type=Issues))
+
 ## 0.8.0b0
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.8.0-alpha.2...ba40cc11c283ea7ee5ee92b29654a291e31fba7d))
@@ -18,8 +91,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-04-24&to=2026-05-25&type=c))
 
 @bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2026-04-24..2026-05-25&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-04-24..2026-05-25&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.8.0a2
 

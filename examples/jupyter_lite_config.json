@@ -11,7 +11,7 @@
   },
   "PyodideLockAddon": {
     "enabled": true,
-    "pyodide_lock_url": "https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide-lock.json?from-lite-config=1",
+    "pyodide_lock_url": "https://cdn.jsdelivr.net/pyodide/v314.0.1/full/pyodide-lock.json?from-lite-config=1",
     "specs": ["-r requirements.txt"],
     "excludes": ["psutil"],
     "constraints": ["-r constraints.txt"],

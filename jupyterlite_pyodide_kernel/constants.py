@@ -24,16 +24,17 @@ PYODIDE_URL = "pyodideUrl"
 
 #: directory name and filenames for the Pyodide distribution
 PYODIDE = "pyodide"
-PYODIDE_JS = "pyodide.js"
+#: the ES module entry point, required by Pyodide 314.0.0 and later
+PYODIDE_MJS = "pyodide.mjs"
 PYODIDE_LOCK_STEM = "pyodide-lock"
 PYODIDE_LOCK = f"{PYODIDE_LOCK_STEM}.json"
 PYODIDE_URL_ENV_VAR = "JUPYTERLITE_PYODIDE_URL"
 
 #: probably only compatible with this version of pyodide
-PYODIDE_VERSION = "0.29.4"
+PYODIDE_VERSION = "314.0.1"
 
 #: probably only compatible with this version of python in browser
-PYODIDE_PYTHON_VERSION = "3.13"
+PYODIDE_PYTHON_VERSION = "3.14"
 
 #: the only kind of noarch wheel piplite understands
 NOARCH_WHL = "py3-none-any.whl"

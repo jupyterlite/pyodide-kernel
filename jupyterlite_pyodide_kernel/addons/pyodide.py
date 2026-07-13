@@ -14,8 +14,8 @@ from traitlets import Unicode, default
 from ._base import _BaseAddon
 from ..constants import (
     PYODIDE,
-    PYODIDE_JS,
     PYODIDE_LOCK,
+    PYODIDE_MJS,
     PYODIDE_URL,
 )
 
@@ -113,16 +113,18 @@ class PyodideAddon(_BaseAddon):
 
         jupyterlite_json = manager.output_dir / JUPYTERLITE_JSON
 
-        output_js = self.output_pyodide / PYODIDE_JS
+        # point the frontend at the ES module entry point: the kernel runs in
+        # module workers, which cannot load the classic pyodide.js script
+        output_mjs = self.output_pyodide / PYODIDE_MJS
 
         yield self.task(
             name=f"patch:{JUPYTERLITE_JSON}",
             doc=f"ensure {JUPYTERLITE_JSON} includes any piplite wheels",
-            file_dep=[output_js],
+            file_dep=[output_mjs],
             actions=[
                 (
                     self.patch_jupyterlite_json,
-                    [jupyterlite_json, output_js],
+                    [jupyterlite_json, output_mjs],
                 )
             ],
         )
@@ -149,16 +151,16 @@ class PyodideAddon(_BaseAddon):
 
         pyodide_path = Path(self.manager.output_dir / pyodide_url).parent
         assert pyodide_path.exists(), f"{pyodide_path} not found"
-        pyodide_js = pyodide_path / PYODIDE_JS
-        assert pyodide_js.exists(), f"{pyodide_js} not found"
+        pyodide_mjs = pyodide_path / PYODIDE_MJS
+        assert pyodide_mjs.exists(), f"{pyodide_mjs} not found"
         pyodide_lock = pyodide_path / PYODIDE_LOCK
         assert pyodide_lock.exists(), f"{pyodide_lock} not found"
 
-    def patch_jupyterlite_json(self, config_path, output_js):
+    def patch_jupyterlite_json(self, config_path, output_mjs):
         """update jupyter-lite.json to use the local pyodide"""
         settings = self.get_pyodide_settings(config_path)
 
-        url = "./{}".format(output_js.relative_to(self.manager.output_dir).as_posix())
+        url = "./{}".format(output_mjs.relative_to(self.manager.output_dir).as_posix())
         if settings.get(PYODIDE_URL) != url:
             settings[PYODIDE_URL] = url
             self.set_pyodide_settings(config_path, settings)
@@ -215,7 +217,7 @@ class PyodideAddon(_BaseAddon):
             ],
             targets=[
                 # there are a lot of js/data files, but we actually talk about these...
-                dest / PYODIDE / PYODIDE_JS,
+                dest / PYODIDE / PYODIDE_MJS,
                 dest / PYODIDE / PYODIDE_LOCK,
             ],
             actions=[(self.extract_one, [local_path, dest])],
