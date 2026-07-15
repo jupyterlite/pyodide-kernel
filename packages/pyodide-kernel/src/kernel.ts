@@ -1,7 +1,7 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import coincident from 'coincident';
+import coincident from 'coincident/main';
 
 import type { Remote } from 'comlink';
 import { wrap } from 'comlink';
@@ -63,6 +63,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     const createModuleWorker = (url: URL): Worker =>
       new Worker(url, { type: 'module' });
     if (crossOriginIsolated) {
+      globalThis.Worker = coincident({}).Worker;
       return createModuleWorker(new URL('./coincident.worker.js', import.meta.url));
     } else {
       return createModuleWorker(new URL('./comlink.worker.js', import.meta.url));
@@ -79,7 +80,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
   protected initRemote(options: PyodideKernel.IOptions): IPyodideWorkerKernel {
     let remote: IComlinkPyodideKernel | ICoincidentPyodideWorkerKernel;
     if (crossOriginIsolated) {
-      remote = coincident(this._worker) as ICoincidentPyodideWorkerKernel;
+      remote = (this._worker as any).proxy as ICoincidentPyodideWorkerKernel;
       remote.processLogMessage = this._processLogMessage.bind(this);
       remote.processWorkerMessage = this._processWorkerMessage.bind(this);
       // The coincident worker uses its own filesystem API:
