@@ -49,7 +49,7 @@ def bump():
     PYODIDE_PACKAGE_JSON.write_text(json.dumps(pyodide_kernel_json, indent=2), **ENC)
 
     # bump the JS version with lerna
-    run(f"yarn run bump:js:version {js_version}", shell=True, check=True)
+    run(f"jlpm run bump:js:version {js_version}", shell=True, check=True)
 
 
 if __name__ == "__main__":
