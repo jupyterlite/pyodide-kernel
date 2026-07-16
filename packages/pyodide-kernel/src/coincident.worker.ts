@@ -17,7 +17,7 @@ import type { ICoincidentPyodideWorkerKernel, IPyodideWorkerKernel } from './tok
 
 import { PyodideRemoteKernel } from './worker';
 
-const workerAPI = (await coincident()).proxy as ICoincidentPyodideWorkerKernel;
+const workerAPI = (await coincident({})).proxy as ICoincidentPyodideWorkerKernel;
 
 /**
  * An Emscripten-compatible synchronous Contents API using shared array buffers.

@@ -12,7 +12,7 @@ interface IMainReturn {
 }
 
 declare module 'coincident/main' {
-  export default function coincident(options: IMainOptions = {}): IMainReturn;
+  export default function coincident(options: IMainOptions): IMainReturn;
 }
 
 interface IWorkerOptions extends IMainOptions {
@@ -29,7 +29,5 @@ interface IWorkerReturn {
 }
 
 declare module 'coincident/worker' {
-  export default function coincident(
-    options: IWorkerOptions = {},
-  ): Promise<IWorkerReturn>;
+  export default function coincident(options: IWorkerOptions): Promise<IWorkerReturn>;
 }
