@@ -63,7 +63,7 @@ export class PyodideKernel extends BaseKernel implements IKernel {
     const createModuleWorker = (url: URL): Worker =>
       new Worker(url, { type: 'module' });
     if (crossOriginIsolated) {
-      const { Worker: patchedWorker } = coincident({});
+      const { Worker: patchedWorker } = coincident();
       const originalWorker = globalThis.Worker;
       globalThis.Worker = patchedWorker;
       const worker = createModuleWorker(
