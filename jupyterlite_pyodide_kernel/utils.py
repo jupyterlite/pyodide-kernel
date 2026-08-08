@@ -6,26 +6,25 @@ import json
 import re
 from fnmatch import fnmatch
 from functools import lru_cache
-from urllib.parse import urlparse
 from pathlib import Path
-from typing import Any
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+from urllib.parse import urlparse
 
 from jupyterlite_core.constants import JSON_FMT, UTF8
 
 from .constants import (
     ALL_WHL,
-    RE_WHEEL_DIST_NAME,
     PEP_735_DEP_GROUPS,
     PEP_735_INC_GROUP,
     PYPROJECT_TOML,
+    RE_WHEEL_DIST_NAME,
 )
 
-
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from packaging.utils import NormalizedName
     from pkginfo import Distribution
-    from collections.abc import Iterator
 
 
 @lru_cache(100)

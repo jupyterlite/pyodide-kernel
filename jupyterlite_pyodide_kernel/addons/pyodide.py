@@ -11,13 +11,13 @@ from jupyterlite_core.constants import (
 )
 from traitlets import Unicode, default
 
-from ._base import _BaseAddon
 from ..constants import (
     PYODIDE,
     PYODIDE_LOCK,
     PYODIDE_MJS,
     PYODIDE_URL,
 )
+from ._base import _BaseAddon
 
 
 class PyodideAddon(_BaseAddon):
@@ -160,7 +160,7 @@ class PyodideAddon(_BaseAddon):
         """update jupyter-lite.json to use the local pyodide"""
         settings = self.get_pyodide_settings(config_path)
 
-        url = "./{}".format(output_mjs.relative_to(self.manager.output_dir).as_posix())
+        url = f"./{output_mjs.relative_to(self.manager.output_dir).as_posix()}"
         if settings.get(PYODIDE_URL) != url:
             settings[PYODIDE_URL] = url
             self.set_pyodide_settings(config_path, settings)

@@ -235,7 +235,7 @@ ${e.stack}`;
    *
    * @param content The incoming message with the code to execute.
    */
-  async execute(content: any, parent: any) {
+  async execute(content: KernelMessage.IExecuteRequestMsg['content'], parent: any) {
     await this.setup(parent);
 
     const publishExecutionResult = (

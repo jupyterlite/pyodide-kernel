@@ -1,10 +1,10 @@
+import re
 from pathlib import Path
+
+import pytest
 
 import jupyterlite_pyodide_kernel
 from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
-
-import pytest
-import re
 
 RE_CDN_ROOT = r"https://cdn.jsdelivr.net/pyodide/v(.*)/full"
 RE_CDN_JS_URL = rf"{RE_CDN_ROOT}/pyodide.mjs"

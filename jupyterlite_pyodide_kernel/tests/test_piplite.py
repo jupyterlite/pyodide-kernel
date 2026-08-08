@@ -4,24 +4,23 @@ import json
 import shutil
 
 import pytest
-from pytest import mark
-
 from jupyterlite_core.constants import (
-    JUPYTERLITE_IPYNB,
-    JUPYTERLITE_JSON,
-    UTF8,
-    JUPYTERLITE_METADATA,
-    LITE_PLUGIN_SETTINGS,
     JSON_FMT,
     JUPYTER_CONFIG_DATA,
+    JUPYTERLITE_IPYNB,
+    JUPYTERLITE_JSON,
+    JUPYTERLITE_METADATA,
+    LITE_PLUGIN_SETTINGS,
+    UTF8,
 )
+from pytest import mark
 
 from jupyterlite_pyodide_kernel.constants import (
-    PYODIDE_KERNEL_PLUGIN_ID,
     DISABLE_PYPI_FALLBACK,
+    PYODIDE_KERNEL_PLUGIN_ID,
 )
 
-from .conftest import WHEELS, PYODIDE_KERNEL_EXTENSION
+from .conftest import PYODIDE_KERNEL_EXTENSION, WHEELS
 
 
 def has_wheel_after_build(an_empty_lite_dir, script_runner, cli_args=None):

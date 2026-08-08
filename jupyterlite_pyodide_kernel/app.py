@@ -34,7 +34,7 @@ class PipliteIndex(DescribedMixin, JupyterApp):
     wheel_dir = CPath(Path.cwd(), help="a path of wheels")
 
     def parse_command_line(self, argv=None):
-        super(PipliteIndex, self).parse_command_line(argv)
+        super().parse_command_line(argv)
 
         if self.extra_args:
             self.wheel_dir = Path(self.extra_args[0])
