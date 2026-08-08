@@ -100,24 +100,37 @@ class PyodideKernel(LoggingConfigurable):
 
     async def run(self, code):
         self.interpreter._last_traceback = None
-        # apply pyodide-specific changes that need to occur before interpreting
-        code = await self.lite_transform_manager.transform_cell(code)
-        exec_code = self.interpreter.transform_cell(code)
 
         results = {}
 
+        # apply pyodide-specific changes that need to occur before interpreting
         try:
-            await _load_packages_from_imports(exec_code)
+            code = await self.lite_transform_manager.transform_cell(code)
+            exec_code = self.interpreter.transform_cell(code)
         except Exception:
+            # Input transformation can raise before any cell code runs — most
+            # commonly TabError/IndentationError, which CPython's tokenizer raises
+            # eagerly on Python 3.12+ (python/cpython#105238) and which IPython's
+            # tokenizer guard (`except tokenize.TokenError`) cannot catch.
+            # InteractiveShell.run_cell guards transform_cell the same way; without
+            # this guard the exception escapes run() as an unhandled rejection and
+            # the user sees a raw kernel traceback instead of the SyntaxError.
+            # showtraceback() dispatches SyntaxError to showsyntaxerror and sets
+            # _last_traceback for the report block below.
             self.interpreter.showtraceback()
         else:
-            if self.interpreter.should_run_async(code):
-                await self.interpreter.run_cell_async(code, store_history=True)
+            try:
+                await _load_packages_from_imports(exec_code)
+            except Exception:
+                self.interpreter.showtraceback()
             else:
-                self.interpreter.run_cell(code, store_history=True)
+                if self.interpreter.should_run_async(code):
+                    await self.interpreter.run_cell_async(code, store_history=True)
+                else:
+                    self.interpreter.run_cell(code, store_history=True)
 
-            results["payload"] = self.interpreter.payload_manager.read_payload()
-            self.interpreter.payload_manager.clear_payload()
+                results["payload"] = self.interpreter.payload_manager.read_payload()
+                self.interpreter.payload_manager.clear_payload()
 
         if self.interpreter._last_traceback is None:
             results["status"] = "ok"
