@@ -38,7 +38,6 @@ class PiplitePyPIDisabled(ValueError):
     attempted."""
 
 
-
 async def _get_pypi_json_from_index(
     name: str,
     piplite_url: str,
