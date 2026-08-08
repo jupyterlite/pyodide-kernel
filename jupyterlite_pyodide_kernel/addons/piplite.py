@@ -6,7 +6,6 @@ import re
 import urllib.parse
 from hashlib import md5, sha256
 from pathlib import Path
-from typing import List as _List
 
 import doit.tools
 from jupyterlite_core.constants import (
@@ -17,25 +16,24 @@ from jupyterlite_core.constants import (
 )
 from traitlets import List
 
-from ._base import _BaseAddon
-
-from ..utils import list_wheels
 from ..constants import (
+    KERNEL_SETTINGS_SCHEMA,
     PIPLITE_INDEX_SCHEMA,
     PIPLITE_URLS,
     PKG_JSON_PIPLITE,
     PKG_JSON_WHEELDIR,
     PYODIDE_KERNEL_NPM_NAME,
     PYPI_WHEELS,
-    KERNEL_SETTINGS_SCHEMA,
 )
+from ..utils import list_wheels
+from ._base import _BaseAddon
 
 
 class PipliteAddon(_BaseAddon):
     __all__ = ["post_init", "build", "post_build", "check"]
 
     # traits
-    piplite_urls: _List[str] = List(
+    piplite_urls: list[str] = List(
         help="Local paths or URLs of piplite-compatible wheels to copy and index",
     ).tag(config=True)
 

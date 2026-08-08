@@ -7,14 +7,14 @@ await piplite.install("a-package")
 
 """
 
-from typing import Any
 import asyncio
 import json
 import logging
+from typing import Any
 from unittest.mock import patch
 
 import micropip
-from micropip.package_index import ProjectInfo, CompatibilityLayer
+from micropip.package_index import CompatibilityLayer, ProjectInfo
 from micropip.package_index import query_package as _MP_QUERY_PACKAGE
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,6 @@ class PiplitePyPIDisabled(ValueError):
     """An error for when PyPI is disabled at the site level, but a download was
     attempted."""
 
-    pass
 
 
 async def _get_pypi_json_from_index(
@@ -57,13 +56,13 @@ async def _get_pypi_json_from_index(
                 piplite_url, fetch_kwargs
             )
         except Exception as err:
-            logger.warn("Could not fetch %s: %s", piplite_url, err)
+            logger.warning("Could not fetch %s: %s", piplite_url, err)
 
         try:
             index = json.loads(data)
             _PIPLITE_INDICES.update({piplite_url: index})
         except Exception as err:
-            logger.warn("Could not parse %s: %s", piplite_url, err)
+            logger.warning("Could not parse %s: %s", piplite_url, err)
 
     pkg = dict((index or {}).get(name) or {})
 
