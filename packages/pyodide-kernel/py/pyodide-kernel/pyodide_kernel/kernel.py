@@ -1,5 +1,6 @@
 # This is our ipykernel mock
 import typing
+import sys
 
 from .comm import get_comm_manager, CommManager
 
@@ -100,24 +101,49 @@ class PyodideKernel(LoggingConfigurable):
 
     async def run(self, code):
         self.interpreter._last_traceback = None
-        # apply pyodide-specific changes that need to occur before interpreting
-        code = await self.lite_transform_manager.transform_cell(code)
-        exec_code = self.interpreter.transform_cell(code)
-
+        preprocessing_exc_tuple = None
         results = {}
 
+        # apply pyodide-specific changes that need to occur before transforming
         try:
-            await _load_packages_from_imports(exec_code)
+            lite_cell = await self.lite_transform_manager.transform_cell(code)
+        except Exception:
+            lite_cell = code
+            preprocessing_exc_tuple = sys.exc_info()
+
+        # load packages from pyodide-lock
+        try:
+            await _load_packages_from_imports(lite_cell)
         except Exception:
             self.interpreter.showtraceback()
-        else:
-            if self.interpreter.should_run_async(code):
-                await self.interpreter.run_cell_async(code, store_history=True)
-            else:
-                self.interpreter.run_cell(code, store_history=True)
+            preprocessing_exc_tuple = sys.exc_info()
 
-            results["payload"] = self.interpreter.payload_manager.read_payload()
-            self.interpreter.payload_manager.clear_payload()
+        # run upstream transforms
+        try:
+            transformed_cell = self.transform_cell(lite_cell)
+        except Exception:
+            transformed_cell = lite_cell
+            preprocessing_exc_tuple = sys.exc_info()
+
+        if self.interpreter.should_run_async(
+            transformed_cell,
+            transformed_cell=transformed_cell,
+            preprocessing_exc_tuple=preprocessing_exc_tuple,
+        ):
+            await self.interpreter.run_cell_async(
+                raw_cell=lite_cell,
+                transformed_cell=transformed_cell,
+                preprocessing_exc_tuple=preprocessing_exc_tuple,
+                store_history=True
+            )
+        else:
+            self.interpreter.run_cell(
+                raw_cell=lite_cell,
+                store_history=True,
+            )
+
+        results["payload"] = self.interpreter.payload_manager.read_payload()
+        self.interpreter.payload_manager.clear_payload()
 
         if self.interpreter._last_traceback is None:
             results["status"] = "ok"
