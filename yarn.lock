@@ -1056,7 +1056,7 @@ __metadata:
     "@jupyterlab/coreutils": ^6.7.0-alpha.0
     "@jupyterlab/logconsole": ^4.7.0-alpha.0
     "@jupyterlite/services": ^0.9.0-alpha.0
-    coincident: ^1.2.3
+    coincident: ^4.1.1
     comlink: ^4.4.2
     esbuild: ^0.19.2
     pyodide: 314.0.4
@@ -1812,10 +1812,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ungap/with-resolvers@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "@ungap/with-resolvers@npm:0.1.0"
-  checksum: ac0c6234414b87ec26e9603c5e57f6ae48477ccc901841e725e820bc026367987cc82dbdb8c702e058179dadbd16578c0fcc607d2122e72d9fe91373bade126c
+"@webreflection/utils@npm:^0.1.1, @webreflection/utils@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "@webreflection/utils@npm:0.1.2"
+  checksum: ad0cc0cbcde42e1d64dc729b5af5ad4b4ce3750f0d8dda5ae5c1784dd36429d0cb22b05c69b95c77a2b1ec832457416213b9fb5aa244f8c5729f2d74b3f698c8
+  languageName: node
+  linkType: hard
+
+"@webreflection/utils@npm:^0.3.6":
+  version: 0.3.39
+  resolution: "@webreflection/utils@npm:0.3.39"
+  checksum: 3a7b9c7e8fb609f88d0692c709072a98220c3012fffa0bb547159036527ea85670e9e87ced97130d086fff4040ff720bdedcb9b36fd0d3e7b641580f2fcf4bcb
   languageName: node
   linkType: hard
 
@@ -2217,19 +2224,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"coincident@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "coincident@npm:1.2.3"
+"coincident@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "coincident@npm:4.1.1"
   dependencies:
-    "@ungap/structured-clone": ^1.2.0
-    "@ungap/with-resolvers": ^0.1.0
-    gc-hook: ^0.3.1
-    proxy-target: ^3.0.2
-    ws: ^8.16.0
-  dependenciesMeta:
-    ws:
-      optional: true
-  checksum: 21c44d9d74be393b12d6f91c885c8b6c640dce570b01b5d5156327488390c858de8e40c0af08763e3cd7041bcf32bee70c058a1b24aa25b145376a92b1c520a3
+    "@webreflection/utils": ^0.1.1
+    next-resolver: ^0.1.4
+    reflected-ffi: ^0.7.0
+  bin:
+    coincident: cli.cjs
+  checksum: 418e4a0c1dff2bd1a8c46fcf7c20c7e549fceb63b7c7022f873d581f7bdb2ff63c0352db6379fa86d1ef54a27525ddb77ba96cc642ddc2219158d6d288095767
   languageName: node
   linkType: hard
 
@@ -2981,13 +2985,6 @@ __metadata:
   version: 1.0.0
   resolution: "fs.realpath@npm:1.0.0"
   checksum: 99ddea01a7e75aa276c250a04eedeffe5662bce66c65c07164ad6264f9de18fb21be9433ead460e54cff20e31721c811f4fb5d70591799df5f85dce6d6746fd0
-  languageName: node
-  linkType: hard
-
-"gc-hook@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "gc-hook@npm:0.3.1"
-  checksum: bda26ab6493faf8593eb8e1ff636c91ba4b38f3d87867ede757b24c4677e4f55ec696977a2b884503e3e56243d5e38abf8cec52257b1fd0685622ec5a3d9c84b
   languageName: node
   linkType: hard
 
@@ -3795,6 +3792,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-resolver@npm:^0.1.4":
+  version: 0.1.7
+  resolution: "next-resolver@npm:0.1.7"
+  dependencies:
+    "@webreflection/utils": ^0.1.2
+    weak-id: ^0.2.1
+  checksum: 3477a57555b8e587e7f78a088d96ec50d7c5492fcc95d623ca19dc67404709d4f971574e65565731583102b68411e02dcb3b8d7cd220407486be9949e1d712af
+  languageName: node
+  linkType: hard
+
 "node-releases@npm:^2.0.51":
   version: 2.0.51
   resolution: "node-releases@npm:2.0.51"
@@ -4087,13 +4094,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"proxy-target@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "proxy-target@npm:3.0.2"
-  checksum: 9d8aa207ce8d3d50273e6926a61bb0205848f2a9de7b6781feeb115072242d9803255351d4da2f2980c573fd2164609257d8c8feaa39b80147867805f2c5d101
-  languageName: node
-  linkType: hard
-
 "pump@npm:^3.0.0":
   version: 3.0.0
   resolution: "pump@npm:3.0.0"
@@ -4174,6 +4174,15 @@ __metadata:
   dependencies:
     loose-envify: ^1.1.0
   checksum: a27bcfa8ff7c15a1e50244ad0d0c1cb2ad4375eeffefd266a64889beea6f6b64c4966c9b37d14ee32d6c9fcd5aa6ba183b6988167ab4d127d13e7cb5b386a376
+  languageName: node
+  linkType: hard
+
+"reflected-ffi@npm:^0.7.0":
+  version: 0.7.2
+  resolution: "reflected-ffi@npm:0.7.2"
+  dependencies:
+    weak-id: ^0.2.1
+  checksum: e66f23a5ceee5788cd125934f3e018d26d269d6c4a84c7df535b98e95241060a76f3c2f747e93547dc46b22d51d794e7e1274a73adcf252ca79de687a3f2ae8f
   languageName: node
   linkType: hard
 
@@ -4741,6 +4750,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"weak-id@npm:^0.2.1":
+  version: 0.2.2
+  resolution: "weak-id@npm:0.2.2"
+  dependencies:
+    "@webreflection/utils": ^0.3.6
+  checksum: 8ce603d49c0fb239e77375ffe1d2b1de6e375e99e49740d818a79075d4faa802e374a1627002224437b9ad96c37195325ff33b17c68b38a28cca3c758264bb7e
+  languageName: node
+  linkType: hard
+
 "webidl-conversions@npm:^6.1.0":
   version: 6.1.0
   resolution: "webidl-conversions@npm:6.1.0"
@@ -4843,7 +4861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8.11.0, ws@npm:^8.16.0, ws@npm:^8.5.0":
+"ws@npm:^8.11.0, ws@npm:^8.5.0":
   version: 8.21.1
   resolution: "ws@npm:8.21.1"
   peerDependencies:

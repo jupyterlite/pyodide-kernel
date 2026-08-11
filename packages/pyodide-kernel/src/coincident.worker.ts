@@ -4,7 +4,7 @@
 /**
  * A WebWorker entrypoint that uses coincident to handle postMessage details
  */
-import coincident from 'coincident';
+import coincident from 'coincident/worker';
 
 import type {
   TDriveMethod,
@@ -17,7 +17,7 @@ import type { ICoincidentPyodideWorkerKernel, IPyodideWorkerKernel } from './tok
 
 import { PyodideRemoteKernel } from './worker';
 
-const workerAPI = coincident(self) as ICoincidentPyodideWorkerKernel;
+const workerAPI = (await coincident()).proxy as ICoincidentPyodideWorkerKernel;
 
 /**
  * An Emscripten-compatible synchronous Contents API using shared array buffers.
