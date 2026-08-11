@@ -7,18 +7,20 @@ when these features are added upstream:
 """
 
 import json
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator, Dict, Any
+from typing import Any
+
 from jupyterlite_core.addons.base import BaseAddon
 from jupyterlite_core.constants import (
+    JSON_FMT,
+    JUPYTER_CONFIG_DATA,
     JUPYTERLITE_IPYNB,
     JUPYTERLITE_JSON,
-    UTF8,
     JUPYTERLITE_METADATA,
-    JUPYTER_CONFIG_DATA,
-    LITE_PLUGIN_SETTINGS,
-    JSON_FMT,
     LAB_EXTENSIONS,
+    LITE_PLUGIN_SETTINGS,
+    UTF8,
 )
 
 from ..constants import PYODIDE_KERNEL_PLUGIN_ID
@@ -36,7 +38,7 @@ class _BaseAddon(BaseAddon):
         """Get the settings for the client-side Pyodide kernel."""
         return self.get_lite_plugin_settings(config_path, PYODIDE_KERNEL_PLUGIN_ID)
 
-    def set_pyodide_settings(self, config_path: Path, settings: Dict[str, Any]) -> None:
+    def set_pyodide_settings(self, config_path: Path, settings: dict[str, Any]) -> None:
         """Update the settings for the client-side Pyodide kernel."""
         return self.set_lite_plugin_settings(
             config_path, PYODIDE_KERNEL_PLUGIN_ID, settings
@@ -56,7 +58,7 @@ class _BaseAddon(BaseAddon):
 
     def get_lite_plugin_settings(
         self, config_path: Path, plugin_id: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get the plugin settings from a config path.
 
         The keys follow the JupyterLab settings naming convention, of module and
@@ -82,7 +84,7 @@ class _BaseAddon(BaseAddon):
         )
 
     def set_lite_plugin_settings(
-        self, config_path: Path, plugin_id: str, settings: Dict[str, Any]
+        self, config_path: Path, plugin_id: str, settings: dict[str, Any]
     ) -> None:
         """Overwrite the plugin settings for a single plugin in a config path.
 

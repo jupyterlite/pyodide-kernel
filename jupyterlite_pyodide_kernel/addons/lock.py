@@ -6,48 +6,46 @@ import importlib.metadata
 import json
 import shutil
 import urllib.parse
-from fnmatch import fnmatch
-
 from copy import deepcopy
 from datetime import datetime, timezone
+from fnmatch import fnmatch
 from pathlib import Path
 from textwrap import indent
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from traitlets import Unicode, Bool, Dict
 import doit.tools
-
-from jupyterlite_core.trait_types import TypedTuple
 from jupyterlite_core.constants import JUPYTERLITE_JSON, UTF8
+from jupyterlite_core.trait_types import TypedTuple
+from traitlets import Bool, Dict, Unicode
 
+from ..constants import (
+    LOAD_PYODIDE_OPTIONS,
+    NOARCH_WHL,
+    OPTION_LOCK_FILE_URL,
+    OPTION_PACKAGES,
+    PYODIDE_LOCK,
+    PYODIDE_LOCK_DEFAULT_URL,
+    PYODIDE_LOCK_STEM,
+    PYODIDE_UV_WHEELS,
+)
 from ..utils import (
+    get_wheel_name,
+    is_pyodide_wheel,
     iter_pep508_specs,
     list_wheels,
     normalize_names,
-    get_wheel_name,
     patch_json_path,
-    is_pyodide_wheel,
     wheel_to_pep508,
 )
-from ..constants import (
-    PYODIDE_LOCK,
-    PYODIDE_LOCK_STEM,
-    PYODIDE_LOCK_DEFAULT_URL,
-    PYODIDE_UV_WHEELS,
-    LOAD_PYODIDE_OPTIONS,
-    OPTION_LOCK_FILE_URL,
-    OPTION_PACKAGES,
-    NOARCH_WHL,
-)
-
 from ._base import _BaseAddon
-
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+    from jupyterlite_core.manager import LiteManager
     from packaging.utils import NormalizedName
     from pyodide_lock.spec import PackageSpec, PyodideLockSpec
-    from jupyterlite_core.manager import LiteManager
+
     from .pyodide import PyodideAddon
 
     TTaskGenerator = Iterator[dict[str, Any]]
@@ -189,7 +187,7 @@ class PyodideLockAddon(_BaseAddon):
 
     @property
     def pyodide_addon(self) -> PyodideAddon:
-        addons: dict[str, _BaseAddon] = self.manager._addons  # noqa: SLF001
+        addons: dict[str, _BaseAddon] = self.manager._addons
         return addons["jupyterlite-pyodide-kernel-pyodide"]
 
     @property

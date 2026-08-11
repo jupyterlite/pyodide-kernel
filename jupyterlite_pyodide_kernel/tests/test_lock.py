@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import os
 import abc
 import json
-import textwrap
+import os
 import shutil
-
+import textwrap
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,7 +19,7 @@ from .conftest import WHEELS
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from pytest_console_scripts import ScriptRunner, RunResult
+    from pytest_console_scripts import RunResult, ScriptRunner
 
     TConfig = dict[str, dict[str, Any]]
     TLockRunner = Callable[[list[str], int], RunResult]
