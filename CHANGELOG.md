@@ -2,6 +2,44 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.9.0a1
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.9.0-alpha.0...3c3569b430b8fa0545eee99ca6064bf50de1a350))
+
+### Maintenance and upkeep improvements
+
+- Update to Pyodide 314.0.4 [#326](https://github.com/jupyterlite/pyodide-kernel/pull/326) ([@jtpio](https://github.com/jtpio))
+- Update coincident from 1.2.3 to 4.1.1 [#314](https://github.com/jupyterlite/pyodide-kernel/pull/314) ([@ianthomas23](https://github.com/ianthomas23), [@jtpio](https://github.com/jtpio))
+
+### Other merged PRs
+
+- Bump nanoid from 3.3.16 to 3.3.18 [#328](https://github.com/jupyterlite/pyodide-kernel/pull/328) ([@jtpio](https://github.com/jtpio))
+- Bump postcss from 8.5.19 to 8.5.26 [#327](https://github.com/jupyterlite/pyodide-kernel/pull/327) ([@jtpio](https://github.com/jtpio))
+- Bump js-yaml from 3.15.0 to 3.15.1 [#325](https://github.com/jupyterlite/pyodide-kernel/pull/325) ([@jtpio](https://github.com/jtpio))
+- Bump dompurify from 3.4.12 to 3.4.13 in /ui-tests [#324](https://github.com/jupyterlite/pyodide-kernel/pull/324) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.4 to 3.1.5 in /ui-tests [#321](https://github.com/jupyterlite/pyodide-kernel/pull/321) ([@jtpio](https://github.com/jtpio))
+- Bump brace-expansion from 2.1.1 to 2.1.2 in /ui-tests [#320](https://github.com/jupyterlite/pyodide-kernel/pull/320) ([@jtpio](https://github.com/jtpio))
+- Bump postcss from 8.5.15 to 8.5.23 in /ui-tests [#319](https://github.com/jupyterlite/pyodide-kernel/pull/319) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.3 to 3.1.4 in /ui-tests [#318](https://github.com/jupyterlite/pyodide-kernel/pull/318) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.2 to 3.1.4 [#317](https://github.com/jupyterlite/pyodide-kernel/pull/317) ([@jtpio](https://github.com/jtpio))
+- Bump brace-expansion from 1.1.11 to 1.1.16 [#315](https://github.com/jupyterlite/pyodide-kernel/pull/315) ([@jtpio](https://github.com/jtpio))
+- Bump picomatch from 2.3.1 to 2.3.2 [#313](https://github.com/jupyterlite/pyodide-kernel/pull/313) ([@jtpio](https://github.com/jtpio))
+- Bump ws from 8.18.0 to 8.21.1 in /ui-tests [#312](https://github.com/jupyterlite/pyodide-kernel/pull/312) ([@jtpio](https://github.com/jtpio))
+- Bump lodash-es from 4.17.21 to 4.18.1 in /ui-tests [#311](https://github.com/jupyterlite/pyodide-kernel/pull/311) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.0.1 to 3.1.3 in /ui-tests [#310](https://github.com/jupyterlite/pyodide-kernel/pull/310) ([@jtpio](https://github.com/jtpio))
+- Bump postcss from 8.5.3 to 8.5.19 [#309](https://github.com/jupyterlite/pyodide-kernel/pull/309) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-07-15&to=2026-08-11&type=c))
+
+@ianthomas23 ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aianthomas23+updated%3A2026-07-15..2026-08-11&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-07-15..2026-08-11&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.9.0a0
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.8.1...ddec12959c6d0b0f164069044c236effb5e89eb7))
@@ -20,8 +58,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-06-26&to=2026-07-15&type=c))
 
 @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-06-26..2026-07-15&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.8.1
 
