@@ -994,9 +994,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyterlite/application@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@jupyterlite/application@npm:0.8.1"
+"@jupyterlite/application@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@jupyterlite/application@npm:0.8.2"
   dependencies:
     "@jupyterlab/application": ~4.6.0
     "@jupyterlab/coreutils": ~6.6.0
@@ -1005,13 +1005,13 @@ __metadata:
     "@lumino/coreutils": ^2.2.2
     "@lumino/signaling": ^2.1.5
     "@lumino/widgets": ^2.8.0
-  checksum: 6176dc85f4bd2f50dfefcc2c27e54aef8867e104aa79eee8787a70ce766522bfe53d73ab6ce2850b47d152b93956dfb1078090514137cd1976afb0de799d5236
+  checksum: 477a425ee76f534255d72306ada3620d35cb6ff8cd21724e10081bdaa9852b8f5e7fa1cd5ffa049ad63a9552aa90696326b7b3dbf83a4071873e8dc7e61b01a3
   languageName: node
   linkType: hard
 
-"@jupyterlite/apputils@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@jupyterlite/apputils@npm:0.8.1"
+"@jupyterlite/apputils@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@jupyterlite/apputils@npm:0.8.2"
   dependencies:
     "@jupyterlab/application": ~4.6.0
     "@jupyterlab/apputils": ~4.7.0
@@ -1023,27 +1023,27 @@ __metadata:
     "@jupyterlab/settingregistry": ~4.6.0
     "@jupyterlab/statedb": ~4.6.0
     "@jupyterlab/translation": ~4.6.0
-    "@jupyterlite/application": ^0.8.1
-    "@jupyterlite/services": ^0.8.1
-    "@jupyterlite/types": ^0.8.1
+    "@jupyterlite/application": ^0.8.2
+    "@jupyterlite/services": ^0.8.2
+    "@jupyterlite/types": ^0.8.2
     "@lumino/application": ^2.4.9
     "@lumino/coreutils": ^2.2.2
     "@lumino/signaling": ^2.1.5
     "@types/emscripten": ^1.39.6
     mock-socket: ^9.3.1
-  checksum: efe3c426c6be601d96d72603ba1b3a0f4f2ed7fbe8a1a41b55005593f873363c5bb12dd6e663d2438965f3bf0008e7c05e8c857c1a9d441cd26d7ea570c34729
+  checksum: 163a2fbeaa5e314dceaba49455c7d8c4218eeb846f47dd63f8ad1e5a2254f6585a9d466fd4cca71c1ccc427664503af7e02f0028a6393b0259da97463936044a
   languageName: node
   linkType: hard
 
-"@jupyterlite/localforage@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@jupyterlite/localforage@npm:0.8.1"
+"@jupyterlite/localforage@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@jupyterlite/localforage@npm:0.8.2"
   dependencies:
     "@jupyterlab/coreutils": ~6.6.0
     "@lumino/coreutils": ^2.2.2
     localforage: ^1.9.0
     localforage-memoryStorageDriver: ^0.9.2
-  checksum: 8969ad0d71b1dd6aa05926aebff816d43b437b35e5e2466f075d9ce9b21253458faf329345bdfc1d8e11cbce79d38711a8912cb1abdf889461bd03d4d7188b5c
+  checksum: 5ac4993a4d7257fad229070070b363f82a93e6393ca5c6084b956258a5944ee9c26f14a987f4564bb6ff28c24a18f31d0a22c98415682a2f71c4dd44b94192cb
   languageName: node
   linkType: hard
 
@@ -1055,9 +1055,9 @@ __metadata:
     "@jupyterlab/application": ^4.6.0
     "@jupyterlab/coreutils": ^6.6.0
     "@jupyterlab/logconsole": ^4.6.0
-    "@jupyterlite/apputils": ^0.8.1
-    "@jupyterlite/pyodide-kernel": ^0.8.3
-    "@jupyterlite/services": ^0.8.1
+    "@jupyterlite/apputils": ^0.8.2
+    "@jupyterlite/pyodide-kernel": ^0.8.4
+    "@jupyterlite/services": ^0.8.2
     rimraf: ^6.0.1
     typescript: ~5.2.2
   languageName: unknown
@@ -1079,33 +1079,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jupyterlite/pyodide-kernel@^0.8.3, @jupyterlite/pyodide-kernel@workspace:packages/pyodide-kernel":
+"@jupyterlite/pyodide-kernel@^0.8.4, @jupyterlite/pyodide-kernel@workspace:packages/pyodide-kernel":
   version: 0.0.0-use.local
   resolution: "@jupyterlite/pyodide-kernel@workspace:packages/pyodide-kernel"
   dependencies:
     "@babel/core": ^7.22.17
     "@jupyterlab/coreutils": ^6.6.0
     "@jupyterlab/logconsole": ^4.6.0
-    "@jupyterlite/services": ^0.8.1
+    "@jupyterlite/services": ^0.8.2
     coincident: ^1.2.3
     comlink: ^4.4.2
     esbuild: ^0.19.2
-    pyodide: 314.0.4
+    pyodide: 314.0.5
     rimraf: ^6.0.1
     typescript: ~5.2.2
   languageName: unknown
   linkType: soft
 
-"@jupyterlite/services@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@jupyterlite/services@npm:0.8.1"
+"@jupyterlite/services@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@jupyterlite/services@npm:0.8.2"
   dependencies:
     "@jupyterlab/coreutils": ~6.6.0
     "@jupyterlab/nbformat": ~4.6.0
     "@jupyterlab/observables": ~5.6.0
     "@jupyterlab/services": ~7.6.0
     "@jupyterlab/settingregistry": ~4.6.0
-    "@jupyterlite/localforage": ^0.8.1
+    "@jupyterlite/localforage": ^0.8.2
     "@lumino/algorithm": ^2.0.4
     "@lumino/coreutils": ^2.2.2
     "@lumino/disposable": ^2.1.5
@@ -1117,16 +1117,16 @@ __metadata:
     localforage: ^1.9.0
     mime: ^3.0.0
     mock-socket: ^9.3.1
-  checksum: 2ed11375a3a77b90accf8d5415cf4e87ccb98c3dcf7184122b6cc4854f5f07b67ceee504aec3354db447030296325ec46c3ff00eb5e032da6ec8633846088353
+  checksum: 58ffc01805e898d24133f4ffb863629cbc871de8820b319a6a2ba2c4ee78df7f9ea1acafbe0a1d58ffaf346b9b6c730676b6e7a373cd098b1a9f2aafb272e3d3
   languageName: node
   linkType: hard
 
-"@jupyterlite/types@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@jupyterlite/types@npm:0.8.1"
+"@jupyterlite/types@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@jupyterlite/types@npm:0.8.2"
   dependencies:
     "@lumino/coreutils": ^2.2.2
-  checksum: bde6864cd6f6f0595af6cfc05c4660148ee506465e63a13ed43d2cfee1b3fb7679f34ce0cb037f537d94d13bce5756caf6c633bac45088a2000fbdaf42bbc5e3
+  checksum: 3f9f4911a7ff1b4ed47640e3f1aaaf74e5912cbdb24179da383b766050ba6f7c3d7670516e7efff2783386f362270d8969ace0b3aef5d3ffda6e4d13037eedd1
   languageName: node
   linkType: hard
 
@@ -4109,13 +4109,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pyodide@npm:314.0.4":
-  version: 314.0.4
-  resolution: "pyodide@npm:314.0.4"
+"pyodide@npm:314.0.5":
+  version: 314.0.5
+  resolution: "pyodide@npm:314.0.5"
   dependencies:
     "@types/emscripten": ^1.41.4
     ws: ^8.5.0
-  checksum: 3ad84078e720b1b066978cfc5946fce678cba124661beb6939dc96615b313b753d1fa6e43016fa7cc09db9a9fc2a91b0fff88f625fd94cafda54d8205201b0c2
+  checksum: f04b279abf22a868b6f54cde564100a85e2177569f80a88d93efcc834425686f7e4b481e56e4cfa381e778c6d0d201206a7828c406d5c46455ee2fd9736c4b2e
   languageName: node
   linkType: hard
 

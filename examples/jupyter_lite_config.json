@@ -4,14 +4,14 @@
     "output_dir": "../build/docs-app",
     "ignore_sys_prefix": ["federated_extensions"],
     "federated_extensions": [
-      "https://pypi.org/packages/py3/j/jupyterlab-widgets/jupyterlab_widgets-3.0.15-py3-none-any.whl",
+      "https://pypi.org/packages/py3/j/jupyterlab-widgets/jupyterlab_widgets-3.0.17-py3-none-any.whl",
       "../jupyterlite_pyodide_kernel/labextension"
     ],
     "cache_dir": "../build/.lite_cache"
   },
   "PyodideLockAddon": {
     "enabled": true,
-    "pyodide_lock_url": "https://cdn.jsdelivr.net/pyodide/v314.0.4/full/pyodide-lock.json?from-lite-config=1",
+    "pyodide_lock_url": "https://cdn.jsdelivr.net/pyodide/v314.0.5/full/pyodide-lock.json?from-lite-config=1",
     "specs": ["-r requirements.txt"],
     "excludes": ["psutil"],
     "constraints": ["-r constraints.txt"],

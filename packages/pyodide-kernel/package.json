@@ -1,6 +1,6 @@
 {
   "name": "@jupyterlite/pyodide-kernel",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "JupyterLite - Pyodide Kernel",
   "homepage": "https://github.com/jupyterlite/pyodide-kernel",
   "bugs": {
@@ -59,7 +59,7 @@
   "devDependencies": {
     "@babel/core": "^7.22.17",
     "esbuild": "^0.19.2",
-    "pyodide": "314.0.4",
+    "pyodide": "314.0.5",
     "rimraf": "^6.0.1",
     "typescript": "~5.9.3"
   },
@@ -68,8 +68,8 @@
   },
   "pyodide-kernel": {
     "packages": {
-      "py/pyodide-kernel": "0.8.3",
-      "py/piplite": "0.8.3",
+      "py/pyodide-kernel": "0.8.4",
+      "py/piplite": "0.8.4",
       "py/ipykernel": "6.9.2",
       "py/widgetsnbextension3/widgetsnbextension": "3.6.999",
       "py/widgetsnbextension4/widgetsnbextension": "4.0.999"
