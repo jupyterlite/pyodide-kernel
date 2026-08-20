@@ -50,9 +50,9 @@
     "watch": "tsc -b --watch"
   },
   "dependencies": {
-    "@jupyterlab/coreutils": "^6.6.0",
-    "@jupyterlab/logconsole": "^4.6.0",
-    "@jupyterlite/services": "^0.8.1",
+    "@jupyterlab/coreutils": "^6.6.3",
+    "@jupyterlab/logconsole": "^4.6.3",
+    "@jupyterlite/services": "^0.8.3",
     "coincident": "^1.2.3",
     "comlink": "^4.4.2"
   },
@@ -61,7 +61,7 @@
     "esbuild": "^0.19.2",
     "pyodide": "314.0.4",
     "rimraf": "^6.0.1",
-    "typescript": "~5.2.2"
+    "typescript": "~5.9.3"
   },
   "publishConfig": {
     "access": "public"
