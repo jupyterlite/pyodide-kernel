@@ -52,8 +52,8 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "prettier": "^3.0.3",
-    "rimraf": "^5.0.1",
-    "typescript": "~5.2.2",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.9.3",
     "yarn-berry-deduplicate": "^6.1.1"
   },
   "prettier": {
