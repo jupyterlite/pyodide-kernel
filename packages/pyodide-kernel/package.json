@@ -61,7 +61,7 @@
     "esbuild": "^0.19.2",
     "pyodide": "314.0.4",
     "rimraf": "^6.0.1",
-    "typescript": "~5.2.2"
+    "typescript": "~5.9.3"
   },
   "publishConfig": {
     "access": "public"
