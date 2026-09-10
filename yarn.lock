@@ -1047,7 +1047,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@jupyterlite/services@npm:^0.9.0-alpha.0":
+"@jupyterlite/services@npm:0.9.0-alpha.0":
   version: 0.9.0-alpha.0
   resolution: "@jupyterlite/services@npm:0.9.0-alpha.0"
   dependencies:
@@ -1069,6 +1069,31 @@ __metadata:
     mime: ^3.0.0
     mock-socket: ^9.3.1
   checksum: 3d4cec826af8ddbc89d91c1c6239e21486a795bb183469dadcf50179b35b86175c428c6fe817bca20b2c48d88f497ae4c08de98a428e725687be23c4ebc82d84
+  languageName: node
+  linkType: hard
+
+"@jupyterlite/services@patch:@jupyterlite/services@npm%3A0.9.0-alpha.0#./.yarn/patches/@jupyterlite-services-npm-0.9.0-alpha.0-57ec210a5d.patch::locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A.":
+  version: 0.9.0-alpha.0
+  resolution: "@jupyterlite/services@patch:@jupyterlite/services@npm%3A0.9.0-alpha.0#./.yarn/patches/@jupyterlite-services-npm-0.9.0-alpha.0-57ec210a5d.patch::version=0.9.0-alpha.0&hash=e6bb8b&locator=%40jupyterlite%2Fpyodide-kernel-root%40workspace%3A."
+  dependencies:
+    "@jupyterlab/coreutils": ~6.7.0-alpha.0
+    "@jupyterlab/nbformat": ~4.7.0-alpha.0
+    "@jupyterlab/observables": ~5.7.0-alpha.0
+    "@jupyterlab/services": ~7.7.0-alpha.0
+    "@jupyterlab/settingregistry": ~4.7.0-alpha.0
+    "@jupyterlite/localforage": ^0.9.0-alpha.0
+    "@lumino/algorithm": ^2.0.4
+    "@lumino/coreutils": ^2.2.2
+    "@lumino/disposable": ^2.1.5
+    "@lumino/signaling": ^2.1.5
+    "@types/emscripten": ^1.39.6
+    async-mutex: ^0.3.1
+    comlink: ^4.3.1
+    json5: ^2.2.0
+    localforage: ^1.9.0
+    mime: ^3.0.0
+    mock-socket: ^9.3.1
+  checksum: 92f7a4d472af241ad176905b9066a552dbc091b23a649c3af72a7f65ec0bae2fe4e04e98e24f8643f01b8abacd80429c9ba3112ec998f66175221ee402508b95
   languageName: node
   linkType: hard
 
