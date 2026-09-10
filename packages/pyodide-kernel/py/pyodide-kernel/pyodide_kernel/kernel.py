@@ -120,7 +120,7 @@ class PyodideKernel(LoggingConfigurable):
 
         # run upstream transforms
         try:
-            transformed_cell = self.transform_cell(lite_cell)
+            transformed_cell = self.interpreter.transform_cell(lite_cell)
         except Exception:
             transformed_cell = lite_cell
             preprocessing_exc_tuple = sys.exc_info()
