@@ -144,6 +144,7 @@ async def get_action_kwargs(argv: list[str]) -> tuple[str | None, dict[str, Any]
 
     if action == "install":
         kwargs["requirements"] = args.packages
+        kwargs["constraints"] = []
 
         if args.pre:
             kwargs["pre"] = True
