@@ -142,5 +142,8 @@
       "prefer-arrow-callback": "error"
     }
   },
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@3.5.0",
+  "resolutions": {
+    "@jupyterlite/services@^0.9.0-alpha.0": "patch:@jupyterlite/services@npm%3A0.9.0-alpha.0#./.yarn/patches/@jupyterlite-services-npm-0.9.0-alpha.0-57ec210a5d.patch"
+  }
 }
