@@ -1,0 +1,41 @@
+diff --git a/lib/contents/drivefs.js b/lib/contents/drivefs.js
+index bc5c90d07bf8b7ecf095dc24d4174fda7e6df3b6..549bef304e9dbbf9b8925cd52d223bcf7faf68cb 100644
+--- a/lib/contents/drivefs.js
++++ b/lib/contents/drivefs.js
+@@ -238,7 +238,13 @@ export class DriveFSEmscriptenNodeOps {
+             return this.fs.API.rmdir(this.fs.PATH.join2(this.fs.realPath(this.node(parent)), name));
+         };
+         this.rmdir = (parent, name) => {
+-            return this.fs.API.rmdir(this.fs.PATH.join2(this.fs.realPath(this.node(parent)), name));
++            const path = this.fs.PATH.join2(this.fs.realPath(this.node(parent)), name);
++            // The drive deletes directories recursively, so refuse if not empty as POSIX rmdir does.
++            const entries = this.fs.API.readdir(path).filter((entry) => entry !== '.' && entry !== '..');
++            if (entries.length > 0) {
++                throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['ENOTEMPTY']);
++            }
++            return this.fs.API.rmdir(path);
+         };
+         this.readdir = (value) => {
+             return this.fs.API.readdir(this.fs.realPath(this.node(value)));
+diff --git a/src/contents/drivefs.ts b/src/contents/drivefs.ts
+index 22ae48153b3f256fc72056457735a739e3f7f532..569b98ebe76693e8cdaf99b2225e8a183fed0063 100644
+--- a/src/contents/drivefs.ts
++++ b/src/contents/drivefs.ts
+@@ -423,9 +423,15 @@ export class DriveFSEmscriptenNodeOps implements IEmscriptenNodeOps {
+   };
+ 
+   rmdir = (parent: IEmscriptenFSNode | IEmscriptenStream, name: string): null => {
+-    return this.fs.API.rmdir(
+-      this.fs.PATH.join2(this.fs.realPath(this.node(parent)), name),
++    const path = this.fs.PATH.join2(this.fs.realPath(this.node(parent)), name);
++    // The drive deletes directories recursively, so refuse if not empty as POSIX rmdir does.
++    const entries = this.fs.API.readdir(path).filter(
++      (entry) => entry !== '.' && entry !== '..',
+     );
++    if (entries.length > 0) {
++      throw new this.fs.FS.ErrnoError(this.fs.ERRNO_CODES['ENOTEMPTY']);
++    }
++    return this.fs.API.rmdir(path);
+   };
+ 
+   readdir = (value: IEmscriptenFSNode | IEmscriptenStream): string[] => {
