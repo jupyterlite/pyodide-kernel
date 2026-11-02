@@ -11,12 +11,12 @@ from jupyterlite_core.constants import UTF8
 from jupyterlite_pyodide_kernel import __version__
 from jupyterlite_pyodide_kernel.constants import PYODIDE_VERSION
 
-from .conftest import ROOT
+from .conftest import HERE
 
-GH = ROOT / ".github"
+PACKAGES = HERE / "../../packages"
+GH = HERE / "../../.github"
 DEPENDABOT = GH / "dependabot.yml"
 
-PACKAGES = ROOT / "packages"
 KERNEL_PKG = PACKAGES / "pyodide-kernel"
 KERNEL_PKG_JSON = KERNEL_PKG / "package.json"
 

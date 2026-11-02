@@ -28,15 +28,13 @@ __all__ = [
 ]
 
 HERE = Path(__file__).parent
-ROOT = HERE.parent.parent
-
 FIXTURES = HERE / "fixtures"
 
 # patch the upstream fixtures with local ones
 jupyterlite_core.tests.conftest.FIXTURES = FIXTURES
 
 
-IN_TREE_EXTENSION = (ROOT / "labextension").resolve()
+IN_TREE_EXTENSION = (HERE / "../labextension").resolve()
 SHARE = Path(sys.prefix) / "share/jupyter/labextensions"
 IN_SHARE_EXTENSION = (SHARE / PYODIDE_KERNEL_NPM_NAME).resolve()
 # prefer testing an in-tree extension, if available
