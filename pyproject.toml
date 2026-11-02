@@ -76,6 +76,7 @@ test = [
     "pytest-cov <7",
     "pytest-html",
     "pytest",
+    "pyyaml",
 ]
 
 docs = [
