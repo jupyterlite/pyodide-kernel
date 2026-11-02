@@ -7,7 +7,7 @@ import json
 import shutil
 import urllib.parse
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from fnmatch import fnmatch
 from pathlib import Path
 from textwrap import indent
@@ -241,7 +241,7 @@ class PyodideLockAddon(_BaseAddon):
         args: list[str] = []
         if self.manager.source_date_epoch:
             iso = datetime.fromtimestamp(
-                self.manager.source_date_epoch, tz=timezone.utc
+                self.manager.source_date_epoch, tz=UTC
             ).isoformat()
             args += ["--exclude-newer", iso]
         return args
