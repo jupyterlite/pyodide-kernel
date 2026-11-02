@@ -17,7 +17,7 @@ and watch what it does to files on disk and in the terminal log.
 ### Prerequisites
 
 - `git`
-- `python >=3.10`
+- `python >=3.11`
 - `nodejs >=22`
 
 ### Setup
