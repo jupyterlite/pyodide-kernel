@@ -1072,7 +1072,7 @@ __metadata:
   resolution: "@jupyterlite/pyodide-kernel-ui-tests@workspace:."
   dependencies:
     "@jupyterlab/galata": ~5.6.5
-    "@playwright/test": ^1.60.0
+    "@playwright/test": ^1.64.1
     rimraf: ^6.0.1
   languageName: unknown
   linkType: soft
@@ -1501,6 +1501,17 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: d9aeb311a5ee81837e011f096aefc32f90925c9b78e8fe9415f10a47b3e1eb58c00259f07092475e68b00c0b99304f39073077e4c4645937773684548634d2b7
+  languageName: node
+  linkType: hard
+
+"@playwright/test@npm:^1.64.1":
+  version: 1.64.1
+  resolution: "@playwright/test@npm:1.64.1"
+  dependencies:
+    playwright: 1.64.1
+  bin:
+    playwright: cli.js
+  checksum: 971aeb35bc50293984a5e1fa0d4f40be27fb845898edf0a6a6fa2bbd28aee0c1416f70149971ac09644784b873a7aa0cc24d002a4ffb7e1e34602b4736f043b0
   languageName: node
   linkType: hard
 
@@ -3984,6 +3995,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.64.1":
+  version: 1.64.1
+  resolution: "playwright-core@npm:1.64.1"
+  bin:
+    playwright-core: cli.js
+  checksum: 614007bcdeaad5c6ff46465b623a81e0dbcae060f04022ba37e325d10c2eb618a9b70c44da2eb7b0857c80f83fca6db73c53f0600dcdf1d922c7942af1e0b701
+  languageName: node
+  linkType: hard
+
 "playwright@npm:1.61.0":
   version: 1.61.0
   resolution: "playwright@npm:1.61.0"
@@ -3996,6 +4016,17 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: e9b3225ced35f29dcda9829362434151eec9f9bf41be1416104107eea1b9ea499e512a8483a24c0cb7ad3efc9066bf45ed0a64407c7877afa2546c4561bb6bd5
+  languageName: node
+  linkType: hard
+
+"playwright@npm:1.64.1":
+  version: 1.64.1
+  resolution: "playwright@npm:1.64.1"
+  dependencies:
+    playwright-core: 1.64.1
+  bin:
+    playwright: cli.js
+  checksum: 74861fdf4087b6d4c33dce1779c977390591d4e76bb590a904018b3823d35b20737b3b8f8bddf8bf32969953b1e9a37f72ab3e33b4b1cebed4b1bcc4a5e62738
   languageName: node
   linkType: hard
 
