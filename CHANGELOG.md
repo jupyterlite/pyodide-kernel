@@ -2,6 +2,26 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.8.7
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/v0.8.6...5d777f27082a3c797402462210a5e8eddc2f8bb0))
+
+### Maintenance and upkeep improvements
+
+- [0.8.x] dependabot updates [#375](https://github.com/jupyterlite/pyodide-kernel/pull/375) ([@jtpio](https://github.com/jtpio))
+- Update to JupyterLite 0.8.7 [#355](https://github.com/jupyterlite/pyodide-kernel/pull/355) ([@jtpio](https://github.com/jtpio), [@bollwyvl](https://github.com/bollwyvl))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-09-10&to=2026-11-05&type=c))
+
+@bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2026-09-10..2026-11-05&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-09-10..2026-11-05&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.8.6
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.8.5...a43969869a99f476e57a754e352945c57a0dd48c))
@@ -22,8 +42,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-08-21&to=2026-09-10&type=c))
 
 @bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2026-08-21..2026-09-10&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-08-21..2026-09-10&type=Issues)) | @juntyr ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajuntyr+updated%3A2026-08-21..2026-09-10&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.8.5
 

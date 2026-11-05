@@ -2,6 +2,6 @@
 
 from .piplite import install
 
-__version__ = "0.8.6"
+__version__ = "0.8.7"
 
 __all__ = ["__version__", "install"]
