@@ -73,9 +73,10 @@ lint = [
 
 test = [
     "pytest-console-scripts >=1.4.0",
-    "pytest-cov <7",
+    "pytest-cov >=7.1",
     "pytest-html",
     "pytest",
+    "pyyaml",
 ]
 
 docs = [
@@ -140,6 +141,9 @@ before-build-python = [
 # non-build tools, sorted by name
 [tool.check-wheel-contents]
 ignore = ["W002"]
+
+[tool.coverage.run]
+patch = ["subprocess"]
 
 [tool.coverage.paths]
 source = [

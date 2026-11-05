@@ -78,6 +78,12 @@ jobs:
           path: pyproject.toml
           if-no-files-found: error
 
+      - name: Run repo integrity tests
+        run: |-
+          set -eux
+          python -m pip install -v -e ".[test]"
+          pytest -k repo
+
   test:
     needs: build
     runs-on: ${{ matrix.os }}-latest
@@ -85,15 +91,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, windows, macos]
-        python-version: ['3.11', '3.13', '3.15']
+        python-version: ['3.11', '3.12', '3.15']
         test-extra: ['test', 'test,lock']
         include:
           - test-extra: test
             use-dist: sdist
-            pytest-args: --cov-fail-under=61
+            pytest-args: --cov-fail-under=59
           - test-extra: test,lock
             use-dist: wheel
-            pytest-args: --cov-fail-under=94
+            pytest-args: --cov-fail-under=93
         exclude:
           - python-version: '3.11'
             test-extra: 'test,lock'

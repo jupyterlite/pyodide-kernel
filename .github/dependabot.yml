@@ -1,0 +1,39 @@
+version: 2
+
+updates:
+  # Check GitHub Actions monthly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }
+    groups: { actions: { patterns: ['*'] } }
+    cooldown: { default-days: 7 }
+
+  - target-branch: 0.8.x
+    package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }
+    groups: { actions: { patterns: ['*'] } }
+    cooldown: { default-days: 7 }
+
+  # Check npm weekly
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+
+  - target-branch: 0.8.x
+    package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+
+  - package-ecosystem: npm
+    directory: /ui-tests/
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+
+  - target-branch: 0.8.x
+    package-ecosystem: npm
+    directory: /ui-tests/
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
