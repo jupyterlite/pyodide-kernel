@@ -2,6 +2,50 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.9.0b0
+
+([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.9.0-alpha.1...34782b5a4478dadefdf6cc679a739bc8feb43b36))
+
+### Bugs fixed
+
+- Fix transform_cell attribute error in pyodide_kernel [#337](https://github.com/jupyterlite/pyodide-kernel/pull/337) ([@juntyr](https://github.com/juntyr), [@jtpio](https://github.com/jtpio))
+
+### Maintenance and upkeep improvements
+
+- Update to JupyterLite 0.9.0b1 [#376](https://github.com/jupyterlite/pyodide-kernel/pull/376) ([@jtpio](https://github.com/jtpio))
+- Add dependabot for 0.8.x, restore python 3.12 for minimum lock test [#359](https://github.com/jupyterlite/pyodide-kernel/pull/359) ([@bollwyvl](https://github.com/bollwyvl), [@jtpio](https://github.com/jtpio))
+- Update to JupyterLite 0.9.0b0 [#357](https://github.com/jupyterlite/pyodide-kernel/pull/357) ([@jtpio](https://github.com/jtpio))
+- Forward port #335: update to pyodide 314.0.6 [#342](https://github.com/jupyterlite/pyodide-kernel/pull/342) ([@jtpio](https://github.com/jtpio))
+- Update jupyter-builder, TypeScript and rimraf [#333](https://github.com/jupyterlite/pyodide-kernel/pull/333) ([@jtpio](https://github.com/jtpio))
+
+### Other merged PRs
+
+- Bump source-map-js from 1.2.1 to 1.2.2 [#358](https://github.com/jupyterlite/pyodide-kernel/pull/358) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.8 to 3.1.9 [#353](https://github.com/jupyterlite/pyodide-kernel/pull/353) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.7 to 3.1.9 in /ui-tests [#352](https://github.com/jupyterlite/pyodide-kernel/pull/352) ([@jtpio](https://github.com/jtpio))
+- Bump dompurify from 3.4.16 to 3.4.17 in /ui-tests [#350](https://github.com/jupyterlite/pyodide-kernel/pull/350) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.7 to 3.1.8 [#349](https://github.com/jupyterlite/pyodide-kernel/pull/349) ([@jtpio](https://github.com/jtpio))
+- Bump postcss-selector-parser from 7.1.5 to 7.1.6 [#348](https://github.com/jupyterlite/pyodide-kernel/pull/348) ([@jtpio](https://github.com/jtpio))
+- Bump source-map-js from 1.2.1 to 1.2.2 in /ui-tests [#347](https://github.com/jupyterlite/pyodide-kernel/pull/347) ([@jtpio](https://github.com/jtpio))
+- Bump dompurify from 3.4.13 to 3.4.16 in /ui-tests [#346](https://github.com/jupyterlite/pyodide-kernel/pull/346) ([@jtpio](https://github.com/jtpio))
+- Bump js-yaml from 3.15.1 to 3.15.2 [#343](https://github.com/jupyterlite/pyodide-kernel/pull/343) ([@jtpio](https://github.com/jtpio))
+- Bump browserslist from 4.28.6 to 4.28.9 [#341](https://github.com/jupyterlite/pyodide-kernel/pull/341) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.5 to 3.1.7 in /ui-tests [#340](https://github.com/jupyterlite/pyodide-kernel/pull/340) ([@jtpio](https://github.com/jtpio))
+- Bump fast-uri from 3.1.4 to 3.1.7 [#339](https://github.com/jupyterlite/pyodide-kernel/pull/339) ([@jtpio](https://github.com/jtpio))
+- Bump brace-expansion from 2.1.2 to 2.1.4 in /ui-tests [#334](https://github.com/jupyterlite/pyodide-kernel/pull/334) ([@jtpio](https://github.com/jtpio))
+- Bump nanoid from 3.3.16 to 3.3.18 in /ui-tests [#330](https://github.com/jupyterlite/pyodide-kernel/pull/330) ([@jtpio](https://github.com/jtpio))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-08-11&to=2026-11-10&type=c))
+
+@bollwyvl ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Abollwyvl+updated%3A2026-08-11..2026-11-10&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-08-11..2026-11-10&type=Issues)) | @juntyr ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajuntyr+updated%3A2026-08-11..2026-11-10&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.9.0a1
 
 ([Full Changelog](https://github.com/jupyterlite/pyodide-kernel/compare/@jupyterlite/pyodide-kernel-extension@0.9.0-alpha.0...3c3569b430b8fa0545eee99ca6064bf50de1a350))
@@ -37,8 +81,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlite/pyodide-kernel/graphs/contributors?from=2026-07-15&to=2026-08-11&type=c))
 
 @ianthomas23 ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Aianthomas23+updated%3A2026-07-15..2026-08-11&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlite%2Fpyodide-kernel+involves%3Ajtpio+updated%3A2026-07-15..2026-08-11&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.9.0a0
 

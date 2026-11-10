@@ -1,3 +1,3 @@
 """source of truth for ``jupyterlite-pyodide-kernel``` version."""
 
-__version__ = "0.9.0a1"
+__version__ = "0.9.0b0"
