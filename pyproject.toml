@@ -73,7 +73,7 @@ lint = [
 
 test = [
     "pytest-console-scripts >=1.4.0",
-    "pytest-cov <7",
+    "pytest-cov >=7.1.0",
     "pytest-html",
     "pytest",
 ]
@@ -146,6 +146,10 @@ source = [
     "jupyterlite_pyodide_kernel/",
     "*/site-packages/jupyterlite_pyodide_kernel/",
 ]
+
+[tool.coverage.run]
+patch = ["subprocess"]
+core = "ctrace"
 
 [tool.pytest.ini_options]
 addopts = [
