@@ -57,7 +57,7 @@
   "devDependencies": {
     "@jupyter/builder": "^1.2.2",
     "rimraf": "^6.0.1",
-    "typescript": "~5.9.3"
+    "typescript": "~7.0.2"
   },
   "publishConfig": {
     "access": "public"
