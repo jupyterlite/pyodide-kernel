@@ -64,7 +64,7 @@ lock = [
 dev = [
     "build",
     "hatch",
-    "jupyterlab >=4.6.5,<4.7.0",
+    "jupyterlab >=4.6.6,<4.7.0",
 ]
 
 lint = [
