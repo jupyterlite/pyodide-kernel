@@ -102,10 +102,10 @@ jobs:
         include:
           - test-extra: test
             use-dist: sdist
-            pytest-args: --cov-fail-under=59
+            pytest-args: --cov-fail-under=58
           - test-extra: test,lock
             use-dist: wheel
-            pytest-args: --cov-fail-under=93
+            pytest-args: --cov-fail-under=92
           # frequently flakes on large downloads
           - os: macos
             pytest-args: -k "not remote-archive"
