@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - 0.1.x
+      - 0.8.x
   pull_request:
     branches:
       - '*'
@@ -91,7 +91,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu, windows, macos]
-        python-version: ['3.11', '3.12', '3.15']
+        python-version:
+          # sync with requires-python from pyproject.toml
+          - '3.11'
+          # sync with requires-python of oldest supported pyodide-lock
+          - '3.12'
+          # best-effort latest python
+          - '3.15'
         test-extra: ['test', 'test,lock']
         include:
           - test-extra: test
@@ -100,13 +106,16 @@ jobs:
           - test-extra: test,lock
             use-dist: wheel
             pytest-args: --cov-fail-under=93
+          # frequently flakes on large downloads
+          - os: macos
+            pytest-args: -k "not remote-archive"
         exclude:
           - python-version: '3.11'
             test-extra: 'test,lock'
 
     steps:
       - name: Install Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
