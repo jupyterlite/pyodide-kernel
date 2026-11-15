@@ -301,7 +301,7 @@ def get_wheel_fileinfo(whl_path):
     metadata = pkginfo.get_metadata(str(whl_path))
     whl_stat = whl_path.stat()
     whl_isodate = (
-        datetime.datetime.fromtimestamp(whl_stat.st_mtime, tz=datetime.timezone.utc)
+        datetime.datetime.fromtimestamp(whl_stat.st_mtime, tz=datetime.UTC)
         .isoformat()
         .split("+")[0]
         + "Z"
