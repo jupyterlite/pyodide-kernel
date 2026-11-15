@@ -7,4 +7,4 @@ jedi ==0.20.0
 jupyterlab-widgets ==3.0.15
 matplotlib-inline ==0.2.2
 pygments ==2.21.0
-widgetsnbextension ==4.0.15
+widgetsnbextension ==4.0.16

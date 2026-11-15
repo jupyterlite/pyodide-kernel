@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "hatchling >=1.28.0",
-    "jupyter-builder >=1.2.2,<2",
+    "jupyter-builder >=1.2.4,<2",
 ]
 build-backend = "hatchling.build"
 
@@ -58,7 +58,7 @@ jupyterlite-pyodide-kernel-pyodide = "jupyterlite_pyodide_kernel.addons.pyodide:
 
 [project.optional-dependencies]
 lock = [
-    "pyodide-lock[uv] >=0.1.3,<0.3.0",
+    "pyodide-lock[uv] >=0.2.1,<0.3.0",
 ]
 
 dev = [
@@ -144,6 +144,7 @@ ignore = ["W002"]
 
 [tool.coverage.run]
 patch = ["subprocess"]
+core = "ctrace"
 
 [tool.coverage.paths]
 source = [
@@ -158,6 +159,7 @@ addopts = [
     "-vv",
     "--tb=long",
     "--color=yes",
+    "--import-mode=importlib",
     # pytest-console-scripts
     "--script-launch-mode=subprocess",
     # cov
