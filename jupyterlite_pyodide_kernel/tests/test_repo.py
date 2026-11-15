@@ -102,5 +102,5 @@ def the_production_x_branch() -> str:
 
 
 @pytest.fixture(params=[p.name for p in GH.rglob("workflows/*.yml")])
-def a_ci_workflow(request: pytest.FixtureRequest) -> dict[str, Any]:
+def a_ci_workflow(request: pytest.FixtureRequest) -> str:
     return f"{request.param}"
