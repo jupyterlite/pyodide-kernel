@@ -141,5 +141,6 @@
       "eqeqeq": "error",
       "prefer-arrow-callback": "error"
     }
-  }
+  },
+  "packageManager": "yarn@3.5.0"
 }
