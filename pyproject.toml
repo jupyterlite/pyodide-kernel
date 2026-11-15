@@ -144,6 +144,7 @@ ignore = ["W002"]
 
 [tool.coverage.run]
 patch = ["subprocess"]
+core = "ctrace"
 
 [tool.coverage.paths]
 source = [
@@ -158,6 +159,7 @@ addopts = [
     "-vv",
     "--tb=long",
     "--color=yes",
+    "--import-mode=importlib",
     # pytest-console-scripts
     "--script-launch-mode=subprocess",
     # cov
