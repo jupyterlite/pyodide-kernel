@@ -60,6 +60,18 @@ def test_dependabot_branches(the_production_x_branch: str) -> None:
     )
 
 
+def test_workflow_branches(the_production_x_branch: str, a_ci_workflow: str) -> None:
+    wf = yaml.safe_load((GH / f"workflows/{a_ci_workflow}").read_bytes())
+    wf_on = wf.get("on") or wf.get(True)
+    on_push_branches = wf_on.get("push", {}).get("branches", {})
+    name = wf.get("name", a_ci_workflow)
+    if not on_push_branches:
+        pytest.skip(f"'{name}` not limited to branches")
+    assert the_production_x_branch in on_push_branches, (
+        f"'{name}' should run on '{the_production_x_branch}'"
+    )
+
+
 # fixtures
 @pytest.fixture
 def the_default_pyodide_url():
@@ -87,3 +99,8 @@ def the_production_x_branch() -> str:
     else:
         x_bits = [major, minor]
     return ".".join([*x_bits, "x"])
+
+
+@pytest.fixture(params=[p.name for p in GH.rglob("workflows/*.yml")])
+def a_ci_workflow(request: pytest.FixtureRequest) -> dict[str, Any]:
+    return f"{request.param}"
