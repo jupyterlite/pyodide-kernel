@@ -56,6 +56,12 @@ class Interpreter(InteractiveShell):
         pass
 
     def _showtraceback(self, etype, evalue, stb):
+        sys.stdout.flush()
+        sys.stderr.flush()
+        dh = self.displayhook
+        if dh.publish_execution_error:
+            dh.publish_execution_error(str(etype), str(evalue), stb)
+
         self._last_traceback = {
             "ename": str(etype),
             "evalue": str(evalue),
